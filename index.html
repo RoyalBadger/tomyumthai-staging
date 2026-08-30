@@ -1594,28 +1594,7 @@
       <!-- ==================== ORDER DISPATCH & REAL-TIME AUTOCOMPLETE DELIVERY CHECKER ==================== -->
       <div id="orderSection" class="order-dispatch-card">
         
-        <!-- Shift Manager Test Switch -->
-        <div class="manager-sim-box">
-          <div class="manager-sim-label">
-            <span>⚙️ Shift Manager Test Switch:</span>
-          </div>
-          <button class="btn-sim-toggle on" id="btnSimToggle" onclick="toggleManagerDelivery()">
-            <span id="simDot">🟢</span> <span id="simText">Driver On-Duty (Click to Pause)</span>
-          </button>
-        </div>
-
-        <div class="dispatch-header">
-          <span class="dispatch-title">Select Order Type:</span>
-          
-          <div class="dispatch-tabs">
-            <button class="dispatch-tab active" id="tabPickup" onclick="setOrderMode('pickup')">
-              🛍️ Pickup (15–20m • Free)
-            </button>
-            <button class="dispatch-tab" id="tabDelivery" onclick="setOrderMode('delivery')">
-              🛵 Delivery (5-Mile Zone)
-            </button>
-          </div>
-        </div>
+        
 
         <!-- Manager Emergency Paused Banner -->
         <div id="deliveryPausedBanner" class="delivery-paused-banner">
@@ -2910,6 +2889,56 @@
       }
       alert('Connecting to Aldelo Express Masa+ Cloud Checkout!\\n\\nIn production, all your selected meats, spice levels, add-ons, and exclusions (NO PEANUTS, NO EGG) auto-print directly on your in-store Aldelo kitchen printer.');
     }
+
+    
+    // Real-Time Sync with Manager Portal (Stock, 86 items, Prices, Holidays, Delivery Pause)
+    function syncWithManagerPortal() {
+      const STORAGE_KEY_MENU = 'tomyum_shared_menu';
+      const STORAGE_KEY_HOLIDAYS = 'tomyum_shared_holidays';
+      const STORAGE_KEY_EMERGENCY = 'tomyum_emergency_pause';
+
+      const savedMenu = localStorage.getItem(STORAGE_KEY_MENU);
+      if (savedMenu) {
+        try {
+          const menuList = JSON.parse(savedMenu);
+          menuList.forEach(m => {
+            if (DISH_CONFIGS[m.id]) {
+              DISH_CONFIGS[m.id].basePrice = m.price;
+              DISH_CONFIGS[m.id].inStock = m.inStock;
+            }
+          });
+        } catch(e){}
+      }
+
+      // Check Emergency Delivery Pause
+      const emergency = localStorage.getItem(STORAGE_KEY_EMERGENCY) === 'true';
+      if (emergency) {
+        isDeliveryAvailable = false;
+        const tabDelivery = document.getElementById('tabDelivery');
+        const pausedBanner = document.getElementById('deliveryPausedBanner');
+        if (tabDelivery) tabDelivery.classList.add('disabled-tab');
+        if (pausedBanner) pausedBanner.style.display = 'block';
+        setOrderMode('pickup');
+      }
+
+      // Check Holidays
+      const savedHolidays = localStorage.getItem(STORAGE_KEY_HOLIDAYS);
+      if (savedHolidays) {
+        try {
+          const holidays = JSON.parse(savedHolidays);
+          const today = new Date().toISOString().split('T')[0];
+          const activeHoliday = holidays.find(h => h.date === today);
+          if (activeHoliday) {
+            const topBar = document.querySelector('.top-bar');
+            if (topBar) {
+              topBar.innerHTML = '⚠️ <strong>Holiday Notice:</strong> ' + activeHoliday.note;
+              topBar.style.background = '#b91c1c';
+            }
+          }
+        } catch(e){}
+      }
+    }
+    syncWithManagerPortal();
 
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('menuSearch');

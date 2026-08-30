@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tom Yum Thai — Store Manager & Kitchen Portal</title>
+  <title>Store Manager Portal | Tom Yum Thai Restaurant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-dark: #12151c;
-      --bg-panel: #1a1e27;
-      --bg-card: #242a36;
+      --bg-dark: #0f1218;
+      --bg-panel: #181c26;
+      --bg-card: #222735;
       --accent-orange: #ff781f;
       --accent-orange-hover: #e65c00;
       --accent-green: #22c55e;
@@ -34,15 +34,117 @@
     body {
       background: var(--bg-dark);
       color: var(--text-main);
-      padding: 24px 16px 60px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    .container {
+    /* Login Screen Container */
+    .login-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 35px 30px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    .login-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .login-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-input:focus {
+      border-color: var(--accent-orange);
+    }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 6px;
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 120, 31, 0.4);
+      transition: transform 0.15s;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-1px);
+    }
+
+    .login-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* Dashboard Layout (Shown when authenticated) */
+    .dashboard-container {
+      display: none;
+      padding: 24px 16px 60px;
       max-width: 1100px;
       margin: 0 auto;
+      width: 100%;
     }
 
-    /* Top Manager Header */
     .manager-header {
       background: var(--bg-panel);
       border-left: 5px solid var(--accent-orange);
@@ -84,15 +186,19 @@
       font-size: 13px;
       font-weight: 700;
       text-decoration: none;
-      transition: all 0.2s;
     }
 
-    .btn-preview-site:hover {
-      background: var(--accent-orange);
-      color: #fff;
+    .btn-logout {
+      background: #334155;
+      color: #cbd5e1;
+      border: 1px solid var(--border-subtle);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
-    /* Tabs Navigation */
     .tabs-nav {
       display: flex;
       gap: 10px;
@@ -121,7 +227,6 @@
       box-shadow: 0 4px 12px rgba(255, 120, 31, 0.35);
     }
 
-    /* Content Cards */
     .tab-panel {
       background: var(--bg-panel);
       border: 1px solid var(--border-subtle);
@@ -161,7 +266,6 @@
       margin-top: 2px;
     }
 
-    /* Table Styles */
     .table-container {
       overflow-x: auto;
     }
@@ -193,7 +297,6 @@
       background: rgba(255,255,255,0.02);
     }
 
-    /* 1-Click Stock Toggle Switch */
     .stock-switch {
       display: inline-flex;
       align-items: center;
@@ -262,14 +365,8 @@
       font-size: 13px;
       font-weight: 800;
       cursor: pointer;
-      transition: transform 0.15s;
     }
 
-    .btn-primary:hover {
-      transform: scale(1.02);
-    }
-
-    /* Holiday & Schedule Form Inputs */
     .form-input {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -322,16 +419,43 @@
 </head>
 <body>
 
-  <div class="container">
+  <!-- ==================== LOGIN SCREEN ==================== -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-card">
+      <span class="login-icon">🏮</span>
+      <h1 class="login-title">Manager Portal</h1>
+      <p class="login-subtitle">Tom Yum Thai Restaurant (Garland, TX)</p>
+
+      <div id="loginError" class="login-error">⚠️ Invalid Manager Password or PIN.</div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="input-group">
+          <label class="input-label">Manager Username:</label>
+          <input type="text" id="loginUsername" class="login-input" value="manager" required>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Manager Password / PIN:</label>
+          <input type="password" id="loginPassword" class="login-input" placeholder="Enter PIN (Default: 2005)" required autofocus>
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Default Demo PIN: <strong>2005</strong></small>
+        </div>
+
+        <button type="submit" class="btn-login">🔒 Log In to Manager Portal</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== AUTHENTICATED DASHBOARD ==================== -->
+  <div id="dashboardScreen" class="dashboard-container">
     
-    <!-- Top Header -->
     <div class="manager-header">
       <div>
         <div class="brand-title">🏮 Tom Yum Thai — Store Manager Portal</div>
-        <div class="brand-subtitle">Logged in as <strong>Store Manager / Kitchen Shift Lead</strong> • Garland, TX</div>
+        <div class="brand-subtitle">Logged in as <strong id="userDisplay">Store Manager</strong> • Garland, TX</div>
       </div>
       <div class="header-actions">
-        <a href="Tom_Yum_Thai_Website_Demo.html" target="_blank" class="btn-preview-site">🌐 Open Live Website Demo</a>
+        <a href="/" target="_blank" class="btn-preview-site">🌐 View Live Website</a>
+        <button class="btn-logout" onclick="handleLogout()">🚪 Logout</button>
       </div>
     </div>
 
@@ -343,7 +467,7 @@
       <button class="tab-btn" onclick="showTab('tabSettings', this)">⚙️ Store & Promo Settings</button>
     </div>
 
-    <!-- ==================== TAB 1: MENU & 86 STOCK ==================== -->
+    <!-- Tab 1: Menu & 86 Stock -->
     <div id="tabMenu" class="tab-panel active">
       <div class="panel-header">
         <div>
@@ -369,7 +493,7 @@
       </div>
     </div>
 
-    <!-- ==================== TAB 2: SCHEDULE & DRIVER SHIFTS ==================== -->
+    <!-- Tab 2: Hours & Drivers -->
     <div id="tabSchedule" class="tab-panel">
       <div class="panel-header">
         <div>
@@ -394,41 +518,41 @@
               <td><strong>Monday</strong></td>
               <td><em style="color:#64748b;">Closed for Lunch</em></td>
               <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+              <td><label><input type="checkbox" id="drv_mon" checked onchange="saveDriverShift('mon', this.checked)"> 🛵 On Duty</label></td>
             </tr>
             <tr>
               <td><strong>Tuesday</strong></td>
               <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
               <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+              <td><label><input type="checkbox" id="drv_tue" checked onchange="saveDriverShift('tue', this.checked)"> 🛵 On Duty</label></td>
             </tr>
             <tr>
               <td><strong>Wednesday</strong></td>
               <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
               <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+              <td><label><input type="checkbox" id="drv_wed" checked onchange="saveDriverShift('wed', this.checked)"> 🛵 On Duty</label></td>
             </tr>
             <tr>
               <td><strong>Thursday</strong></td>
               <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
               <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+              <td><label><input type="checkbox" id="drv_thu" checked onchange="saveDriverShift('thu', this.checked)"> 🛵 On Duty</label></td>
             </tr>
             <tr>
               <td><strong>Friday</strong></td>
               <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
               <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+              <td><label><input type="checkbox" id="drv_fri" checked onchange="saveDriverShift('fri', this.checked)"> 🛵 On Duty</label></td>
             </tr>
             <tr>
               <td><strong>Saturday</strong></td>
               <td colspan="2"><input type="time" class="form-input" value="12:00"> to <input type="time" class="form-input" value="21:30"> <small style="color:var(--accent-gold);">(All Day Service)</small></td>
-              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+              <td><label><input type="checkbox" id="drv_sat" checked onchange="saveDriverShift('sat', this.checked)"> 🛵 On Duty</label></td>
             </tr>
             <tr>
               <td><strong>Sunday</strong></td>
               <td colspan="2"><input type="time" class="form-input" value="12:00"> to <input type="time" class="form-input" value="21:30"> <small style="color:var(--accent-gold);">(All Day Service)</small></td>
-              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+              <td><label><input type="checkbox" id="drv_sun" checked onchange="saveDriverShift('sun', this.checked)"> 🛵 On Duty</label></td>
             </tr>
           </tbody>
         </table>
@@ -437,15 +561,15 @@
       <div class="emergency-pause-box">
         <div>
           <strong style="color:#fca5a5;font-size:14px;">⚠️ 1-Click Emergency Delivery Pause</strong>
-          <p style="font-size:12px;color:#cbd5e1;margin-top:2px;">Turn off direct delivery immediately if a driver does not show up or calls in sick. Pickup remains open.</p>
+          <p style="font-size:12px;color:#cbd5e1;margin-top:2px;">Turn off direct delivery immediately if a driver does not show up. Pickup remains open.</p>
         </div>
-        <button class="btn-action" style="background:#7f1d1d;color:#fca5a5;border-color:#ef4444;font-size:13px;padding:8px 16px;" onclick="toggleEmergencyPause(this)">
+        <button id="btnEmergencyPause" class="btn-action" style="background:#7f1d1d;color:#fca5a5;border-color:#ef4444;font-size:13px;padding:8px 16px;" onclick="toggleEmergencyPause()">
           🔴 Emergency Pause Delivery
         </button>
       </div>
     </div>
 
-    <!-- ==================== TAB 3: HOLIDAY CALENDAR ==================== -->
+    <!-- Tab 3: Holiday Calendar -->
     <div id="tabHolidays" class="tab-panel">
       <div class="panel-header">
         <div>
@@ -454,7 +578,6 @@
         </div>
       </div>
 
-      <!-- Add Holiday Bar -->
       <div style="background:#151821;padding:16px;border:1px solid var(--border-subtle);border-radius:8px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
         <div>
           <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Holiday Date:</label>
@@ -486,7 +609,7 @@
       </div>
     </div>
 
-    <!-- ==================== TAB 4: STORE SETTINGS ==================== -->
+    <!-- Tab 4: Store Settings -->
     <div id="tabSettings" class="tab-panel">
       <div class="panel-header">
         <div>
@@ -525,12 +648,16 @@
 
   </div>
 
-  <!-- Toast Alert -->
   <div id="toastAlert" class="toast-alert">✓ Settings Saved!</div>
 
   <script>
-    // In-Memory Menu Database for Manager Demo
-    let menuData = [
+    // Master State with LocalStorage Persistence
+    const STORAGE_KEY_MENU = 'tomyum_shared_menu';
+    const STORAGE_KEY_HOLIDAYS = 'tomyum_shared_holidays';
+    const STORAGE_KEY_EMERGENCY = 'tomyum_emergency_pause';
+    const STORAGE_KEY_AUTH = 'tomyum_manager_auth';
+
+    const DEFAULT_MENU = [
       { id: 'kmg', name: 'Thai Chicken Rice', thai: 'Khao Man Gai • ข้าวมันไก่', cat: 'Signatures', price: 14.99, inStock: true },
       { id: 'tomyum', name: 'Authentic Tom Yum Soup', thai: 'Tom Yum Goong • ต้มยำ', cat: 'Signatures', price: 13.99, inStock: true },
       { id: 'drunken', name: 'Pad Kee Mow (Drunken Noodles)', thai: 'Pad Kee Mao • ผัดขี้เมา', cat: 'Noodles', price: 13.99, inStock: true },
@@ -540,11 +667,64 @@
       { id: 'thaitea', name: 'Authentic Thai Iced Tea', thai: 'Cha Yen • ชาเย็น', cat: 'Drinks', price: 4.50, inStock: true }
     ];
 
-    let holidayData = [
+    const DEFAULT_HOLIDAYS = [
       { date: '2026-07-04', title: 'Independence Day', note: 'Closed for 4th of July Holiday' },
       { date: '2026-11-26', title: 'Thanksgiving Day', note: 'Closed for Thanksgiving' },
       { date: '2026-12-25', title: 'Christmas Day', note: 'Closed for Christmas' }
     ];
+
+    let menuData = JSON.parse(localStorage.getItem(STORAGE_KEY_MENU)) || DEFAULT_MENU;
+    let holidayData = JSON.parse(localStorage.getItem(STORAGE_KEY_HOLIDAYS)) || DEFAULT_HOLIDAYS;
+    let isEmergencyPaused = localStorage.getItem(STORAGE_KEY_EMERGENCY) === 'true';
+
+    // Authentication Logic (PIN: 2005 or password: tomyum)
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('loginUsername').value.trim();
+      const pass = document.getElementById('loginPassword').value.trim();
+      const errorBox = document.getElementById('loginError');
+
+      if (pass === '2005' || pass === 'tomyum' || pass === 'garland2005') {
+        localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify({ user: user, time: Date.now() }));
+        showDashboard(user);
+      } else {
+        errorBox.style.display = 'block';
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem(STORAGE_KEY_AUTH);
+      document.getElementById('dashboardScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('loginPassword').value = '';
+    }
+
+    function checkAuth() {
+      const auth = localStorage.getItem(STORAGE_KEY_AUTH);
+      if (auth) {
+        try {
+          const data = JSON.parse(auth);
+          showDashboard(data.user || 'Store Manager');
+        } catch(e) {
+          handleLogout();
+        }
+      }
+    }
+
+    function showDashboard(username) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboardScreen').style.display = 'block';
+      document.getElementById('userDisplay').innerText = username;
+      renderMenu();
+      renderHolidays();
+      updateEmergencyPauseUI();
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY_MENU, JSON.stringify(menuData));
+      localStorage.setItem(STORAGE_KEY_HOLIDAYS, JSON.stringify(holidayData));
+      localStorage.setItem(STORAGE_KEY_EMERGENCY, isEmergencyPaused ? 'true' : 'false');
+    }
 
     function renderMenu() {
       const tbody = document.getElementById('menuTableBody');
@@ -581,6 +761,7 @@
 
     function toggleStock(index) {
       menuData[index].inStock = !menuData[index].inStock;
+      saveState();
       renderMenu();
       const statusText = menuData[index].inStock ? 'marked IN STOCK' : 'marked 86 (OUT OF STOCK)';
       showToast(`${menuData[index].name} ${statusText}! Live site updated.`);
@@ -588,6 +769,7 @@
 
     function updatePrice(index, newPrice) {
       menuData[index].price = parseFloat(newPrice) || menuData[index].price;
+      saveState();
       showToast(`Updated price for ${menuData[index].name} to $${menuData[index].price.toFixed(2)}`);
     }
 
@@ -595,6 +777,7 @@
       const name = menuData[index].name;
       if (confirm(`Are you sure you want to delete ${name}?`)) {
         menuData.splice(index, 1);
+        saveState();
         renderMenu();
         showToast(`Deleted ${name} from menu.`);
       }
@@ -614,6 +797,7 @@
         price: price,
         inStock: true
       });
+      saveState();
       renderMenu();
       showToast(`Added ${name} ($${price.toFixed(2)}) to menu!`);
     }
@@ -647,33 +831,46 @@
       }
 
       holidayData.push({ date: d, title: title, note: note || ('Closed for ' + title) });
+      saveState();
       renderHolidays();
       showToast(`Holiday override added for ${d} (${title})`);
     }
 
     function deleteHoliday(idx) {
       holidayData.splice(idx, 1);
+      saveState();
       renderHolidays();
       showToast('Holiday override removed.');
     }
 
-    function toggleEmergencyPause(btn) {
-      if (btn.innerText.includes('Emergency Pause')) {
+    function toggleEmergencyPause() {
+      isEmergencyPaused = !isEmergencyPaused;
+      saveState();
+      updateEmergencyPauseUI();
+      if (isEmergencyPaused) {
+        showToast('⚠️ Delivery is PAUSED on live website. Pickup active.');
+      } else {
+        showToast('🟢 Delivery shifts RESUMED on live website.');
+      }
+    }
+
+    function updateEmergencyPauseUI() {
+      const btn = document.getElementById('btnEmergencyPause');
+      if (isEmergencyPaused) {
         btn.innerText = '🟢 Resume Delivery Shift';
         btn.style.background = '#14532d';
         btn.style.borderColor = '#22c55e';
         btn.style.color = '#86efac';
-        showToast('⚠️ Delivery is PAUSED on live website. Pickup active.');
       } else {
         btn.innerText = '🔴 Emergency Pause Delivery';
         btn.style.background = '#7f1d1d';
         btn.style.borderColor = '#ef4444';
         btn.style.color = '#fca5a5';
-        showToast('🟢 Delivery shifts RESUMED on live website.');
       }
     }
 
     function saveSchedule() {
+      saveState();
       showToast('Operating schedule and driver shifts saved!');
     }
 
@@ -694,8 +891,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      renderMenu();
-      renderHolidays();
+      checkAuth();
     });
   </script>
 </body>
