@@ -1018,6 +1018,7 @@
       $('dashboardScreen').style.display = 'block';
       $('userDisplay').innerText = me.email + ' (' + me.role + ')';
       await loadAll();
+      startQueuePolling();
     }
 
     $('loginForm').addEventListener('submit', async e => {
@@ -1211,6 +1212,135 @@
         }});
         toast('Store settings saved.');
       } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    // ---------- kitchen queue ----------
+    let queueTimer = null;
+    let lastQueuePoll = null;
+    let audioCtx = null;
+
+    function chime() {
+      try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const beep = (freq, delay) => setTimeout(() => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g); g.connect(audioCtx.destination);
+          o.type = 'sine'; o.frequency.value = freq;
+          g.gain.setValueAtTime(0.4, audioCtx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+          o.start(); o.stop(audioCtx.currentTime + 0.8);
+        }, delay);
+        beep(880, 0); beep(1174, 250);
+      } catch {}
+    }
+
+    function elapsedText(iso) {
+      const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return mins + ' min ago';
+      return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm ago';
+    }
+
+    function startQueuePolling() {
+      clearInterval(queueTimer);
+      const tick = () => loadQueue().catch(() => {});
+      tick();
+      queueTimer = setInterval(tick, 7000);
+    }
+
+    async function loadQueue() {
+      const url = '/api/admin/orders' + (lastQueuePoll ? ('?since=' + encodeURIComponent(lastQueuePoll)) : '');
+      const data = await api(url);
+      if (lastQueuePoll && data.new_since > 0) chime();
+      lastQueuePoll = data.now;
+      renderQueue(data.orders);
+    }
+
+    function renderQueue(orders) {
+      const list = $('queueList');
+      const tpl = $('queue-card-tpl');
+      list.innerHTML = '';
+      if (!orders.length) {
+        list.innerHTML = '<div style="color:var(--text-muted);font-size:14px;padding:30px;text-align:center;grid-column:1/-1;">No active orders. New paid orders appear here automatically with a chime.</div>';
+        return;
+      }
+      const sorted = [...orders.filter(o => o.status !== 'completed'), ...orders.filter(o => o.status === 'completed')];
+      for (const o of sorted) {
+        const node = tpl.content.firstElementChild.cloneNode(true);
+        node.dataset.orderId = o.id;
+        if (o.status === 'received' && (Date.now() - new Date(o.paid_at || o.created_at).getTime()) < 120000) node.classList.add('is-new');
+        if (o.status === 'completed') node.style.opacity = '0.45';
+        node.querySelector('[data-code]').innerText = o.public_code;
+        node.querySelector('[data-type]').innerText = o.order_type.toUpperCase() + ' • ' + o.status.toUpperCase();
+        node.querySelector('[data-elapsed]').innerText = elapsedText(o.created_at);
+        node.querySelector('[data-customer]').innerText = o.customer_name;
+        const phoneEl = node.querySelector('[data-phone]');
+        phoneEl.innerText = o.customer_phone;
+        phoneEl.href = 'tel:' + o.customer_phone;
+        const addrEl = node.querySelector('[data-address]');
+        if (o.order_type === 'delivery' && o.delivery_address) {
+          addrEl.innerText = '🛵 ' + o.delivery_address + (o.delivery_notes ? ' — ' + o.delivery_notes : '');
+        } else { addrEl.style.display = 'none'; }
+        node.querySelector('[data-items]').innerHTML = o.items.map(it => `
+          <div class="queue-item-row">
+            <div class="queue-item-title">${it.qty}× ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}</div>
+            <div class="queue-item-meta">
+              ${it.protein ? esc(it.protein) : ''}
+              ${it.spice_level ? ' <span class="queue-item-spice">' + '🌶'.repeat(it.spice_level) + ' Lv' + it.spice_level + '</span>' : ''}
+              ${it.extras && it.extras.length ? ' • +' + esc(it.extras.join(', +')) : ''}
+              ${it.notes ? '<br>📝 ' + esc(it.notes) : ''}
+            </div>
+            ${it.exclusions ? '<span class="queue-item-exclusion">⚠ ' + esc(it.exclusions) + '</span>' : ''}
+          </div>`).join('');
+        node.querySelector('[data-total]').innerText = '$' + dollars(o.total_cents);
+        const next = { received: 'cooking', cooking: 'ready', ready: 'completed' }[o.status];
+        node.querySelectorAll('[data-action]').forEach(btn => {
+          if (btn.dataset.action === next) {
+            btn.onclick = () => advanceOrder(o.id, next);
+          } else {
+            btn.style.display = 'none';
+          }
+        });
+        const printBtn = document.createElement('button');
+        printBtn.className = 'btn-queue btn-done';
+        printBtn.innerText = '🖨️ Print Ticket';
+        printBtn.onclick = () => printReceipt(o);
+        node.querySelector('.queue-action-btns').appendChild(printBtn);
+        list.appendChild(node);
+      }
+    }
+
+    async function advanceOrder(id, status) {
+      try {
+        await api('/api/admin/orders', { method: 'PATCH', body: { id, status } });
+        toast('Order moved to ' + status + '.');
+        await loadQueue();
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    function printReceipt(o) {
+      const node = $('receipt-tpl').content.firstElementChild.cloneNode(true);
+      node.querySelector('[data-receipt-type]').innerText = o.order_type.toUpperCase();
+      node.querySelector('[data-receipt-code]').innerText = o.public_code;
+      node.querySelector('[data-receipt-time]').innerText = new Date(o.created_at).toLocaleString('en-US', { timeZone: 'America/Chicago' });
+      node.querySelector('[data-receipt-customer]').innerText = o.customer_name;
+      node.querySelector('[data-receipt-phone]').innerText = o.customer_phone;
+      node.querySelector('[data-receipt-address]').innerText = o.order_type === 'delivery'
+        ? (o.delivery_address || '') + (o.delivery_notes ? ' / ' + o.delivery_notes : '') : '';
+      node.querySelector('[data-receipt-items]').innerHTML = o.items.map(it => `
+        <div class="receipt-item-row">
+          <div class="receipt-item-main">${it.qty} x ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}</div>
+          <div>${it.protein ? esc(it.protein) : ''}${it.spice_level ? ' - SPICE LV ' + it.spice_level : ''}${it.extras && it.extras.length ? ' - +' + esc(it.extras.join(', +')) : ''}</div>
+          ${it.exclusions ? '<div class="receipt-exclusion">*** ' + esc(it.exclusions) + ' ***</div>' : ''}
+          ${it.notes ? '<div>NOTE: ' + esc(it.notes) + '</div>' : ''}
+        </div>`).join('');
+      node.querySelector('[data-receipt-subtotal]').innerText = '$' + dollars(o.subtotal_cents - o.discount_cents);
+      node.querySelector('[data-receipt-tax]').innerText = '$' + dollars(o.tax_cents);
+      node.querySelector('[data-receipt-total]').innerText = '$' + dollars(o.total_cents);
+      document.body.appendChild(node);
+      window.print();
+      setTimeout(() => node.remove(), 500);
     }
 
     // ---------- ui ----------
