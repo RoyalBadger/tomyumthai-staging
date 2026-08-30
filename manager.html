@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tom Yum Thai — Store Manager & Kitchen Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #12151c;
+      --bg-panel: #1a1e27;
+      --bg-card: #242a36;
+      --accent-orange: #ff781f;
+      --accent-orange-hover: #e65c00;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-gold: #f5b041;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      padding: 24px 16px 60px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Top Manager Header */
+    .manager-header {
+      background: var(--bg-panel);
+      border-left: 5px solid var(--accent-orange);
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .brand-subtitle {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-preview-site {
+      background: #242a36;
+      color: #ff9d5c;
+      border: 1px solid var(--accent-orange);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-preview-site:hover {
+      background: var(--accent-orange);
+      color: #fff;
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-orange);
+      color: #ffffff;
+      border-color: var(--accent-orange);
+      box-shadow: 0 4px 12px rgba(255, 120, 31, 0.35);
+    }
+
+    /* Content Cards */
+    .tab-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 24px;
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .panel-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 14px;
+      background: #141720;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: #e2e8f0;
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* 1-Click Stock Toggle Switch */
+    .stock-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .stock-pill {
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+
+    .stock-in {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+
+    .stock-out {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .price-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 800;
+      width: 80px;
+      outline: none;
+    }
+
+    .price-input:focus {
+      border-color: var(--accent-orange);
+    }
+
+    .btn-action {
+      background: #2a313e;
+      border: 1px solid var(--border-subtle);
+      color: #cbd5e1;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-action:hover {
+      border-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.02);
+    }
+
+    /* Holiday & Schedule Form Inputs */
+    .form-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-orange);
+    }
+
+    .emergency-pause-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .toast-alert {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #14532d;
+      border: 1px solid #22c55e;
+      color: #86efac;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: none;
+      z-index: 99999;
+      animation: slideUp 0.2s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Header -->
+    <div class="manager-header">
+      <div>
+        <div class="brand-title">🏮 Tom Yum Thai — Store Manager Portal</div>
+        <div class="brand-subtitle">Logged in as <strong>Store Manager / Kitchen Shift Lead</strong> • Garland, TX</div>
+      </div>
+      <div class="header-actions">
+        <a href="Tom_Yum_Thai_Website_Demo.html" target="_blank" class="btn-preview-site">🌐 Open Live Website Demo</a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="showTab('tabMenu', this)">📋 Menu & 1-Click 86 Stock</button>
+      <button class="tab-btn" onclick="showTab('tabSchedule', this)">🕒 Operating Hours & Drivers</button>
+      <button class="tab-btn" onclick="showTab('tabHolidays', this)">🗓️ Holiday Calendar Overrides</button>
+      <button class="tab-btn" onclick="showTab('tabSettings', this)">⚙️ Store & Promo Settings</button>
+    </div>
+
+    <!-- ==================== TAB 1: MENU & 86 STOCK ==================== -->
+    <div id="tabMenu" class="tab-panel active">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Active Menu Items (<span id="menuCount">7</span> Dishes)</div>
+          <div class="panel-desc">Modify prices or 86 out-of-stock dishes with 1 click. Updates the customer site instantly!</div>
+        </div>
+        <button class="btn-primary" onclick="openAddItemPrompt()">+ Add New Menu Item</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:28%;">Dish Name</th>
+              <th style="width:16%;">Category</th>
+              <th style="width:16%;">Price ($)</th>
+              <th style="width:24%;">Live Stock Status</th>
+              <th style="width:16%;text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="menuTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: SCHEDULE & DRIVER SHIFTS ==================== -->
+    <div id="tabSchedule" class="tab-panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Operating Hours & Driver Schedule</div>
+          <div class="panel-desc">Configure lunch and dinner windows and enable/disable delivery driver shifts per day.</div>
+        </div>
+        <button class="btn-primary" onclick="saveSchedule()">💾 Save Schedule</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%;">Day of Week</th>
+              <th style="width:30%;">Lunch Hours</th>
+              <th style="width:30%;">Dinner Hours</th>
+              <th style="width:22%;">Delivery Drivers</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTableBody">
+            <tr>
+              <td><strong>Monday</strong></td>
+              <td><em style="color:#64748b;">Closed for Lunch</em></td>
+              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
+              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+            </tr>
+            <tr>
+              <td><strong>Tuesday</strong></td>
+              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
+              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
+              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+            </tr>
+            <tr>
+              <td><strong>Wednesday</strong></td>
+              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
+              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
+              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+            </tr>
+            <tr>
+              <td><strong>Thursday</strong></td>
+              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
+              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
+              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+            </tr>
+            <tr>
+              <td><strong>Friday</strong></td>
+              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
+              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
+              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+            </tr>
+            <tr>
+              <td><strong>Saturday</strong></td>
+              <td colspan="2"><input type="time" class="form-input" value="12:00"> to <input type="time" class="form-input" value="21:30"> <small style="color:var(--accent-gold);">(All Day Service)</small></td>
+              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+            </tr>
+            <tr>
+              <td><strong>Sunday</strong></td>
+              <td colspan="2"><input type="time" class="form-input" value="12:00"> to <input type="time" class="form-input" value="21:30"> <small style="color:var(--accent-gold);">(All Day Service)</small></td>
+              <td><label><input type="checkbox" checked> 🛵 On Duty</label></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="emergency-pause-box">
+        <div>
+          <strong style="color:#fca5a5;font-size:14px;">⚠️ 1-Click Emergency Delivery Pause</strong>
+          <p style="font-size:12px;color:#cbd5e1;margin-top:2px;">Turn off direct delivery immediately if a driver does not show up or calls in sick. Pickup remains open.</p>
+        </div>
+        <button class="btn-action" style="background:#7f1d1d;color:#fca5a5;border-color:#ef4444;font-size:13px;padding:8px 16px;" onclick="toggleEmergencyPause(this)">
+          🔴 Emergency Pause Delivery
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: HOLIDAY CALENDAR ==================== -->
+    <div id="tabHolidays" class="tab-panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Holiday Calendar & Closure Overrides</div>
+          <div class="panel-desc">Set specific holiday dates when Tom Yum Thai will be closed. A banner automatically displays on the website.</div>
+        </div>
+      </div>
+
+      <!-- Add Holiday Bar -->
+      <div style="background:#151821;padding:16px;border:1px solid var(--border-subtle);border-radius:8px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+        <div>
+          <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Holiday Date:</label>
+          <input type="date" id="holidayDateInput" class="form-input" value="2026-07-04">
+        </div>
+        <div>
+          <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Holiday Name:</label>
+          <input type="text" id="holidayNameInput" class="form-input" placeholder="e.g. Labor Day" value="Independence Day">
+        </div>
+        <div>
+          <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Website Alert Banner Note:</label>
+          <input type="text" id="holidayNoteInput" class="form-input" style="width:260px;" placeholder="e.g. Closed for 4th of July" value="Closed in observance of 4th of July">
+        </div>
+        <button class="btn-primary" onclick="addHolidayRow()">+ Add Holiday</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:20%;">Date</th>
+              <th style="width:25%;">Holiday Title</th>
+              <th style="width:40%;">Customer Banner Message</th>
+              <th style="width:15%;text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="holidayTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: STORE SETTINGS ==================== -->
+    <div id="tabSettings" class="tab-panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Store & Promo Settings</div>
+          <div class="panel-desc">Configure delivery fees, free delivery minimums, and direct promo discount codes.</div>
+        </div>
+        <button class="btn-primary" onclick="showToast('Store settings updated successfully!')">💾 Save Settings</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
+        <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Standard Delivery Fee ($):</label>
+          <input type="number" class="form-input" value="4.99" step="0.01" style="width:100%;">
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Charged on local 5-mile delivery orders.</small>
+        </div>
+
+        <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Free Delivery Threshold ($):</label>
+          <input type="number" class="form-input" value="45.00" step="0.01" style="width:100%;">
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Orders over this amount get automatic 100% free delivery.</small>
+        </div>
+
+        <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Direct Order Promo Code:</label>
+          <input type="text" class="form-input" value="DIRECT15" style="width:100%;text-transform:uppercase;font-weight:bold;color:var(--accent-orange);">
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Prints on the 4x6" takeout bag insert.</small>
+        </div>
+
+        <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Promo Discount Amount (%):</label>
+          <input type="number" class="form-input" value="15" style="width:100%;">
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">15% discount applied at checkout.</small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Alert -->
+  <div id="toastAlert" class="toast-alert">✓ Settings Saved!</div>
+
+  <script>
+    // In-Memory Menu Database for Manager Demo
+    let menuData = [
+      { id: 'kmg', name: 'Thai Chicken Rice', thai: 'Khao Man Gai • ข้าวมันไก่', cat: 'Signatures', price: 14.99, inStock: true },
+      { id: 'tomyum', name: 'Authentic Tom Yum Soup', thai: 'Tom Yum Goong • ต้มยำ', cat: 'Signatures', price: 13.99, inStock: true },
+      { id: 'drunken', name: 'Pad Kee Mow (Drunken Noodles)', thai: 'Pad Kee Mao • ผัดขี้เมา', cat: 'Noodles', price: 13.99, inStock: true },
+      { id: 'padthai', name: 'Traditional Pad Thai', thai: 'Pad Thai • ผัดไทย', cat: 'Noodles', price: 13.99, inStock: true },
+      { id: 'panang', name: 'Panang Curry with Rice', thai: 'Gaeng Panang • แกงพะแนง', cat: 'Curries', price: 14.49, inStock: true },
+      { id: 'mango', name: 'Sweet Mango Sticky Rice', thai: 'Khao Niao Mamuang', cat: 'Desserts', price: 7.99, inStock: true },
+      { id: 'thaitea', name: 'Authentic Thai Iced Tea', thai: 'Cha Yen • ชาเย็น', cat: 'Drinks', price: 4.50, inStock: true }
+    ];
+
+    let holidayData = [
+      { date: '2026-07-04', title: 'Independence Day', note: 'Closed for 4th of July Holiday' },
+      { date: '2026-11-26', title: 'Thanksgiving Day', note: 'Closed for Thanksgiving' },
+      { date: '2026-12-25', title: 'Christmas Day', note: 'Closed for Christmas' }
+    ];
+
+    function renderMenu() {
+      const tbody = document.getElementById('menuTableBody');
+      document.getElementById('menuCount').innerText = menuData.length;
+
+      let html = '';
+      menuData.forEach((item, index) => {
+        html += `
+          <tr>
+            <td>
+              <strong>${item.name}</strong><br>
+              <small style="color:var(--text-muted);">${item.thai}</small>
+            </td>
+            <td><span style="background:#141822;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;color:#fbd38d;">${item.cat}</span></td>
+            <td>
+              $<input type="number" step="0.01" class="price-input" value="${item.price.toFixed(2)}" onchange="updatePrice(${index}, this.value)">
+            </td>
+            <td>
+              <div class="stock-switch" onclick="toggleStock(${index})">
+                <input type="checkbox" ${item.inStock ? 'checked' : ''} style="cursor:pointer;">
+                <span class="stock-pill ${item.inStock ? 'stock-in' : 'stock-out'}">
+                  ${item.inStock ? '🟢 In Stock' : '🔴 86 (Out of Stock)'}
+                </span>
+              </div>
+            </td>
+            <td style="text-align:right;">
+              <button class="btn-action" onclick="deleteItem(${index})">🗑️ Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function toggleStock(index) {
+      menuData[index].inStock = !menuData[index].inStock;
+      renderMenu();
+      const statusText = menuData[index].inStock ? 'marked IN STOCK' : 'marked 86 (OUT OF STOCK)';
+      showToast(`${menuData[index].name} ${statusText}! Live site updated.`);
+    }
+
+    function updatePrice(index, newPrice) {
+      menuData[index].price = parseFloat(newPrice) || menuData[index].price;
+      showToast(`Updated price for ${menuData[index].name} to $${menuData[index].price.toFixed(2)}`);
+    }
+
+    function deleteItem(index) {
+      const name = menuData[index].name;
+      if (confirm(`Are you sure you want to delete ${name}?`)) {
+        menuData.splice(index, 1);
+        renderMenu();
+        showToast(`Deleted ${name} from menu.`);
+      }
+    }
+
+    function openAddItemPrompt() {
+      const name = prompt('Enter new dish name (e.g. Green Curry Chicken):');
+      if (!name) return;
+      const price = parseFloat(prompt('Enter dish price (e.g. 14.49):')) || 13.99;
+      const cat = prompt('Enter category (Signatures, Noodles, Curries, Starters, Desserts):') || 'Signatures';
+      
+      menuData.push({
+        id: 'item_' + Date.now(),
+        name: name,
+        thai: name + ' • เมนูใหม่',
+        cat: cat,
+        price: price,
+        inStock: true
+      });
+      renderMenu();
+      showToast(`Added ${name} ($${price.toFixed(2)}) to menu!`);
+    }
+
+    function renderHolidays() {
+      const tbody = document.getElementById('holidayTableBody');
+      let html = '';
+      holidayData.forEach((h, idx) => {
+        html += `
+          <tr>
+            <td><strong>${h.date}</strong></td>
+            <td>${h.title}</td>
+            <td><span style="color:#fca5a5;font-weight:bold;">⚠️ ${h.note}</span></td>
+            <td style="text-align:right;">
+              <button class="btn-action" onclick="deleteHoliday(${idx})">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function addHolidayRow() {
+      const d = document.getElementById('holidayDateInput').value;
+      const title = document.getElementById('holidayNameInput').value;
+      const note = document.getElementById('holidayNoteInput').value;
+
+      if (!d || !title) {
+        alert('Please provide holiday date and title');
+        return;
+      }
+
+      holidayData.push({ date: d, title: title, note: note || ('Closed for ' + title) });
+      renderHolidays();
+      showToast(`Holiday override added for ${d} (${title})`);
+    }
+
+    function deleteHoliday(idx) {
+      holidayData.splice(idx, 1);
+      renderHolidays();
+      showToast('Holiday override removed.');
+    }
+
+    function toggleEmergencyPause(btn) {
+      if (btn.innerText.includes('Emergency Pause')) {
+        btn.innerText = '🟢 Resume Delivery Shift';
+        btn.style.background = '#14532d';
+        btn.style.borderColor = '#22c55e';
+        btn.style.color = '#86efac';
+        showToast('⚠️ Delivery is PAUSED on live website. Pickup active.');
+      } else {
+        btn.innerText = '🔴 Emergency Pause Delivery';
+        btn.style.background = '#7f1d1d';
+        btn.style.borderColor = '#ef4444';
+        btn.style.color = '#fca5a5';
+        showToast('🟢 Delivery shifts RESUMED on live website.');
+      }
+    }
+
+    function saveSchedule() {
+      showToast('Operating schedule and driver shifts saved!');
+    }
+
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastAlert');
+      toast.innerText = '✓ ' + msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMenu();
+      renderHolidays();
+    });
+  </script>
+</body>
+</html>

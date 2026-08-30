@@ -1,0 +1,2964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tom Yum Thai Restaurant | Authentic Thai & Neighborhood Gem in Garland, TX Since 2005</title>
+  <meta name="description" content="Garland's beloved neighborhood Thai spot since 2005. Laid-back hole-in-the-wall serving authentic Thai classics, famous Thai Chicken Rice (Khao Man Gai), rich curries, and 5 spice levels. Direct pickup & 5-mile delivery.">
+  
+  <!-- Canonical URL & Open Graph -->
+  <link rel="canonical" href="https://mytomyumthai.com">
+  <meta property="og:title" content="Tom Yum Thai Restaurant - Garland's Neighborhood Thai Staple Since 2005">
+  <meta property="og:description" content="Authentic Thai food, laid-back neighborhood vibes. Serving Garland & Richardson since 2005. Order direct & save 15%!">
+  <meta property="og:type" content="restaurant">
+  <meta property="og:url" content="https://mytomyumthai.com">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #1a1d24;
+      --bg-surface: #222731;
+      --bg-card: #2a313e;
+      --bg-card-hover: #323b4b;
+      --accent-orange: #ff781f;
+      --accent-orange-hover: #e65c00;
+      --accent-orange-light: #ffebd9;
+      --accent-green: #22c55e;
+      --accent-gold: #f5b041;
+      --accent-red: #ef4444;
+      --text-main: #ffffff;
+      --text-muted: #cbd5e1;
+      --text-dim: #94a3b8;
+      --border-color: rgba(255, 120, 31, 0.25);
+      --border-subtle: rgba(255, 255, 255, 0.12);
+      --font-title: 'Cinzel', serif;
+      --font-serif: 'Playfair Display', serif;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 14px 35px rgba(0, 0, 0, 0.45);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .top-bar {
+      background: linear-gradient(90deg, #c44e00 0%, #ff781f 50%, #c44e00 100%);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      padding: 8px 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .top-bar strong {
+      color: #fff9e6;
+      text-decoration: underline;
+    }
+
+    header {
+      background: rgba(26, 29, 36, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 75px;
+    }
+
+    .brand-logo {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #ffffff;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-orange);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-orange);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-phone {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .btn-phone:hover {
+      background: rgba(255, 120, 31, 0.15);
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+    }
+
+    .btn-cart-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cart-nav:hover {
+      background: rgba(255, 120, 31, 0.2);
+    }
+
+    .cart-count-badge {
+      background: var(--accent-orange);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .hero-section {
+      position: relative;
+      padding: 50px 0 35px;
+      background: radial-gradient(circle at 50% 10%, #362a20 0%, #222731 60%, var(--bg-base) 100%);
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 120, 31, 0.15);
+      border: 1px solid var(--border-color);
+      color: var(--accent-orange);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: clamp(28px, 4.5vw, 48px);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.15;
+      max-width: 860px;
+      margin: 0 auto 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-title span {
+      color: var(--accent-orange);
+    }
+
+    .hero-desc {
+      font-size: clamp(14.5px, 1.8vw, 17px);
+      color: #e2e8f0;
+      max-width: 700px;
+      margin: 0 auto 20px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       Interactive Delivery & Pickup Dispatch Engine
+       ============================================================ */
+    .order-dispatch-card {
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      max-width: 780px;
+      margin: 0 auto 25px;
+      box-shadow: var(--shadow-lg);
+      text-align: left;
+    }
+
+    .manager-sim-box {
+      background: #11141b;
+      border: 1px solid #f5b041;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .manager-sim-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-sim-toggle {
+      padding: 5px 12px;
+      font-size: 11.5px;
+      font-weight: 800;
+      border-radius: 20px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-sim-toggle.on {
+      background: #14532d;
+      border-color: #22c55e;
+      color: #86efac;
+    }
+
+    .btn-sim-toggle.off {
+      background: #7f1d1d;
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .dispatch-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .dispatch-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .dispatch-tabs {
+      display: flex;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 30px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .dispatch-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .dispatch-tab.active {
+      background: var(--accent-orange);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(255, 120, 31, 0.4);
+    }
+
+    .dispatch-tab.disabled-tab {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #333 !important;
+      color: #888 !important;
+    }
+
+    .delivery-paused-banner {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* Address Autocomplete Container */
+    .autocomplete-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .delivery-input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .delivery-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 2px solid var(--border-subtle);
+      color: #ffffff;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .delivery-input:focus {
+      border-color: var(--accent-orange);
+      background: #1c212a;
+    }
+
+    /* 1-Tap Quick Suggestion Chips */
+    .quick-chips-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .quick-chip {
+      background: #181d26;
+      border: 1px solid rgba(255, 120, 31, 0.4);
+      color: #fbd38d;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-chip:hover, .quick-chip:active {
+      background: var(--accent-orange);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* Real-Time Autocomplete Dropdown Menu */
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #151821;
+      border: 2px solid var(--accent-orange);
+      border-radius: 6px;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.85);
+      z-index: 99999;
+      max-height: 250px;
+      overflow-y: auto;
+      display: none;
+      margin-top: 4px;
+    }
+
+    .autocomplete-item {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #e2e8f0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #151821;
+      transition: background 0.15s;
+    }
+
+    .autocomplete-item:active, .autocomplete-item:hover {
+      background: rgba(255, 120, 31, 0.25) !important;
+      color: #ffffff;
+    }
+
+    .autocomplete-item strong {
+      color: #ff9d5c;
+    }
+
+    .autocomplete-item .dist-tag {
+      font-size: 11px;
+      color: var(--accent-green);
+      font-weight: 800;
+      background: rgba(34, 197, 94, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .btn-check-address {
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 0 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .delivery-time-select-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .time-dropdown {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--accent-gold);
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .zone-status-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      display: none;
+    }
+
+    .zone-success {
+      background: rgba(34, 197, 94, 0.18);
+      border: 1px solid rgba(34, 197, 94, 0.45);
+      color: #86efac;
+    }
+
+    .zone-warning {
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    .dispatch-perks-row {
+      display: flex;
+      gap: 14px;
+      margin-top: 10px;
+      font-size: 11.5px;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+    }
+
+    .trust-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      max-width: 1000px;
+      margin: 25px auto 0;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .trust-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .trust-score {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent-orange);
+    }
+
+    .trust-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    /* Menu Section */
+    .menu-section {
+      padding: 50px 0;
+      background: var(--bg-base);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 25px;
+    }
+
+    .section-tag {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-orange);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-title {
+      font-family: var(--font-title);
+      font-size: clamp(24px, 3.5vw, 34px);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .menu-controls {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-box {
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 10px 16px 10px 38px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+    }
+
+    .cat-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cat-btn:hover, .cat-btn.active {
+      background: var(--accent-orange);
+      color: #ffffff;
+      border-color: var(--accent-orange);
+    }
+
+    .dietary-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .chip-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chip-btn:hover, .chip-btn.active {
+      background: rgba(255, 120, 31, 0.18);
+      border-color: var(--accent-orange);
+      color: #ffffff;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .dish-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .dish-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow-lg);
+      background: var(--bg-card-hover);
+    }
+
+    .dish-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .dish-name {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .dish-thai-name {
+      font-family: var(--font-serif);
+      font-size: 12px;
+      font-style: italic;
+      color: var(--accent-orange);
+      margin-top: 2px;
+    }
+
+    .dish-price {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .dish-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 6px 0 10px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .badge-signature {
+      background: rgba(255, 120, 31, 0.15);
+      color: var(--accent-orange);
+      border: 1px solid var(--accent-orange);
+    }
+
+    .badge-popular {
+      background: rgba(245, 176, 65, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid var(--accent-gold);
+    }
+
+    .badge-diet {
+      background: rgba(46, 125, 50, 0.2);
+      color: #81c784;
+      border: 1px solid #2e7d32;
+    }
+
+    .dish-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+      flex-grow: 1;
+    }
+
+    .dish-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 12px;
+      margin-top: 6px;
+    }
+
+    .btn-customize-dish {
+      width: 100%;
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-customize-dish:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(255, 120, 31, 0.35);
+    }
+
+    /* Promo Banner */
+    .promo-banner {
+      background: linear-gradient(135deg, #2b323f 0%, #36281e 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 40px 30px;
+      margin: 50px auto;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .promo-badge {
+      background: var(--accent-orange);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .promo-title {
+      font-family: var(--font-title);
+      font-size: clamp(24px, 3.5vw, 34px);
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .promo-desc {
+      color: #e2e8f0;
+      font-size: 15px;
+      max-width: 680px;
+      margin: 0 auto 20px;
+    }
+
+    .promo-code-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-base);
+      border: 1px dashed var(--accent-orange);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-orange);
+      margin-bottom: 24px;
+    }
+
+    /* Story Section */
+    .story-section {
+      padding: 70px 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 40px;
+      align-items: center;
+    }
+
+    .story-content h2 {
+      font-family: var(--font-title);
+      font-size: clamp(26px, 3.5vw, 36px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .story-content p {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .story-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .story-feat-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 14px;
+      border-radius: var(--radius-sm);
+    }
+
+    .story-feat-item strong {
+      display: block;
+      color: #ffffff;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .story-feat-item span {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .story-card-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 35px 25px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .story-card-visual .quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 18px;
+      color: var(--accent-orange-light);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .story-card-visual .author {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-orange);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Location Section */
+    .location-section {
+      padding: 70px 0;
+      background: var(--bg-base);
+    }
+
+    .location-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+    }
+
+    .location-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 30px;
+    }
+
+    .location-card h3 {
+      font-family: var(--font-title);
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 10px;
+    }
+
+    .hours-table {
+      width: 100%;
+      font-size: 13.5px;
+      border-collapse: collapse;
+    }
+
+    .hours-table td {
+      padding: 6px 0;
+    }
+
+    .hours-table td:last-child {
+      text-align: right;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .address-box {
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .address-box strong {
+      color: #fff;
+      font-size: 15px;
+    }
+
+    footer {
+      background: #14171f;
+      border-top: 1px solid var(--border-subtle);
+      padding: 40px 0 30px;
+      color: var(--text-dim);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .footer-brand {
+      font-family: var(--font-title);
+      font-size: 18px;
+      color: var(--accent-orange);
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 16px 0;
+      list-style: none;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-orange);
+    }
+
+    /* Custom Modal */
+    .custom-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 11000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .custom-modal {
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: modalPop 0.2s ease-out;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      background: var(--bg-card);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .modal-dish-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .modal-dish-sub {
+      font-family: var(--font-serif);
+      font-size: 12px;
+      font-style: italic;
+      color: var(--accent-orange);
+      margin-top: 2px;
+    }
+
+    .btn-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .option-group-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .option-group-title small {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: none;
+    }
+
+    .option-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+    }
+
+    .option-card-label {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-size: 12.5px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .option-card-label:hover {
+      border-color: var(--accent-orange);
+      background: var(--bg-card-hover);
+    }
+
+    .option-card-label input {
+      margin-right: 6px;
+      accent-color: var(--accent-orange);
+    }
+
+    .option-card-label.selected {
+      border-color: var(--accent-orange);
+      background: rgba(255, 120, 31, 0.15);
+      color: #fff;
+    }
+
+    .option-price-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    .special-notes-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #ffffff;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 60px;
+      outline: none;
+    }
+
+    .special-notes-input:focus {
+      border-color: var(--accent-orange);
+    }
+
+    .modal-footer {
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-qty-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-modal-add {
+      flex: 1;
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #ffffff;
+      font-size: 14.5px;
+      font-weight: 800;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 120, 31, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Cart Drawer */
+    .cart-drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      display: none;
+      justify-content: flex-end;
+    }
+
+    .cart-drawer {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-surface);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+      border-left: 1px solid var(--border-color);
+      animation: slideIn 0.25s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    .cart-drawer-header {
+      padding: 18px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-drawer-title {
+      font-family: var(--font-title);
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .btn-close-cart {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .free-delivery-bar-box {
+      background: #191d25;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .free-delivery-text {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-track {
+      background: var(--bg-card);
+      height: 5px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #ff781f 0%, #22c55e 100%);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .cart-items-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cart-empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-dim);
+    }
+
+    .cart-item-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cart-item-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .cart-item-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cart-item-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .cart-item-mods {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      background: rgba(0,0,0,0.2);
+      padding: 6px 8px;
+      border-radius: 4px;
+      border-left: 2px solid var(--accent-orange);
+    }
+
+    .cart-item-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .qty-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-item-delete {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 11.5px;
+      cursor: pointer;
+    }
+
+    .btn-item-delete:hover {
+      color: var(--accent-red);
+    }
+
+    .cart-drawer-footer {
+      padding: 18px 20px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .promo-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .promo-input {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px dashed var(--accent-orange);
+      color: #ff9d5c;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    .btn-apply-promo {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cart-summary-table {
+      width: 100%;
+      font-size: 12.5px;
+      margin-bottom: 14px;
+    }
+
+    .cart-summary-table td {
+      padding: 3px 0;
+    }
+
+    .cart-summary-table td:last-child {
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .discount-row {
+      color: var(--accent-green);
+    }
+
+    .total-row {
+      font-size: 15.5px;
+      font-weight: 800;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 8px;
+      color: #ffffff;
+    }
+
+    .btn-checkout {
+      width: 100%;
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #ffffff;
+      font-size: 14.5px;
+      font-weight: 800;
+      padding: 13px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 120, 31, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .floating-cart-btn {
+      position: fixed;
+      bottom: 85px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      z-index: 900;
+      border: 2px solid #ffffff;
+    }
+
+    .mobile-bottom-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(26, 29, 36, 0.98);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 16px;
+      z-index: 9999;
+    }
+
+    .mobile-bar-inner {
+      display: flex;
+      gap: 10px;
+    }
+
+    .mobile-btn-order {
+      flex: 2;
+      background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mobile-btn-call {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-actions .btn-phone {
+        display: none;
+      }
+      .mobile-bottom-bar {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Announcement -->
+  <div class="top-bar">
+    🛵 Order Direct & Save: Use Coupon Code <strong>DIRECT15</strong> at Checkout for 15% OFF!
+  </div>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="#" class="brand-logo">
+        <span class="brand-title">Tom Yum Thai</span>
+        <span class="brand-subtitle">Garland's Neighborhood Thai Staple • Since 2005</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#story">About Us</a></li>
+        <li><a href="#specials">Direct Specials</a></li>
+        <li><a href="#location">Hours & Location</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="tel:2147030391" class="btn-phone">📞 (214) 703-0391</a>
+        <button class="btn-cart-nav" onclick="openCart()">
+          🛒 Cart <span class="cart-count-badge" id="navCartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-badge">
+        📍 3313 Belt Line Rd • Garland / Richardson Border • Est. 2005
+      </div>
+      <h1 class="hero-title">
+        Authentic Thai Flavors. <span>Laid-Back Neighborhood Charm.</span>
+      </h1>
+      <p class="hero-desc">
+        No pretension, no shortcuts—just authentic Thai cooking prepared with fresh herbs, real Thai heat, and generous portions. Serving Garland and Richardson for over 20 years.
+      </p>
+
+      <!-- ==================== ORDER DISPATCH & REAL-TIME AUTOCOMPLETE DELIVERY CHECKER ==================== -->
+      <div id="orderSection" class="order-dispatch-card">
+        
+        <!-- Shift Manager Test Switch -->
+        <div class="manager-sim-box">
+          <div class="manager-sim-label">
+            <span>⚙️ Shift Manager Test Switch:</span>
+          </div>
+          <button class="btn-sim-toggle on" id="btnSimToggle" onclick="toggleManagerDelivery()">
+            <span id="simDot">🟢</span> <span id="simText">Driver On-Duty (Click to Pause)</span>
+          </button>
+        </div>
+
+        <div class="dispatch-header">
+          <span class="dispatch-title">Select Order Type:</span>
+          
+          <div class="dispatch-tabs">
+            <button class="dispatch-tab active" id="tabPickup" onclick="setOrderMode('pickup')">
+              🛍️ Pickup (15–20m • Free)
+            </button>
+            <button class="dispatch-tab" id="tabDelivery" onclick="setOrderMode('delivery')">
+              🛵 Delivery (5-Mile Zone)
+            </button>
+          </div>
+        </div>
+
+        <!-- Manager Emergency Paused Banner -->
+        <div id="deliveryPausedBanner" class="delivery-paused-banner">
+          <strong>⚠️ Direct Delivery is Temporarily Paused for this Shift</strong><br>
+          <span style="font-size:12px;">Our delivery drivers are currently off-duty. However, our kitchen is open and ready for <strong>🛍️ Fast Pickup (Ready in 15–20 mins)</strong>!</span>
+        </div>
+
+        <!-- Delivery Address Checker Form with Real-Time Autocomplete & 1-Tap Quick Chips -->
+        <div id="deliveryBox" style="display:none;">
+          <div class="delivery-time-select-row">
+            <span>⏰ Delivery Timing:</span>
+            <select class="time-dropdown" id="deliveryTimeSlot">
+              <option value="asap">ASAP (35–45 mins)</option>
+              <option value="5:30pm">Dinner: 5:30 PM</option>
+              <option value="6:00pm">Dinner: 6:00 PM</option>
+              <option value="6:30pm">Dinner: 6:30 PM</option>
+              <option value="7:00pm">Dinner: 7:00 PM</option>
+              <option value="7:30pm">Dinner: 7:30 PM</option>
+              <option value="8:00pm">Dinner: 8:00 PM</option>
+            </select>
+          </div>
+
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin:10px 0 4px;">
+            Enter your Garland/Richardson address or street name:
+          </label>
+          
+          <div class="delivery-input-group">
+            <div class="autocomplete-wrapper">
+              <input type="text" id="deliveryAddressInput" class="delivery-input" 
+                placeholder="Type street name (e.g. Belt Line, Campbell, Jupiter, Shiloh, 75044...)" 
+                autocomplete="off" 
+                list="addressDatalist"
+                onfocus="showInitialSuggestions()" 
+                oninput="handleAddressTyping(this.value)">
+              
+              <!-- HTML5 Datalist for Native Mobile Keyboard Autofill -->
+              <datalist id="addressDatalist">
+                <option value="3313 Belt Line Rd, Garland, TX 75044">
+                <option value="Belt Line Rd & Jupiter Rd, Garland, TX 75044">
+                <option value="Campbell Rd & Shiloh Rd, Richardson, TX 75082">
+                <option value="Jupiter Rd & Arapaho Rd, Richardson, TX 75081">
+                <option value="Firewheel Town Center, Garland, TX 75040">
+                <option value="Spring Park, Garland, TX 75044">
+                <option value="UT Dallas (800 W Campbell Rd, Richardson, TX 75080)">
+                <option value="75044 (North Garland)">
+                <option value="75082 (Richardson)">
+                <option value="75040 (Firewheel Garland)">
+              </datalist>
+
+              <!-- Interactive Floating Suggested Dropdown -->
+              <div id="addressDropdown" class="autocomplete-dropdown"></div>
+            </div>
+
+            <button class="btn-check-address" onclick="checkDeliveryRadius()">Verify</button>
+          </div>
+
+          <!-- 1-Tap Quick Pick Suggestions -->
+          <div class="quick-chips-row">
+            <span style="font-size:11px;color:var(--text-dim);font-weight:bold;">Quick Pick:</span>
+            <button type="button" class="quick-chip" onpointerdown="selectQuickAddress('Belt Line Rd & Jupiter Rd, Garland, TX 75044')">📍 Belt Line & Jupiter</button>
+            <button type="button" class="quick-chip" onpointerdown="selectQuickAddress('E Campbell Rd & Shiloh Rd, Richardson, TX 75082')">📍 Campbell & Shiloh</button>
+            <button type="button" class="quick-chip" onpointerdown="selectQuickAddress('Firewheel Town Center, Garland, TX 75040')">📍 Firewheel Center</button>
+            <button type="button" class="quick-chip" onpointerdown="selectQuickAddress('75044 (North Garland)')">📍 Zip 75044</button>
+            <button type="button" class="quick-chip" onpointerdown="selectQuickAddress('75082 (Richardson)')">📍 Zip 75082</button>
+          </div>
+
+          <!-- Status Message Result -->
+          <div id="zoneStatus" class="zone-status-box"></div>
+        </div>
+
+        <div class="dispatch-perks-row" id="dispatchPerks">
+          <span class="dispatch-perk">✓ <strong>No third-party app markup</strong></span>
+          <span class="dispatch-perk">✓ <strong>15% Off with code DIRECT15</strong></span>
+          <span class="dispatch-perk" id="perkDeliveryText">✓ <strong>Pickup ready in 15–20 mins</strong></span>
+        </div>
+      </div>
+
+      <!-- Trust Proof Indicators -->
+      <div class="trust-bar">
+        <div class="trust-item">
+          <span class="trust-score">⭐ 4.9 / 5.0</span>
+          <span class="trust-label">900+ Ratings on Uber Eats</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-score">⭐ 4.7 / 5.0</span>
+          <span class="trust-label">1,000+ Ratings on DoorDash</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-score">🏆 #1 Thai in Garland</span>
+          <span class="trust-label">Ranked on TripAdvisor</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-score">🌶️ 5 Spice Levels</span>
+          <span class="trust-label">Level 1 Mild to Level 5 Thai Hot</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Menu Section -->
+  <section id="menu" class="menu-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Cooked Fresh To Order</span>
+        <h2 class="section-title">Authentic Thai Menu</h2>
+        <p style="color:var(--text-muted);font-size:14.5px;">Click any dish to customize meat choices, spice levels, add-ons, and allergies.</p>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="menu-controls">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="menuSearch" class="search-input" placeholder="Search dishes (e.g. Khao Man Gai, Pad Thai, Tom Yum, Curry, Tofu)...">
+        </div>
+
+        <div class="category-tabs" id="categoryTabs">
+          <button class="cat-btn active" data-category="all">All Items</button>
+          <button class="cat-btn" data-category="signatures">👑 Signature Favorites</button>
+          <button class="cat-btn" data-category="starters">Starters & Soups</button>
+          <button class="cat-btn" data-category="noodles">Noodles & Fried Rice</button>
+          <button class="cat-btn" data-category="curries">Authentic Curries</button>
+          <button class="cat-btn" data-category="desserts">Drinks & Desserts</button>
+        </div>
+
+        <div class="dietary-chips">
+          <span style="font-size:11px;color:var(--text-dim);font-weight:700;align-self:center;">Filters:</span>
+          <button class="chip-btn" data-filter="all">Show All</button>
+          <button class="chip-btn" data-filter="popular">🔥 Most Popular</button>
+          <button class="chip-btn" data-filter="veg">🌱 Vegetarian / Vegan</button>
+          <button class="chip-btn" data-filter="gf">🌾 Gluten-Free</button>
+        </div>
+      </div>
+
+      <!-- Dishes Grid -->
+      <div class="menu-grid" id="menuGrid">
+
+        <!-- Dish 1 -->
+        <div class="dish-card" data-category="signatures" data-tags="popular gf" onclick="openCustomModal('kmg')">
+          <div>
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <div class="dish-name">Thai Chicken Rice</div>
+                <div class="dish-thai-name">Khao Man Gai • ข้าวมันไก่</div>
+              </div>
+              <div class="dish-price">$14.99</div>
+            </div>
+            <div class="dish-badges">
+              <span class="badge badge-signature">House Signature</span>
+              <span class="badge badge-popular">Fan Favorite</span>
+              <span class="badge badge-diet">GF Available</span>
+            </div>
+            <p class="dish-desc">
+              Our iconic signature dish! Tender poached chicken over fragrant ginger rice with our famous homemade ginger-chili dipping sauce.
+            </p>
+          </div>
+          <div class="dish-footer">
+            <button class="btn-customize-dish">⚙️ Customize & Add to Order</button>
+          </div>
+        </div>
+
+        <!-- Dish 2 -->
+        <div class="dish-card" data-category="signatures starters" data-tags="popular gf" onclick="openCustomModal('tomyum')">
+          <div>
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <div class="dish-name">Authentic Tom Yum Soup</div>
+                <div class="dish-thai-name">Tom Yum Goong / Gai • ต้มยำ</div>
+              </div>
+              <div class="dish-price">$13.99</div>
+            </div>
+            <div class="dish-badges">
+              <span class="badge badge-signature">Namesake Classic</span>
+              <span class="badge badge-popular">Top Rated</span>
+            </div>
+            <p class="dish-desc">
+              Hot & sour broth simmered with lemongrass, galangal, kaffir lime, chili paste, mushrooms, and cilantro.
+            </p>
+          </div>
+          <div class="dish-footer">
+            <button class="btn-customize-dish">⚙️ Customize & Add to Order</button>
+          </div>
+        </div>
+
+        <!-- Dish 3 -->
+        <div class="dish-card" data-category="noodles" data-tags="popular veg gf" onclick="openCustomModal('drunken')">
+          <div>
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <div class="dish-name">Pad Kee Mow (Drunken Noodles)</div>
+                <div class="dish-thai-name">Pad Kee Mao • ผัดขี้เมา</div>
+              </div>
+              <div class="dish-price">$13.99</div>
+            </div>
+            <div class="dish-badges">
+              <span class="badge badge-popular">High-Wok Flame</span>
+              <span class="badge badge-diet">Veggie Available</span>
+            </div>
+            <p class="dish-desc">
+              Wide flat rice noodles wok-seared over high flame with basil, bell peppers, onions, and spicy garlic chili sauce.
+            </p>
+          </div>
+          <div class="dish-footer">
+            <button class="btn-customize-dish">⚙️ Customize & Add to Order</button>
+          </div>
+        </div>
+
+        <!-- Dish 4 -->
+        <div class="dish-card" data-category="noodles" data-tags="popular gf veg" onclick="openCustomModal('padthai')">
+          <div>
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <div class="dish-name">Traditional Pad Thai</div>
+                <div class="dish-thai-name">Pad Thai • ผัดไทย</div>
+              </div>
+              <div class="dish-price">$13.99</div>
+            </div>
+            <div class="dish-badges">
+              <span class="badge badge-popular">Classic</span>
+              <span class="badge badge-diet">GF Available</span>
+            </div>
+            <p class="dish-desc">
+              Thin rice noodles stir-fried in tamarind sauce with egg, bean sprouts, scallions, and crushed peanuts.
+            </p>
+          </div>
+          <div class="dish-footer">
+            <button class="btn-customize-dish">⚙️ Customize & Add to Order</button>
+          </div>
+        </div>
+
+        <!-- Dish 5 -->
+        <div class="dish-card" data-category="curries" data-tags="popular gf veg" onclick="openCustomModal('panang')">
+          <div>
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <div class="dish-name">Panang Curry with Jasmine Rice</div>
+                <div class="dish-thai-name">Gaeng Panang • แกงพะแนง</div>
+              </div>
+              <div class="dish-price">$14.49</div>
+            </div>
+            <div class="dish-badges">
+              <span class="badge badge-signature">House Special</span>
+              <span class="badge badge-diet">GF / Vegan Option</span>
+            </div>
+            <p class="dish-desc">
+              Rich, creamy coconut curry simmered with bell peppers, green beans, crushed peanuts, and kaffir lime leaves.
+            </p>
+          </div>
+          <div class="dish-footer">
+            <button class="btn-customize-dish">⚙️ Customize & Add to Order</button>
+          </div>
+        </div>
+
+        <!-- Dish 6 -->
+        <div class="dish-card" data-category="desserts" data-tags="popular gf veg" onclick="openCustomModal('mango')">
+          <div>
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <div class="dish-name">Sweet Mango Sticky Rice</div>
+                <div class="dish-thai-name">Khao Niao Mamuang • ข้าวเหนียวมะม่วง</div>
+              </div>
+              <div class="dish-price">$7.99</div>
+            </div>
+            <div class="dish-badges">
+              <span class="badge badge-signature">Dessert Favorite</span>
+              <span class="badge badge-diet">GF / Vegan</span>
+            </div>
+            <p class="dish-desc">
+              Warm sweet sticky rice steeped in sweet coconut milk, topped with toasted sesame seeds and fresh mango.
+            </p>
+          </div>
+          <div class="dish-footer">
+            <button class="btn-customize-dish">⚙️ Customize & Add to Order</button>
+          </div>
+        </div>
+
+        <!-- Dish 7 -->
+        <div class="dish-card" data-category="desserts" data-tags="popular" onclick="openCustomModal('thaitea')">
+          <div>
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <div class="dish-name">Authentic Thai Iced Tea</div>
+                <div class="dish-thai-name">Cha Yen • ชาเย็น</div>
+              </div>
+              <div class="dish-price">$4.50</div>
+            </div>
+            <div class="dish-badges">
+              <span class="badge badge-popular">Must-Order Drink</span>
+            </div>
+            <p class="dish-desc">
+              Freshly brewed Thai tea infused with star anise and vanilla, served over ice and topped with creamy milk.
+            </p>
+          </div>
+          <div class="dish-footer">
+            <button class="btn-customize-dish">⚙️ Customize & Add to Order</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== DIRECT ORDERING PROMO BOX ==================== -->
+  <div class="container">
+    <div id="specials" class="promo-banner">
+      <div class="promo-badge">Direct Ordering Perk</div>
+      <h2 class="promo-title">Save 15% When You Order Direct</h2>
+      <p class="promo-desc">
+        Skip third-party delivery app markups! Order directly through our website to enjoy our lowest menu prices, and 100% of your support stays right here with our local kitchen.
+      </p>
+      <div class="promo-code-pill">
+        <span>🎟️ Coupon Code:</span>
+        <strong style="color:#ffffff;letter-spacing:2px;">DIRECT15</strong>
+      </div>
+      <div>
+        <a href="#menu" class="btn-customize-dish" style="display:inline-flex;width:auto;padding:12px 28px;font-size:15px;">🛵 Order Direct Now & Save 15%</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ABOUT US / NEIGHBORHOOD GEM STORY ==================== -->
+  <section id="story" class="story-section">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-content">
+          <span class="section-tag">Since 2005</span>
+          <h2>Garland's Laid-Back Neighborhood Thai Gem</h2>
+          <p>
+            Since 2005, Tom Yum Thai has been a cozy, unpretentious hole-in-the-wall staple on Belt Line Road. We focus on what truly matters: authentic Thai cooking, rich handmade curries, high-flame wok noodles, and honest hospitality.
+          </p>
+          <p>
+            Whether you're stopping by for a quick lunch break, picking up dinner for the family, or craving late-night comfort food, we welcome you to enjoy real Thai flavors crafted without shortcuts.
+          </p>
+          
+          <div class="story-features">
+            <div class="story-feat-item">
+              <strong>Real Thai Heat</strong>
+              <span>5 Custom Spice Levels</span>
+            </div>
+            <div class="story-feat-item">
+              <strong>Local History</strong>
+              <span>Serving Garland Since 2005</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-card-visual">
+          <div class="quote">
+            "Authentic Thai comfort food in a relaxed neighborhood setting. Real flavor, honest cooking, and generous portions every time."
+          </div>
+          <div class="author">— Tom Yum Thai Restaurant (Est. 2005)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOURS & LOCATION ==================== -->
+  <section id="location" class="location-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Dine In • Takeout • Delivery</span>
+        <h2 class="section-title">Visit Us in Garland, TX</h2>
+      </div>
+
+      <div class="location-grid">
+        <div class="location-card">
+          <h3>🕒 Operating Hours</h3>
+          <table class="hours-table">
+            <tr>
+              <td>Monday</td>
+              <td>5:00 PM – 9:30 PM (Dinner)</td>
+            </tr>
+            <tr>
+              <td>Tuesday</td>
+              <td>11:00 AM – 2:30 PM | 5:00 – 9:30 PM</td>
+            </tr>
+            <tr>
+              <td>Wednesday</td>
+              <td>11:00 AM – 2:30 PM | 5:00 – 9:30 PM</td>
+            </tr>
+            <tr>
+              <td>Thursday</td>
+              <td>11:00 AM – 2:30 PM | 5:00 – 9:30 PM</td>
+            </tr>
+            <tr>
+              <td>Friday</td>
+              <td>11:00 AM – 2:30 PM | 5:00 – 9:30 PM</td>
+            </tr>
+            <tr>
+              <td>Saturday</td>
+              <td>12:00 PM – 9:30 PM (All Day)</td>
+            </tr>
+            <tr>
+              <td>Sunday</td>
+              <td>12:00 PM – 9:30 PM (All Day)</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="location-card">
+          <h3>📍 Location & Contact</h3>
+          <div class="address-box">
+            <strong>Tom Yum Thai Restaurant</strong><br>
+            3313 Belt Line Rd<br>
+            Garland, TX 75044<br>
+            <span style="font-size:12.5px;color:var(--accent-orange);">Near Jupiter Rd (Garland / Richardson Border)</span>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <a href="tel:2147030391" class="btn-phone" style="text-align:center;justify-content:center;padding:12px;">📞 Call (214) 703-0391</a>
+            <a href="https://maps.google.com/?q=Tom+Yum+Thai+3313+Belt+Line+Rd+Garland+TX" target="_blank" rel="noopener noreferrer" class="btn-customize-dish" style="text-align:center;justify-content:center;padding:12px;">🗺️ Get Directions in Google Maps</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer>
+    <div class="container">
+      <div class="footer-brand">TOM YUM THAI RESTAURANT</div>
+      <p>3313 Belt Line Rd, Garland, TX 75044 • (214) 703-0391</p>
+      
+      <ul class="footer-links">
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#story">About Us</a></li>
+        <li><a href="#location">Hours & Location</a></li>
+        <li><a href="https://www.facebook.com/people/Tom-Yum-Thai-Restaurant/100057476564639/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+      </ul>
+
+      <p style="font-size: 11px; margin-top: 12px; color: #64748b;">
+        © 2026 Tom Yum Thai Restaurant. Garland's neighborhood Thai staple since 2005.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== DISH CUSTOMIZATION MODAL ==================== -->
+  <div class="custom-modal-overlay" id="customModalOverlay" onclick="closeCustomModalOnBg(event)">
+    <div class="custom-modal" id="customModal">
+      
+      <div class="modal-header">
+        <div>
+          <div class="modal-dish-title" id="modalDishTitle">Pad Kee Mow (Drunken Noodles)</div>
+          <div class="modal-dish-sub" id="modalDishSub">Pad Kee Mao • Base: $13.99</div>
+        </div>
+        <button class="btn-modal-close" onclick="closeCustomModal()">×</button>
+      </div>
+
+      <div class="modal-body" id="modalBody">
+        
+        <div id="proteinSection">
+          <div class="option-group-title">
+            <span>1. Choose Your Protein</span>
+            <small>(Select 1 - Required)</small>
+          </div>
+          <div class="option-items-grid">
+            <label class="option-card-label selected">
+              <span><input type="radio" name="modalProtein" value="Chicken" data-price="0" checked onchange="calcModalTotal()"> Chicken</span>
+              <span class="option-price-tag">+$0.00</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalProtein" value="Tofu (Vegan)" data-price="0" onchange="calcModalTotal()"> Tofu (Vegan)</span>
+              <span class="option-price-tag">+$0.00</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalProtein" value="Veggie Only" data-price="0" onchange="calcModalTotal()"> Veggie Only</span>
+              <span class="option-price-tag">+$0.00</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalProtein" value="Pork" data-price="1.00" onchange="calcModalTotal()"> Pork</span>
+              <span class="option-price-tag">+$1.00</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalProtein" value="Beef" data-price="2.00" onchange="calcModalTotal()"> Beef</span>
+              <span class="option-price-tag">+$2.00</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalProtein" value="Shrimp" data-price="3.00" onchange="calcModalTotal()"> Shrimp</span>
+              <span class="option-price-tag">+$3.00</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalProtein" value="Seafood Combo" data-price="4.50" onchange="calcModalTotal()"> Seafood Combo</span>
+              <span class="option-price-tag">+$4.50</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="spiceSection">
+          <div class="option-group-title">
+            <span>2. Select Spice Level</span>
+            <small>(Select 1)</small>
+          </div>
+          <div class="option-items-grid">
+            <label class="option-card-label">
+              <span><input type="radio" name="modalSpice" value="Level 1 (Mild)" onchange="calcModalTotal()"> Level 1 (Mild)</span>
+            </label>
+            <label class="option-card-label selected">
+              <span><input type="radio" name="modalSpice" value="Level 2 (Medium)" checked onchange="calcModalTotal()"> Level 2 (Medium)</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalSpice" value="Level 3 (Spicy)" onchange="calcModalTotal()"> Level 3 (Spicy)</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalSpice" value="Level 4 (Very Hot)" onchange="calcModalTotal()"> Level 4 (Very Hot)</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="radio" name="modalSpice" value="Level 5 (Thai Hot 🔥)" onchange="calcModalTotal()"> Level 5 (Thai Hot 🔥)</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="addonsSection">
+          <div class="option-group-title">
+            <span>3. Add-Ons & Extras</span>
+            <small>(Optional)</small>
+          </div>
+          <div class="option-items-grid">
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalAddon" value="Extra Meat" data-price="3.50" onchange="calcModalTotal()"> Extra Meat</span>
+              <span class="option-price-tag">+$3.50</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalAddon" value="Extra Veggies" data-price="2.00" onchange="calcModalTotal()"> Extra Veggies</span>
+              <span class="option-price-tag">+$2.00</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalAddon" value="Fried Egg on Top" data-price="1.50" onchange="calcModalTotal()"> Fried Egg</span>
+              <span class="option-price-tag">+$1.50</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalAddon" value="Extra Jasmine Rice" data-price="2.00" onchange="calcModalTotal()"> Extra Rice</span>
+              <span class="option-price-tag">+$2.00</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="exclusionsSection">
+          <div class="option-group-title">
+            <span>4. Dietary Preferences / Exclusions</span>
+            <small>(No Extra Charge)</small>
+          </div>
+          <div class="option-items-grid">
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalExclusion" value="NO Peanuts (Allergy)" onchange="calcModalTotal()"> 🥜 No Peanuts</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalExclusion" value="NO Egg" onchange="calcModalTotal()"> 🥚 No Egg</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalExclusion" value="NO Onions/Scallions" onchange="calcModalTotal()"> 🧅 No Onions</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalExclusion" value="NO Bean Sprouts" onchange="calcModalTotal()"> 🌱 No Sprouts</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalExclusion" value="NO Fish Sauce (Vegan)" onchange="calcModalTotal()"> 🥬 Strict Vegan</span>
+            </label>
+            <label class="option-card-label">
+              <span><input type="checkbox" name="modalExclusion" value="Gluten-Free Prep" onchange="calcModalTotal()"> 🌾 Gluten-Free</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <div class="option-group-title">
+            <span>5. Special Kitchen Instructions</span>
+            <small>(Optional)</small>
+          </div>
+          <textarea id="modalSpecialNotes" class="special-notes-input" placeholder="e.g. Sauce on side, extra crispy tofu, cut noodles in half..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <div class="modal-qty-box">
+          <button class="qty-btn" onclick="changeModalQty(-1)">-</button>
+          <span id="modalQtyDisplay" style="font-weight:bold;color:#fff;font-size:14px;">1</span>
+          <button class="qty-btn" onclick="changeModalQty(1)">+</button>
+        </div>
+
+        <button class="btn-modal-add" onclick="addCustomizedItemToCart()">
+          <span>Add to Order</span>
+          <span id="modalAddTotal">$13.99</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING CART BUTTON ==================== -->
+  <div class="floating-cart-btn" id="floatingCartBtn" onclick="openCart()">
+    <span>🛒 Your Order (<span id="floatCartCount">0</span>)</span>
+    <span style="background:rgba(0,0,0,0.25);padding:2px 8px;border-radius:12px;" id="floatCartTotal">$0.00</span>
+  </div>
+
+  <!-- ==================== SLIDE-OUT CART DRAWER ==================== -->
+  <div class="cart-drawer-overlay" id="cartOverlay" onclick="closeCartOnBg(event)">
+    <div class="cart-drawer" id="cartDrawer">
+      
+      <div class="cart-drawer-header">
+        <div class="cart-drawer-title">Your Order (<span id="drawerOrderModeText">Pickup</span>)</div>
+        <button class="btn-close-cart" onclick="closeCart()">×</button>
+      </div>
+
+      <div class="free-delivery-bar-box" id="freeDeliveryBarBox">
+        <div class="free-delivery-text">
+          <span id="freeDeliveryMsg">Add $45.00 for FREE Delivery!</span>
+          <span id="freeDeliveryPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="cart-items-list" id="cartItemsContainer">
+        <div class="cart-empty-state">
+          🛒 Your cart is currently empty.<br>Click any dish above to customize and add!
+        </div>
+      </div>
+
+      <div class="cart-drawer-footer" id="cartFooter" style="display:none;">
+        <div class="promo-input-row">
+          <input type="text" class="promo-input" id="promoCodeInput" value="DIRECT15" placeholder="Promo code">
+          <button class="btn-apply-promo" onclick="applyPromo()">Apply</button>
+        </div>
+
+        <table class="cart-summary-table">
+          <tr>
+            <td>Subtotal:</td>
+            <td id="subtotalVal">$0.00</td>
+          </tr>
+          <tr class="discount-row" id="discountRow">
+            <td>Direct Order Discount (15% OFF):</td>
+            <td id="discountVal">-$0.00</td>
+          </tr>
+          <tr id="deliveryFeeRow" style="display:none;">
+            <td>Delivery Fee (5-Mile Zone):</td>
+            <td id="deliveryFeeVal">$4.99</td>
+          </tr>
+          <tr>
+            <td>Estimated Sales Tax (8.25%):</td>
+            <td id="taxVal">$0.00</td>
+          </tr>
+          <tr class="total-row">
+            <td>Estimated Total:</td>
+            <td id="totalVal" style="color:var(--accent-orange);">$0.00</td>
+          </tr>
+        </table>
+
+        <button class="btn-checkout" onclick="proceedToAldeloCheckout()">
+          🔒 Proceed to Checkout via Aldelo Masa+
+        </button>
+        <p style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:8px;">
+          ✓ Auto-prints modifiers & exclusions directly to kitchen printer
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    let isDeliveryAvailable = true;
+    let orderMode = 'pickup';
+    let isAddressVerified = false;
+    let deliveryFee = 4.99;
+    let cart = [];
+    let discountPct = 0.15;
+
+    let currentModalDish = null;
+    let modalQty = 1;
+
+    // Restaurant Origin Point (3313 Belt Line Rd, Garland, TX 75044)
+    const RESTAURANT_LAT = 32.94554;
+    const RESTAURANT_LON = -96.67871;
+
+    // Pre-indexed Local Streets, Corridors, and Communities within 5 Miles
+    const LOCAL_DELIVERY_DATABASE = [
+      { display: "3313 Belt Line Rd, Garland, TX 75044", dist: "0.1 mi", inZone: true },
+      { display: "Belt Line Rd & Jupiter Rd, Garland, TX 75044", dist: "0.4 mi", inZone: true },
+      { display: "Campbell Rd & N Garland Ave, Garland, TX 75044", dist: "1.2 mi", inZone: true },
+      { display: "E Campbell Rd & Shiloh Rd, Richardson, TX 75082", dist: "1.8 mi", inZone: true },
+      { display: "Jupiter Rd & Arapaho Rd, Richardson, TX 75081", dist: "2.3 mi", inZone: true },
+      { display: "Firewheel Town Center (Garland, TX 75040)", dist: "2.6 mi", inZone: true },
+      { display: "Spring Park Neighborhood, Garland, TX 75044", dist: "1.9 mi", inZone: true },
+      { display: "N Plano Rd & Buckingham Rd, Richardson, TX 75081", dist: "3.1 mi", inZone: true },
+      { display: "UT Dallas Campus (800 W Campbell Rd, Richardson, TX 75080)", dist: "4.6 mi", inZone: true },
+      { display: "Holford Rd & Arapaho Rd, Garland, TX 75044", dist: "1.5 mi", inZone: true },
+      { display: "Brand Rd & Firewheel Pkwy, Garland, TX 75040", dist: "3.4 mi", inZone: true },
+      { display: "Lookout Dr & Collins Blvd, Richardson, TX 75082", dist: "2.8 mi", inZone: true },
+      { display: "Northlake Dr & Belt Line Rd, Garland, TX 75044", dist: "0.9 mi", inZone: true },
+      { display: "CityLine DFW (State Hwy 190 & Plano Rd, Richardson)", dist: "3.7 mi", inZone: true },
+      { display: "75044 (North Garland / Belt Line Area)", dist: "Within 2 mi", inZone: true },
+      { display: "75040 (Firewheel / East Garland)", dist: "Within 3.5 mi", inZone: true },
+      { display: "75082 (Richardson Telecom Corridor)", dist: "Within 3 mi", inZone: true },
+      { display: "75081 (Central Richardson)", dist: "Within 3.8 mi", inZone: true },
+      { display: "75080 (West Richardson / UTD)", dist: "Within 4.8 mi", inZone: true }
+    ];
+
+    const VALID_DELIVERY_ZIPS = ['75044', '75040', '75080', '75081', '75082', '75042', '75048', '75041', '75043', '75098'];
+    const VALID_KEYWORDS = ['garland', 'richardson', 'jupiter', 'belt line', 'campbell', 'shiloh', 'buckingham', 'arapaho', 'plano', 'firewheel', 'spring park', 'lookout', 'northlake', 'holford', 'brand'];
+
+    // Show initial suggestions when user taps on input box
+    function showInitialSuggestions() {
+      const input = document.getElementById('deliveryAddressInput');
+      if (!input.value.trim()) {
+        renderAddressDropdown(LOCAL_DELIVERY_DATABASE.slice(0, 6), '');
+      }
+    }
+
+    // 1-Tap Quick Select
+    function selectQuickAddress(addressText) {
+      const input = document.getElementById('deliveryAddressInput');
+      input.value = addressText;
+      document.getElementById('addressDropdown').style.display = 'none';
+      checkDeliveryRadius();
+    }
+
+    // As-You-Type Address Filter & Autocomplete Handler
+    let geocodeDebounceTimer = null;
+    function handleAddressTyping(query) {
+      const dropdown = document.getElementById('addressDropdown');
+      const q = query.toLowerCase().trim();
+
+      if (q.length === 0) {
+        showInitialSuggestions();
+        return;
+      }
+
+      // 1. Instant In-Memory Match (0ms response)
+      const localMatches = LOCAL_DELIVERY_DATABASE.filter(item => item.display.toLowerCase().includes(q));
+      renderAddressDropdown(localMatches, q);
+
+      // 2. Query Live OpenStreetMap / Photon Geocoder for real street addresses in Garland/Richardson
+      clearTimeout(geocodeDebounceTimer);
+      if (q.length >= 3) {
+        geocodeDebounceTimer = setTimeout(() => {
+          fetchLiveGeocode(q);
+        }, 300);
+      }
+    }
+
+    function fetchLiveGeocode(q) {
+      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q + ' Garland Richardson TX')}&limit=5&lat=${RESTAURANT_LAT}&lon=${RESTAURANT_LON}`;
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.features && data.features.length > 0) {
+            const liveItems = [];
+            data.features.forEach(f => {
+              const p = f.properties;
+              const coords = f.geometry.coordinates; // [lon, lat]
+              const name = p.name || p.street || '';
+              const street = p.street || '';
+              const city = p.city || 'Garland';
+              const postcode = p.postcode || '75044';
+              const fullDisplay = `${name ? name + ', ' : ''}${street ? street + ', ' : ''}${city}, TX ${postcode}`.replace(', ,', ',');
+              
+              const distMiles = calculateDistance(RESTAURANT_LAT, RESTAURANT_LON, coords[1], coords[0]);
+              liveItems.push({
+                display: fullDisplay,
+                dist: `${distMiles.toFixed(1)} mi away`,
+                inZone: distMiles <= 5.5
+              });
+            });
+
+            if (liveItems.length > 0) {
+              renderAddressDropdown(liveItems, q);
+            }
+          }
+        })
+        .catch(err => {
+          console.log('Geocoding notice:', err);
+        });
+    }
+
+    // Haversine formula to compute exact driving/air miles
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 3958.8; // Earth radius in miles
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    function renderAddressDropdown(items, query) {
+      const dropdown = document.getElementById('addressDropdown');
+      
+      if (!items || items.length === 0) {
+        if (query) {
+          dropdown.innerHTML = `
+            <div class="autocomplete-item" onpointerdown="selectSuggestedAddress('${query.replace(/'/g, "\\'")}', true, 'Custom Address')">
+              <span>📍 Use custom address: <strong>${query}</strong></span>
+              <span class="dist-tag">Click to verify</span>
+            </div>
+          `;
+          dropdown.style.display = 'block';
+        } else {
+          dropdown.style.display = 'none';
+        }
+        return;
+      }
+
+      let html = '';
+      items.slice(0, 6).forEach(item => {
+        let displayHtml = item.display;
+        if (query) {
+          const regex = new RegExp(`(${query})`, 'gi');
+          displayHtml = item.display.replace(regex, '<strong>$1</strong>');
+        }
+        const safeAddress = item.display.replace(/'/g, "\\'");
+        html += `
+          <div class="autocomplete-item" onpointerdown="selectSuggestedAddress('${safeAddress}', ${item.inZone}, '${item.dist}')">
+            <span>📍 ${displayHtml}</span>
+            <span class="dist-tag">${item.dist}</span>
+          </div>
+        `;
+      });
+
+      dropdown.innerHTML = html;
+      dropdown.style.display = 'block';
+    }
+
+    // Touch & Pointer friendly suggestion click
+    function selectSuggestedAddress(addressText, inZone, distText) {
+      const input = document.getElementById('deliveryAddressInput');
+      const dropdown = document.getElementById('addressDropdown');
+      const statusBox = document.getElementById('zoneStatus');
+
+      input.value = addressText;
+      dropdown.style.display = 'none';
+
+      if (inZone) {
+        statusBox.className = 'zone-status-box zone-success';
+        statusBox.style.display = 'flex';
+        statusBox.innerHTML = `
+          <div>
+            <strong>✓ You are within our 5-Mile Delivery Zone!</strong> (${distText})<br>
+            <span style="font-size:11.5px;">Estimated delivery: 35–45 mins • Hot & fresh to your door.</span>
+          </div>
+          <span style="font-weight:bold;color:#22c55e;">In Zone</span>
+        `;
+        isAddressVerified = true;
+      } else {
+        statusBox.className = 'zone-status-box zone-warning';
+        statusBox.style.display = 'block';
+        statusBox.innerHTML = `
+          <strong>⚠️ Outside our 5-Mile Local Delivery Radius</strong> (${distText})<br>
+          <span style="font-size:11.5px;">Your address is outside our delivery zone, but we would love to prepare this for <strong>🛍️ Pickup (Ready in 15–20m)</strong>!</span>
+        `;
+        isAddressVerified = false;
+      }
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('pointerdown', (e) => {
+      const wrapper = document.querySelector('.autocomplete-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById('addressDropdown').style.display = 'none';
+      }
+    });
+
+    // Dishes Data
+    const DISH_CONFIGS = {
+      kmg: {
+        name: 'Thai Chicken Rice (Khao Man Gai)',
+        thai: 'Khao Man Gai • ข้าวมันไก่',
+        basePrice: 14.99,
+        hasProtein: true,
+        hasSpice: true,
+        hasAddons: true,
+        hasExclusions: true
+      },
+      tomyum: {
+        name: 'Authentic Tom Yum Soup',
+        thai: 'Tom Yum Goong / Gai • ต้มยำ',
+        basePrice: 13.99,
+        hasProtein: true,
+        hasSpice: true,
+        hasAddons: true,
+        hasExclusions: true
+      },
+      drunken: {
+        name: 'Pad Kee Mow (Drunken Noodles)',
+        thai: 'Pad Kee Mao • ผัดขี้เมา',
+        basePrice: 13.99,
+        hasProtein: true,
+        hasSpice: true,
+        hasAddons: true,
+        hasExclusions: true
+      },
+      padthai: {
+        name: 'Traditional Pad Thai',
+        thai: 'Pad Thai • ผัดไทย',
+        basePrice: 13.99,
+        hasProtein: true,
+        hasSpice: true,
+        hasAddons: true,
+        hasExclusions: true
+      },
+      panang: {
+        name: 'Panang Curry with Jasmine Rice',
+        thai: 'Gaeng Panang • แกงพะแนง',
+        basePrice: 14.49,
+        hasProtein: true,
+        hasSpice: true,
+        hasAddons: true,
+        hasExclusions: true
+      },
+      mango: {
+        name: 'Sweet Mango Sticky Rice',
+        thai: 'Khao Niao Mamuang • ข้าวเหนียวมะม่วง',
+        basePrice: 7.99,
+        hasProtein: false,
+        hasSpice: false,
+        hasAddons: false,
+        hasExclusions: true
+      },
+      thaitea: {
+        name: 'Authentic Thai Iced Tea',
+        thai: 'Cha Yen • ชาเย็น',
+        basePrice: 4.50,
+        hasProtein: false,
+        hasSpice: false,
+        hasAddons: false,
+        hasExclusions: false
+      }
+    };
+
+    function openCustomModal(dishKey) {
+      currentModalDish = DISH_CONFIGS[dishKey] || DISH_CONFIGS['drunken'];
+      modalQty = 1;
+      document.getElementById('modalQtyDisplay').innerText = '1';
+      document.getElementById('modalDishTitle').innerText = currentModalDish.name;
+      document.getElementById('modalDishSub').innerText = `${currentModalDish.thai} • Base: $${currentModalDish.basePrice.toFixed(2)}`;
+
+      document.getElementById('proteinSection').style.display = currentModalDish.hasProtein ? 'block' : 'none';
+      document.getElementById('spiceSection').style.display = currentModalDish.hasSpice ? 'block' : 'none';
+      document.getElementById('addonsSection').style.display = currentModalDish.hasAddons ? 'block' : 'none';
+      document.getElementById('exclusionsSection').style.display = currentModalDish.hasExclusions ? 'block' : 'none';
+
+      document.querySelectorAll('input[name="modalAddon"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('input[name="modalExclusion"]').forEach(cb => cb.checked = false);
+      document.getElementById('modalSpecialNotes').value = '';
+
+      calcModalTotal();
+      document.getElementById('customModalOverlay').style.display = 'flex';
+    }
+
+    function closeCustomModal() {
+      document.getElementById('customModalOverlay').style.display = 'none';
+    }
+
+    function closeCustomModalOnBg(e) {
+      if (e.target.id === 'customModalOverlay') {
+        closeCustomModal();
+      }
+    }
+
+    function changeModalQty(delta) {
+      modalQty = Math.max(1, modalQty + delta);
+      document.getElementById('modalQtyDisplay').innerText = modalQty;
+      calcModalTotal();
+    }
+
+    function calcModalTotal() {
+      if (!currentModalDish) return;
+      let unitPrice = currentModalDish.basePrice;
+
+      if (currentModalDish.hasProtein) {
+        const selectedProtein = document.querySelector('input[name="modalProtein"]:checked');
+        if (selectedProtein) {
+          unitPrice += parseFloat(selectedProtein.dataset.price || 0);
+        }
+      }
+
+      if (currentModalDish.hasAddons) {
+        document.querySelectorAll('input[name="modalAddon"]:checked').forEach(cb => {
+          unitPrice += parseFloat(cb.dataset.price || 0);
+        });
+      }
+
+      document.querySelectorAll('.option-card-label').forEach(label => {
+        const input = label.querySelector('input');
+        if (input && input.checked) {
+          label.classList.add('selected');
+        } else {
+          label.classList.remove('selected');
+        }
+      });
+
+      const total = unitPrice * modalQty;
+      document.getElementById('modalAddTotal').innerText = `$${total.toFixed(2)}`;
+      return unitPrice;
+    }
+
+    function addCustomizedItemToCart() {
+      const unitPrice = calcModalTotal();
+      
+      let protein = '';
+      if (currentModalDish.hasProtein) {
+        const selectedProtein = document.querySelector('input[name="modalProtein"]:checked');
+        if (selectedProtein) protein = selectedProtein.value;
+      }
+
+      let spice = '';
+      if (currentModalDish.hasSpice) {
+        const selectedSpice = document.querySelector('input[name="modalSpice"]:checked');
+        if (selectedSpice) spice = selectedSpice.value;
+      }
+
+      let addons = [];
+      if (currentModalDish.hasAddons) {
+        document.querySelectorAll('input[name="modalAddon"]:checked').forEach(cb => addons.push(cb.value));
+      }
+
+      let exclusions = [];
+      if (currentModalDish.hasExclusions) {
+        document.querySelectorAll('input[name="modalExclusion"]:checked').forEach(cb => exclusions.push(cb.value));
+      }
+
+      let notes = document.getElementById('modalSpecialNotes').value.trim();
+
+      cart.push({
+        name: currentModalDish.name,
+        unitPrice: unitPrice,
+        qty: modalQty,
+        protein: protein,
+        spice: spice,
+        addons: addons,
+        exclusions: exclusions,
+        notes: notes
+      });
+
+      closeCustomModal();
+      renderCart();
+      openCart();
+    }
+
+    function changeQty(index, delta) {
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      renderCart();
+    }
+
+    function deleteItem(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cartItemsContainer');
+      const footer = document.getElementById('cartFooter');
+      const navCount = document.getElementById('navCartCount');
+      const floatCount = document.getElementById('floatCartCount');
+      const floatTotal = document.getElementById('floatCartTotal');
+      const totalItemCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
+      navCount.innerText = totalItemCount;
+      floatCount.innerText = totalItemCount;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="cart-empty-state">
+            🛒 Your cart is currently empty.<br>Click any dish above to customize and add!
+          </div>
+        `;
+        footer.style.display = 'none';
+        floatTotal.innerText = '$0.00';
+        return;
+      }
+
+      footer.style.display = 'block';
+
+      let html = '';
+      let rawSubtotal = 0;
+
+      cart.forEach((item, idx) => {
+        const itemTotal = item.unitPrice * item.qty;
+        rawSubtotal += itemTotal;
+
+        let modBullets = [];
+        if (item.protein) modBullets.push(`🥩 <strong>${item.protein}</strong>`);
+        if (item.spice) modBullets.push(`🌶️ ${item.spice}`);
+        if (item.addons && item.addons.length > 0) modBullets.push(`➕ Add: ${item.addons.join(', ')}`);
+        if (item.exclusions && item.exclusions.length > 0) modBullets.push(`🚫 <span style="color:#f87171;">${item.exclusions.join(', ')}</span>`);
+        if (item.notes) modBullets.push(`📝 Note: "<em>${item.notes}</em>"`);
+
+        html += `
+          <div class="cart-item-row">
+            <div class="cart-item-main">
+              <div class="cart-item-title">${item.name}</div>
+              <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+            </div>
+
+            ${modBullets.length > 0 ? `<div class="cart-item-mods">${modBullets.join('<br>')}</div>` : ''}
+
+            <div class="cart-item-controls">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+                <span style="font-size:13px;font-weight:bold;color:#fff;min-width:18px;text-align:center;">${item.qty}</span>
+                <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+              </div>
+              <button class="btn-item-delete" onclick="deleteItem(${idx})">🗑️ Remove</button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+
+      const freeDeliveryTarget = 45.00;
+      const progressFill = document.getElementById('progressFill');
+      const freeDeliveryMsg = document.getElementById('freeDeliveryMsg');
+      const freeDeliveryPct = document.getElementById('freeDeliveryPct');
+
+      if (rawSubtotal >= freeDeliveryTarget) {
+        progressFill.style.width = '100%';
+        freeDeliveryMsg.innerHTML = '🎉 You unlocked <strong>FREE Delivery!</strong>';
+        freeDeliveryPct.innerText = '100%';
+      } else {
+        const remaining = (freeDeliveryTarget - rawSubtotal).toFixed(2);
+        const pct = Math.min(Math.round((rawSubtotal / freeDeliveryTarget) * 100), 100);
+        progressFill.style.width = pct + '%';
+        freeDeliveryMsg.innerText = `Add $${remaining} more for FREE Delivery!`;
+        freeDeliveryPct.innerText = pct + '%';
+      }
+
+      const discount = rawSubtotal * discountPct;
+      const discountedSubtotal = rawSubtotal - discount;
+      
+      let finalDeliveryFee = 0;
+      const feeRow = document.getElementById('deliveryFeeRow');
+      const feeVal = document.getElementById('deliveryFeeVal');
+
+      if (orderMode === 'delivery') {
+        feeRow.style.display = 'table-row';
+        if (rawSubtotal >= freeDeliveryTarget) {
+          finalDeliveryFee = 0;
+          feeVal.innerHTML = '<span style="color:#22c55e;">FREE</span>';
+        } else {
+          finalDeliveryFee = deliveryFee;
+          feeVal.innerText = `$${deliveryFee.toFixed(2)}`;
+        }
+      } else {
+        feeRow.style.display = 'none';
+      }
+
+      const tax = discountedSubtotal * 0.0825;
+      const grandTotal = discountedSubtotal + finalDeliveryFee + tax;
+
+      document.getElementById('subtotalVal').innerText = `$${rawSubtotal.toFixed(2)}`;
+      document.getElementById('discountVal').innerText = `-$${discount.toFixed(2)}`;
+      document.getElementById('taxVal').innerText = `$${tax.toFixed(2)}`;
+      document.getElementById('totalVal').innerText = `$${grandTotal.toFixed(2)}`;
+      floatTotal.innerText = `$${grandTotal.toFixed(2)}`;
+    }
+
+    function toggleManagerDelivery() {
+      isDeliveryAvailable = !isDeliveryAvailable;
+      const btn = document.getElementById('btnSimToggle');
+      const dot = document.getElementById('simDot');
+      const text = document.getElementById('simText');
+      const tabDelivery = document.getElementById('tabDelivery');
+      const pausedBanner = document.getElementById('deliveryPausedBanner');
+      const deliveryBox = document.getElementById('deliveryBox');
+
+      if (isDeliveryAvailable) {
+        btn.className = 'btn-sim-toggle on';
+        dot.innerText = '🟢';
+        text.innerText = 'Driver On-Duty (Click to Pause)';
+        tabDelivery.classList.remove('disabled-tab');
+        pausedBanner.style.display = 'none';
+        if (orderMode === 'delivery') {
+          deliveryBox.style.display = 'block';
+        }
+      } else {
+        btn.className = 'btn-sim-toggle off';
+        dot.innerText = '🔴';
+        text.innerText = 'Driver OFF-DUTY / Paused (Click to Enable)';
+        tabDelivery.classList.add('disabled-tab');
+        setOrderMode('pickup');
+        pausedBanner.style.display = 'block';
+      }
+    }
+
+    function setOrderMode(mode) {
+      if (mode === 'delivery' && !isDeliveryAvailable) {
+        alert('Direct delivery is currently paused (driver unavailable). Please select Pickup!');
+        return;
+      }
+
+      orderMode = mode;
+      const tabPickup = document.getElementById('tabPickup');
+      const tabDelivery = document.getElementById('tabDelivery');
+      const deliveryBox = document.getElementById('deliveryBox');
+      const perkText = document.getElementById('perkDeliveryText');
+      const drawerModeText = document.getElementById('drawerOrderModeText');
+      const feeRow = document.getElementById('deliveryFeeRow');
+      const freeBar = document.getElementById('freeDeliveryBarBox');
+
+      if (mode === 'pickup') {
+        tabPickup.classList.add('active');
+        tabDelivery.classList.remove('active');
+        deliveryBox.style.display = 'none';
+        perkText.innerHTML = '✓ <strong>Pickup ready in 15–20 mins</strong>';
+        drawerModeText.innerText = 'Pickup';
+        feeRow.style.display = 'none';
+        freeBar.style.display = 'none';
+      } else {
+        tabDelivery.classList.add('active');
+        tabPickup.classList.remove('active');
+        deliveryBox.style.display = 'block';
+        perkText.innerHTML = '✓ <strong>$4.99 Delivery Fee (Free on orders $45+)</strong>';
+        drawerModeText.innerText = '5-Mile Delivery';
+        freeBar.style.display = 'block';
+      }
+      renderCart();
+    }
+
+    function checkDeliveryRadius() {
+      const input = document.getElementById('deliveryAddressInput').value.toLowerCase().trim();
+      const statusBox = document.getElementById('zoneStatus');
+      
+      if (!input) {
+        statusBox.className = 'zone-status-box zone-warning';
+        statusBox.style.display = 'block';
+        statusBox.innerHTML = '⚠️ Please enter your street address or zip code to verify.';
+        isAddressVerified = false;
+        return;
+      }
+
+      const hasZipMatch = VALID_DELIVERY_ZIPS.some(zip => input.includes(zip));
+      const hasKeywordMatch = VALID_KEYWORDS.some(kw => input.includes(kw));
+
+      if (hasZipMatch || hasKeywordMatch) {
+        statusBox.className = 'zone-status-box zone-success';
+        statusBox.style.display = 'flex';
+        statusBox.innerHTML = `
+          <div>
+            <strong>✓ You are within our 5-Mile Delivery Zone!</strong><br>
+            <span style="font-size:11.5px;">Estimated delivery: 35–45 mins • Driver on duty.</span>
+          </div>
+          <span style="font-weight:bold;color:#22c55e;">In Zone</span>
+        `;
+        isAddressVerified = true;
+      } else {
+        statusBox.className = 'zone-status-box zone-warning';
+        statusBox.style.display = 'block';
+        statusBox.innerHTML = `
+          <strong>⚠️ Outside our 5-Mile Local Delivery Radius</strong><br>
+          <span style="font-size:11.5px;">Your address is outside our delivery zone, but we would love to prepare this for <strong>🛍️ Pickup (Ready in 15–20m)</strong>!</span>
+        `;
+        isAddressVerified = false;
+      }
+    }
+
+    function openCart() {
+      document.getElementById('cartOverlay').style.display = 'flex';
+    }
+
+    function closeCart() {
+      document.getElementById('cartOverlay').style.display = 'none';
+    }
+
+    function closeCartOnBg(e) {
+      if (e.target.id === 'cartOverlay') {
+        closeCart();
+      }
+    }
+
+    function applyPromo() {
+      const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      if (code === 'DIRECT15') {
+        discountPct = 0.15;
+        alert('Promo code DIRECT15 applied! 15% discount active.');
+      } else {
+        alert('Invalid promo code. Use DIRECT15 for 15% off.');
+      }
+      renderCart();
+    }
+
+    function proceedToAldeloCheckout() {
+      if (orderMode === 'delivery' && !isAddressVerified) {
+        alert('Please check and verify your delivery address before checkout!');
+        document.getElementById('orderSection').scrollIntoView();
+        closeCart();
+        return;
+      }
+      alert('Connecting to Aldelo Express Masa+ Cloud Checkout!\\n\\nIn production, all your selected meats, spice levels, add-ons, and exclusions (NO PEANUTS, NO EGG) auto-print directly on your in-store Aldelo kitchen printer.');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('menuSearch');
+      const categoryTabs = document.querySelectorAll('.cat-btn');
+      const filterChips = document.querySelectorAll('.chip-btn');
+      const dishCards = document.querySelectorAll('.dish-card');
+
+      let currentCategory = 'all';
+      let currentFilter = 'all';
+      let currentSearch = '';
+
+      function filterDishes() {
+        dishCards.forEach(card => {
+          const categoryMatch = currentCategory === 'all' || card.dataset.category.includes(currentCategory);
+          const filterMatch = currentFilter === 'all' || (card.dataset.tags && card.dataset.tags.includes(currentFilter));
+          const textContent = card.innerText.toLowerCase();
+          const searchMatch = currentSearch === '' || textContent.includes(currentSearch);
+
+          if (categoryMatch && filterMatch && searchMatch) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value.toLowerCase().trim();
+        filterDishes();
+      });
+
+      categoryTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          categoryTabs.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentCategory = btn.dataset.category;
+          filterDishes();
+        });
+      });
+
+      filterChips.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterChips.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter;
+          filterDishes();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

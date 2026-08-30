@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tom Yum Thai - 4x6 Takeout Bag Insert (Updated Branding)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+  /* --- Reset & Page Setup for 4x6 inch Postcard --- */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background-color: #16181d;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  .preview-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .card-label {
+    color: #ff781f;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .card-page {
+    width: 400px;
+    height: 600px;
+    background: #1e222b;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    border-radius: 8px;
+  }
+
+  /* --- FRONT SIDE STYLES --- */
+  .front-card {
+    background: radial-gradient(circle at 50% 20%, #2f251c 0%, #1e222b 65%, #15181f 100%);
+    color: #fff;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    border: 1px solid rgba(255, 120, 31, 0.3);
+  }
+
+  .front-card::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid rgba(255, 120, 31, 0.25);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  .header-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .thai-motif {
+    color: #ff781f;
+    font-size: 15px;
+    letter-spacing: 4px;
+    opacity: 0.9;
+  }
+
+  .restaurant-name {
+    font-family: 'Cinzel', serif;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .tagline {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ff781f;
+    letter-spacing: 0.5px;
+  }
+
+  .offer-badge {
+    background: linear-gradient(135deg, #ff781f 0%, #d45000 100%);
+    border: 2px solid #ffffff;
+    border-radius: 12px;
+    padding: 16px 14px;
+    margin: 10px 0;
+    box-shadow: 0 8px 20px rgba(255, 120, 31, 0.4);
+  }
+
+  .offer-sub {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff4ec;
+    margin-bottom: 2px;
+  }
+
+  .offer-headline {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  .offer-desc {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff0e6;
+    margin-top: 4px;
+  }
+
+  .code-box {
+    background: #14171e;
+    border: 1px dashed #ffffff;
+    border-radius: 6px;
+    padding: 6px 12px;
+    display: inline-block;
+    margin-top: 8px;
+  }
+
+  .code-label {
+    font-size: 9px;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .code-text {
+    font-family: 'Plus Jakarta Sans', monospace;
+    font-size: 18px;
+    font-weight: 800;
+    color: #ff9d5c;
+    letter-spacing: 3px;
+  }
+
+  .qr-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .qr-wrapper {
+    background: #ffffff;
+    padding: 8px;
+    border-radius: 8px;
+    border: 2px solid #ff781f;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  }
+
+  .qr-wrapper svg {
+    display: block;
+    width: 105px;
+    height: 105px;
+  }
+
+  .qr-instruction {
+    font-size: 12px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+  }
+
+  .website-url {
+    font-size: 14px;
+    font-weight: 800;
+    color: #ff781f;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .front-footer {
+    font-size: 10px;
+    color: #94a3b8;
+    line-height: 1.4;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+  }
+
+  /* --- BACK SIDE STYLES --- */
+  .back-card {
+    background: #ffffff;
+    color: #1e293b;
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #cbd5e1;
+  }
+
+  .back-card::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid rgba(255, 120, 31, 0.25);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  .back-header {
+    text-align: center;
+  }
+
+  .back-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #c44e00;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .back-story {
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #475569;
+    margin-top: 4px;
+  }
+
+  .favorites-section {
+    margin: 8px 0;
+  }
+
+  .section-heading {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #c44e00;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 3px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .fav-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+  }
+
+  .fav-name {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .fav-badge {
+    font-size: 9px;
+    font-weight: 800;
+    color: #ff781f;
+    background: #fff0e6;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-left: 4px;
+  }
+
+  .fav-desc {
+    font-size: 9.5px;
+    color: #64748b;
+    line-height: 1.25;
+  }
+
+  .why-direct-box {
+    background: #f8fafc;
+    border-left: 3px solid #ff781f;
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin: 6px 0;
+  }
+
+  .why-direct-title {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #c44e00;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .why-direct-list {
+    list-style: none;
+    font-size: 9.5px;
+    color: #334155;
+    line-height: 1.35;
+  }
+
+  .why-direct-list li::before {
+    content: "✓ ";
+    color: #16a34a;
+    font-weight: bold;
+  }
+
+  .back-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 8px;
+    gap: 8px;
+  }
+
+  .contact-info {
+    text-align: left;
+    font-size: 9.5px;
+    color: #475569;
+    line-height: 1.35;
+  }
+
+  .contact-info strong {
+    color: #0f172a;
+    font-size: 10px;
+  }
+
+  .review-qr-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: #ffffff;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    flex-shrink: 0;
+  }
+
+  .review-qr-block svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .review-qr-label {
+    font-size: 8px;
+    font-weight: 800;
+    color: #c44e00;
+    margin-top: 2px;
+  }
+
+  .print-actions {
+    display: flex;
+    gap: 16px;
+  }
+
+  .btn-print {
+    background: linear-gradient(135deg, #ff781f 0%, #e65c00 100%);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 120, 31, 0.4);
+    transition: transform 0.1s ease;
+  }
+
+  .btn-print:hover {
+    transform: scale(1.03);
+  }
+
+  @media print {
+    body {
+      background: none;
+      padding: 0;
+      gap: 0;
+    }
+    .print-actions, .card-label {
+      display: none !important;
+    }
+    .preview-wrapper {
+      gap: 0;
+    }
+    .card-container {
+      page-break-after: always;
+      break-after: page;
+      margin: 0;
+      padding: 0;
+    }
+    .card-page {
+      width: 4in;
+      height: 6in;
+      box-shadow: none;
+      border-radius: 0;
+      margin: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-actions">
+  <button class="btn-print" onclick="window.print()">🖨️ Print 4x6" Postcard / Save as PDF</button>
+</div>
+
+<div class="preview-wrapper">
+
+  <!-- ==================== FRONT SIDE ==================== -->
+  <div class="card-container">
+    <div class="card-label">Front Side (4" x 6")</div>
+    <div class="card-page front-card">
+      
+      <!-- Brand Header -->
+      <div class="header-brand">
+        <div class="thai-motif">❖ ❖ ❖</div>
+        <div class="restaurant-name">TOM YUM THAI</div>
+        <div class="tagline">Garland's Neighborhood Thai Staple • Since 2005</div>
+      </div>
+
+      <!-- Hero Offer Box -->
+      <div class="offer-badge">
+        <div class="offer-sub">Exclusive Direct Order Perk</div>
+        <div class="offer-headline">SAVE 15%</div>
+        <div class="offer-desc">ON YOUR NEXT TAKEOUT OR DELIVERY</div>
+        <div class="code-box">
+          <div class="code-label">Use Promo Code:</div>
+          <div class="code-text">DIRECT15</div>
+        </div>
+      </div>
+
+      <!-- Main Ordering QR -->
+      <div class="qr-section">
+        <div class="qr-wrapper">
+          <svg viewBox="0 0 100 100" fill="#000000">
+            <rect x="0" y="0" width="30" height="30" fill="#000"/>
+            <rect x="5" y="5" width="20" height="20" fill="#fff"/>
+            <rect x="10" y="10" width="10" height="10" fill="#000"/>
+            <rect x="70" y="0" width="30" height="30" fill="#000"/>
+            <rect x="75" y="5" width="20" height="20" fill="#fff"/>
+            <rect x="80" y="10" width="10" height="10" fill="#000"/>
+            <rect x="0" y="70" width="30" height="30" fill="#000"/>
+            <rect x="5" y="75" width="20" height="20" fill="#fff"/>
+            <rect x="10" y="80" width="10" height="10" fill="#000"/>
+            <rect x="35" y="8" width="5" height="5"/>
+            <rect x="45" y="8" width="5" height="5"/>
+            <rect x="55" y="8" width="5" height="5"/>
+            <rect x="8" y="35" width="5" height="5"/>
+            <rect x="8" y="45" width="5" height="5"/>
+            <rect x="8" y="55" width="5" height="5"/>
+            <rect x="35" y="20" width="6" height="6"/>
+            <rect x="48" y="20" width="6" height="6"/>
+            <rect x="38" y="32" width="8" height="8"/>
+            <rect x="52" y="32" width="6" height="6"/>
+            <rect x="68" y="36" width="7" height="7"/>
+            <rect x="82" y="36" width="6" height="6"/>
+            <rect x="20" y="48" width="8" height="8"/>
+            <rect x="34" y="48" width="7" height="7"/>
+            <rect x="48" y="48" width="8" height="8"/>
+            <rect x="64" y="48" width="7" height="7"/>
+            <rect x="78" y="48" width="8" height="8"/>
+            <rect x="36" y="62" width="6" height="6"/>
+            <rect x="48" y="62" width="8" height="8"/>
+            <rect x="62" y="62" width="6" height="6"/>
+            <rect x="78" y="62" width="7" height="7"/>
+            <rect x="35" y="76" width="7" height="7"/>
+            <rect x="48" y="76" width="6" height="6"/>
+            <rect x="62" y="76" width="8" height="8"/>
+            <rect x="78" y="76" width="6" height="6"/>
+            <rect x="40" y="88" width="8" height="8"/>
+            <rect x="56" y="88" width="7" height="7"/>
+            <rect x="70" y="88" width="8" height="8"/>
+            <rect x="85" y="88" width="6" height="6"/>
+          </svg>
+        </div>
+        <div class="qr-instruction">📲 SCAN CAMERA TO ORDER DIRECT</div>
+        <div class="website-url">mytomyumthai.com</div>
+      </div>
+
+      <!-- Front Footer -->
+      <div class="front-footer">
+        📍 3313 Belt Line Rd, Garland, TX • 📞 (214) 703-0391<br>
+        <span style="color:#ffffff;font-weight:700;">Thank you for supporting our neighborhood restaurant!</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== BACK SIDE ==================== -->
+  <div class="card-container">
+    <div class="card-label">Back Side (4" x 6")</div>
+    <div class="card-page back-card">
+      
+      <!-- Back Header Story -->
+      <div class="back-header">
+        <div class="back-title">Garland's Authentic Thai Spot</div>
+        <div class="back-story">
+          "Unpretentious, honest Thai cooking with real herbs, rich curries, and 5 custom spice levels. Serving Garland & Richardson since 2005."
+        </div>
+      </div>
+
+      <!-- Menu Favorites -->
+      <div class="favorites-section">
+        <div class="section-heading">
+          <span>👑 Fan Favorites to Try Next</span>
+          <span style="color:#64748b;font-weight:700;font-size:9px;">5 Spice Levels (1-5)</span>
+        </div>
+
+        <div class="fav-item">
+          <div>
+            <span class="fav-name">Thai Chicken Rice (Khao Man Gai)</span>
+            <span class="fav-badge">Signature</span>
+            <div class="fav-desc">Tender poached chicken over fragrant ginger rice with house ginger-chili sauce.</div>
+          </div>
+        </div>
+
+        <div class="fav-item">
+          <div>
+            <span class="fav-name">Authentic Tom Yum Soup</span>
+            <span class="fav-badge">Must-Try</span>
+            <div class="fav-desc">Hot & sour broth infused with lemongrass, galangal, kaffir lime & mushrooms.</div>
+          </div>
+        </div>
+
+        <div class="fav-item">
+          <div>
+            <span class="fav-name">Pad Kee Mow (Drunken Noodles)</span>
+            <div class="fav-desc">Wok-seared flat noodles with basil, bell peppers, onions & Thai chili flame.</div>
+          </div>
+        </div>
+
+        <div class="fav-item">
+          <div>
+            <span class="fav-name">Panang Curry with Jasmine Rice</span>
+            <div class="fav-desc">Rich, creamy coconut curry seasoned with lime leaves & crushed peanuts.</div>
+          </div>
+        </div>
+
+        <div class="fav-item">
+          <div>
+            <span class="fav-name">Sweet Mango Sticky Rice</span>
+            <div class="fav-desc">Warm sweet coconut rice paired with fresh ripe mango slices.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why Order Direct -->
+      <div class="why-direct-box">
+        <div class="why-direct-title">Why Order Direct at mytomyumthai.com?</div>
+        <ul class="why-direct-list">
+          <li><strong>Lowest Prices:</strong> No inflated third-party delivery app markups.</li>
+          <li><strong>15% Off with Code DIRECT15:</strong> Real savings on every order.</li>
+          <li><strong>Direct Support:</strong> 100% of your payment supports our local kitchen.</li>
+        </ul>
+      </div>
+
+      <!-- Back Footer & Review QR -->
+      <div class="back-footer">
+        <div class="contact-info">
+          <strong>Tom Yum Thai Restaurant</strong> (Est. 2005)<br>
+          3313 Belt Line Rd, Garland, TX 75044<br>
+          <strong>Lunch:</strong> Tue–Fri 11am–2:30pm<br>
+          <strong>Dinner:</strong> Mon–Fri 5–9:30pm | Sat–Sun 12–9:30pm<br>
+          <strong>Call:</strong> (214) 703-0391 • Follow <strong>@TomYumThaiGarland</strong>
+        </div>
+
+        <div class="review-qr-block">
+          <svg viewBox="0 0 100 100" fill="#c44e00">
+            <rect x="0" y="0" width="30" height="30" fill="#c44e00"/>
+            <rect x="5" y="5" width="20" height="20" fill="#fff"/>
+            <rect x="10" y="10" width="10" height="10" fill="#c44e00"/>
+            <rect x="70" y="0" width="30" height="30" fill="#c44e00"/>
+            <rect x="75" y="5" width="20" height="20" fill="#fff"/>
+            <rect x="80" y="10" width="10" height="10" fill="#c44e00"/>
+            <rect x="0" y="70" width="30" height="30" fill="#c44e00"/>
+            <rect x="5" y="75" width="20" height="20" fill="#fff"/>
+            <rect x="10" y="80" width="10" height="10" fill="#c44e00"/>
+            <rect x="36" y="12" width="6" height="6"/>
+            <rect x="52" y="12" width="6" height="6"/>
+            <rect x="38" y="35" width="8" height="8"/>
+            <rect x="54" y="35" width="8" height="8"/>
+            <rect x="38" y="55" width="7" height="7"/>
+            <rect x="54" y="55" width="7" height="7"/>
+            <rect x="72" y="55" width="8" height="8"/>
+            <rect x="38" y="75" width="6" height="6"/>
+            <rect x="54" y="75" width="6" height="6"/>
+            <rect x="72" y="75" width="8" height="8"/>
+          </svg>
+          <div class="review-qr-label">⭐ Love Us?<br>Review Us!</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
