@@ -415,6 +415,301 @@
       from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+  
+    /* ==================== KITCHEN QUEUE & TABLET STYLES ==================== */
+    .queue-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .queue-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .queue-card.is-new {
+      animation: queuePulse 2s infinite;
+      border-color: #ec5a30 !important;
+    }
+
+    @keyframes queuePulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(236, 90, 48, 0); }
+      50% { box-shadow: 0 0 25px rgba(236, 90, 48, 0.7); }
+    }
+
+    .queue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .queue-code-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .queue-code {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      font-family: monospace;
+      letter-spacing: 0.5px;
+    }
+
+    .queue-type {
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(255, 120, 31, 0.2);
+      color: #ff9d5c;
+      border: 1px solid rgba(255, 120, 31, 0.4);
+    }
+
+    .queue-elapsed {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    .queue-customer-info {
+      margin-bottom: 12px;
+    }
+
+    .queue-customer-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .queue-customer-phone {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .queue-customer-address {
+      font-size: 13px;
+      color: #fbbf24;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .queue-items-box {
+      background: #12151d;
+      border-radius: 6px;
+      padding: 12px;
+      margin: 10px 0 14px;
+      border: 1px solid var(--border-subtle);
+      flex: 1;
+    }
+
+    .queue-item-row {
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .queue-item-row:last-child {
+      border-bottom: none;
+    }
+
+    .queue-item-title {
+      font-weight: 800;
+      color: #ffffff;
+      font-size: 15px;
+    }
+
+    .queue-item-meta {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .queue-item-spice {
+      color: #f97316;
+      font-weight: 800;
+    }
+
+    /* ALLERGY SAFETY: HUGE BOLD RED CALLOUT */
+    .queue-item-exclusion {
+      color: #ef4444 !important;
+      font-weight: 900 !important;
+      font-size: 13.5px !important;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .queue-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .queue-total-wrap {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .queue-total-wrap strong {
+      color: #ffffff;
+      font-size: 16px;
+    }
+
+    .queue-action-btns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .btn-queue {
+      padding: 10px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .btn-cook {
+      background: #1e3a8a;
+      color: #93c5fd;
+      border-color: #3b82f6;
+    }
+    .btn-cook:hover { background: #2563eb; color: #fff; }
+
+    .btn-ready {
+      background: #14532d;
+      color: #86efac;
+      border-color: #22c55e;
+    }
+    .btn-ready:hover { background: #16a34a; color: #fff; }
+
+    .btn-done {
+      background: #334155;
+      color: #cbd5e1;
+      border-color: #64748b;
+    }
+    .btn-done:hover { background: #475569; color: #fff; }
+
+    /* ==================== 80MM THERMAL RECEIPT PRINT STYLES ==================== */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .thermal-receipt, .thermal-receipt * {
+        visibility: visible;
+      }
+      .thermal-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        max-width: 80mm;
+        padding: 2mm;
+        margin: 0;
+        background: #fff !important;
+        color: #000 !important;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 11pt;
+        line-height: 1.25;
+      }
+      .receipt-header {
+        text-align: center;
+        margin-bottom: 4mm;
+      }
+      .receipt-title {
+        font-size: 16pt;
+        font-weight: 900;
+      }
+      .receipt-sub {
+        font-size: 9pt;
+      }
+      .receipt-code {
+        font-size: 18pt;
+        font-weight: 900;
+        margin: 2mm 0;
+      }
+      .receipt-type {
+        font-size: 14pt;
+        font-weight: 900;
+        border: 2px solid #000;
+        padding: 1mm 2mm;
+        display: inline-block;
+        margin: 1mm 0;
+      }
+      .receipt-divider {
+        font-family: monospace;
+        font-size: 9pt;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .receipt-customer {
+        margin: 2mm 0;
+        font-size: 11pt;
+      }
+      .receipt-cust-name {
+        font-weight: 900;
+        font-size: 13pt;
+      }
+      .receipt-item-row {
+        margin: 2mm 0;
+        padding-bottom: 1mm;
+      }
+      .receipt-item-main {
+        font-weight: 900;
+        font-size: 12pt;
+      }
+      .receipt-exclusion {
+        font-weight: 900;
+        font-size: 11pt;
+        text-decoration: underline;
+      }
+      .receipt-totals-box {
+        margin-top: 3mm;
+        text-align: right;
+      }
+      .receipt-grand-total {
+        font-size: 14pt;
+        font-weight: 900;
+      }
+      .receipt-paid-tag {
+        text-align: center;
+        font-weight: 900;
+        font-size: 10pt;
+        margin-top: 3mm;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -466,14 +761,91 @@
 
     <!-- Navigation Tabs -->
     <div class="tabs-nav">
-      <button class="tab-btn active" onclick="showTab('tabMenu', this)">📋 Menu &amp; 1-Click 86</button>
+      <button class="tab-btn active" onclick="showTab('tabOrders', this)">🔔 Live Orders</button>
+      <button class="tab-btn" onclick="showTab('tabMenu', this)">📋 Menu &amp; 1-Click 86</button>
       <button class="tab-btn" onclick="showTab('tabHours', this)">🕒 Hours &amp; Ordering</button>
       <button class="tab-btn" onclick="showTab('tabHolidays', this)">🗓️ Holiday Closures</button>
       <button class="tab-btn" onclick="showTab('tabSettings', this)">⚙️ Store Settings</button>
     </div>
 
+    <!-- Tab 0: Kitchen Live Orders Queue -->
+    <div id="tabOrders" class="tab-panel active">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">🔔 Kitchen Live Orders Queue</div>
+          <div class="panel-desc">Real-time tablet queue for kitchen woks. All orders shown are prepaid.</div>
+        </div>
+      </div>
+
+      <!-- Live Order Cards Container -->
+      <div id="queueList" class="queue-grid">
+        <!-- Claude populates orders here using #queue-card-tpl -->
+      </div>
+
+      <!-- Kitchen Order Card Template -->
+      <template id="queue-card-tpl">
+        <div class="queue-card">
+          <div class="queue-header">
+            <div class="queue-code-badge">
+              <span class="queue-code" data-code>TYT-2026-0001</span>
+              <span class="queue-type" data-type>PICKUP</span>
+            </div>
+            <span class="queue-elapsed" data-elapsed>Just now</span>
+          </div>
+
+          <div class="queue-customer-info">
+            <div class="queue-customer-name" data-customer>Customer Name</div>
+            <a class="queue-customer-phone" data-phone href="tel:">Phone</a>
+            <div class="queue-customer-address" data-address></div>
+          </div>
+
+          <div class="queue-items-box" data-items>
+            <!-- Injected items list -->
+          </div>
+
+          <div class="queue-footer">
+            <div class="queue-total-wrap">Paid: <strong data-total>$0.00</strong></div>
+            <div class="queue-action-btns">
+              <button type="button" class="btn-queue btn-cook" data-action="cooking">🍳 Start Cooking</button>
+              <button type="button" class="btn-queue btn-ready" data-action="ready">✓ Mark Ready</button>
+              <button type="button" class="btn-queue btn-done" data-action="completed">Archive / Done</button>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- 80mm Thermal Receipt Template -->
+      <template id="receipt-tpl">
+        <div class="thermal-receipt">
+          <div class="receipt-header">
+            <div class="receipt-title">TOM YUM THAI</div>
+            <div class="receipt-sub">3313 Belt Line Rd, Garland, TX<br>(214) 703-0391</div>
+            <div class="receipt-divider">================================</div>
+            <div class="receipt-type" data-receipt-type>PICKUP</div>
+            <div class="receipt-code" data-receipt-code>TYT-2026-0001</div>
+            <div class="receipt-time" data-receipt-time>00:00 AM</div>
+          </div>
+          <div class="receipt-divider">--------------------------------</div>
+          <div class="receipt-customer">
+            <div class="receipt-cust-name" data-receipt-customer>Customer</div>
+            <div class="receipt-cust-phone" data-receipt-phone>Phone</div>
+            <div class="receipt-cust-address" data-receipt-address></div>
+          </div>
+          <div class="receipt-divider">================================</div>
+          <div class="receipt-items-list" data-receipt-items></div>
+          <div class="receipt-divider">================================</div>
+          <div class="receipt-totals-box">
+            <div>Subtotal: <span data-receipt-subtotal>$0.00</span></div>
+            <div>Tax (8.25%): <span data-receipt-tax>$0.00</span></div>
+            <div class="receipt-grand-total">TOTAL: <span data-receipt-total>$0.00</span></div>
+            <div class="receipt-paid-tag">*** PAID ONLINE — DIRECT ***</div>
+          </div>
+        </div>
+      </template>
+    </div>
+
     <!-- Tab 1: Menu & 86 -->
-    <div id="tabMenu" class="tab-panel active">
+    <div id="tabMenu" class="tab-panel">
       <div class="panel-header">
         <div>
           <div class="panel-title">Menu Items (<span id="menuCount">–</span>)</div>

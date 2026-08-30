@@ -1545,6 +1545,593 @@
         display: block;
       }
     }
+  
+    /* ==================== TASK 1 & 2: CHECKOUT DRAWER & CONFIRMATION STYLES ==================== */
+    .checkout-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-color);
+      box-shadow: -10px 0 35px rgba(0,0,0,0.6);
+      z-index: 10000;
+      transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .checkout-drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      background: var(--bg-card);
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .drawer-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .drawer-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+    .drawer-close:hover { color: #fff; }
+
+    .drawer-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Order Summary List */
+    .order-summary-box {
+      background: var(--bg-base);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .summary-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    .summary-items-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Promo Row */
+    .promo-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    #promo-code {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      outline: none;
+    }
+    #promo-code:focus { border-color: var(--accent-orange); }
+
+    #promo-apply {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #promo-apply:hover { background: var(--accent-orange); color: #fff; }
+
+    /* Order Type Toggle Radios */
+    .order-type-toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--bg-base);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .order-type-radio-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .order-type-radio-label input[type="radio"] {
+      display: none;
+    }
+
+    .order-type-radio-label:has(input:checked) {
+      background: var(--accent-orange);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(236, 90, 48, 0.4);
+    }
+
+    /* Delivery Fields */
+    #delivery-fields {
+      border: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-base);
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Contact inputs */
+    .checkout-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--accent-orange); }
+
+    /* Totals Calculation Block */
+    .totals-block {
+      background: var(--bg-base);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13.5px;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    .totals-row.discount-row {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    .totals-row.grand-total-row {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 8px;
+      margin-top: 4px;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    /* Stripe Payment Element Container */
+    .payment-frame-container {
+      background: var(--bg-base);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--border-subtle);
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    #payment-element {
+      min-height: 300px;
+      width: 100%;
+    }
+
+    /* Error Message */
+    #checkout-errors {
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Place Order Button */
+    #place-order-btn {
+      background: linear-gradient(135deg, #ec5a30 0%, #d44319 100%);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(236, 90, 48, 0.4);
+      transition: all 0.2s;
+      width: 100%;
+    }
+    #place-order-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(236, 90, 48, 0.55);
+    }
+
+    /* ==================== ORDER CONFIRMATION MODAL & STEPPER ==================== */
+    .confirmation-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 11000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .confirmation-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+      text-align: center;
+    }
+
+    .confirm-icon-badge {
+      font-size: 44px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .order-code-display {
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      font-family: monospace;
+      letter-spacing: 1px;
+      margin: 4px 0;
+    }
+
+    .eta-badge {
+      display: inline-block;
+      background: rgba(255, 120, 31, 0.15);
+      border: 1px solid var(--accent-orange);
+      color: #ff9d5c;
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin: 8px 0 20px;
+    }
+
+    /* Status Stepper */
+    #order-status {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin: 20px 0;
+      padding: 0;
+      background: var(--bg-base);
+      border-radius: var(--radius-md);
+      padding: 12px 6px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    #order-status li {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      opacity: 0.4;
+      transition: all 0.3s;
+    }
+
+    #order-status li.active {
+      opacity: 1;
+      color: #fff;
+    }
+
+    #order-status li .step-icon {
+      font-size: 18px;
+    }
+
+    /* Itemized Receipt */
+    .receipt-container {
+      background: var(--bg-base);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--border-subtle);
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    [data-receipt] {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .receipt-exclusion-tag {
+      color: #ef4444 !important;
+      font-weight: 900 !important;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .btn-call-store {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn-call-store:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+
+    /* ==================== TASK 3: DYNAMIC MENU CARD & STORE CLOSED BANNER ==================== */
+    #store-closed-banner {
+      background: #7f1d1d;
+      border: 1px solid #ef4444;
+      color: #fecaca;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    [data-menu-root] {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .menu-category-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .menu-category-title {
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid rgba(245, 176, 65, 0.2);
+      padding-bottom: 8px;
+    }
+
+    .badge-sold-out {
+      background: rgba(239, 68, 68, 0.2) !important;
+      border: 1px solid #ef4444 !important;
+      color: #fca5a5 !important;
+    }
+
+    .dish-card.is-sold-out {
+      opacity: 0.55;
+      filter: grayscale(0.6);
+      pointer-events: none;
+    }
+
+    /* Customizer inside Card */
+    .dish-customizer-section {
+      background: var(--bg-base);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .custom-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .size-pills, .spice-levels {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .size-pill, .spice-btn {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .size-pill input, .spice-btn input { display: none; }
+    .size-pill:has(input:checked), .spice-btn:has(input:checked) {
+      background: var(--accent-orange);
+      border-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    .protein-options, .addons-grid, .exclusions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 6px;
+    }
+
+    .protein-radio, .addon-check, .exclusion-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: var(--bg-card);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+    .protein-radio:has(input:checked) {
+      border-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    .custom-notes-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      outline: none;
+      margin-top: 4px;
+    }
+    .custom-notes-input:focus { border-color: var(--accent-orange); }
+
+    .dish-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+    }
+
+    .btn-qty-minus, .btn-qty-plus {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+
+    .btn-add-to-cart {
+      flex: 1;
+      background: linear-gradient(135deg, #ec5a30 0%, #d44319 100%);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-add-to-cart:hover {
+      box-shadow: 0 4px 15px rgba(236, 90, 48, 0.4);
+    }
+
   </style>
 </head>
 <body>
@@ -1702,6 +2289,110 @@
         <h2 class="section-title">Authentic Thai Menu</h2>
         <p style="color:var(--text-muted);font-size:14.5px;">Click any dish to customize meat choices, spice levels, add-ons, and allergies.</p>
       </div>
+
+      <!-- Store Closed Banner -->
+      <div id="store-closed-banner">
+        <span>⚠️</span>
+        <span data-closed-message>Online ordering is currently closed. Please call (214) 703-0391.</span>
+      </div>
+
+      <!-- Dynamic API Menu Root Container -->
+      <div data-menu-root></div>
+
+      <!-- Menu Item Card Template -->
+      <template id="menu-item-tpl">
+        <div class="dish-card" data-item-id="">
+          <div class="dish-card-body">
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <h3 class="dish-name" data-name>Thai Chicken Rice</h3>
+                <div class="dish-thai-name" data-thai>Khao Man Gai • ข้าวมันไก่</div>
+              </div>
+              <div class="dish-price-wrap">
+                <span class="dish-price" data-price>$14.99</span>
+                <span class="dish-price-note" data-price-note></span>
+              </div>
+            </div>
+            <div class="dish-badges-row">
+              <span data-sold-out class="badge badge-sold-out" style="display:none;">Sold Out Today</span>
+            </div>
+            <p class="dish-desc" data-desc>Tender poached chicken over fragrant ginger rice with our homemade dipping sauce.</p>
+          </div>
+
+          <!-- Customizer Container for this dish -->
+          <div class="dish-customizer-section">
+            <!-- Size Pills -->
+            <div class="customizer-group size-group">
+              <label class="custom-label">Choose Size:</label>
+              <div class="size-pills" data-sizes>
+                <label class="size-pill"><input type="radio" name="size" value="regular" checked> <span>Regular (16 oz)</span></label>
+                <label class="size-pill"><input type="radio" name="size" value="large"> <span>Large (32 oz)</span></label>
+              </div>
+            </div>
+
+            <!-- Choice of Protein -->
+            <div class="customizer-group protein-group">
+              <label class="custom-label">Choice of Protein:</label>
+              <div class="protein-options" data-proteins>
+                <label class="protein-radio"><input type="radio" name="protein" value="chicken" checked> <span>Chicken (+$0.00)</span></label>
+                <label class="protein-radio"><input type="radio" name="protein" value="pork"> <span>Pork (+$0.00)</span></label>
+                <label class="protein-radio"><input type="radio" name="protein" value="tofu"> <span>Tofu (+$0.00)</span></label>
+                <label class="protein-radio"><input type="radio" name="protein" value="veggie"> <span>Vegetables (+$0.00)</span></label>
+                <label class="protein-radio"><input type="radio" name="protein" value="beef"> <span>Beef (+$3.00)</span></label>
+                <label class="protein-radio"><input type="radio" name="protein" value="shrimp"> <span>Shrimp (+$3.00)</span></label>
+                <label class="protein-radio"><input type="radio" name="protein" value="seafood"> <span>Seafood Trio (+$4.00)</span></label>
+              </div>
+            </div>
+
+            <!-- Spice Level 1 to 5 -->
+            <div class="customizer-group spice-group">
+              <label class="custom-label">Spice Level (1 Mild – 5 Thai Hot):</label>
+              <div class="spice-levels" data-spice>
+                <label class="spice-btn"><input type="radio" name="spice" value="1"> <span>🌶️ 1 - Mild</span></label>
+                <label class="spice-btn"><input type="radio" name="spice" value="2" checked> <span>🌶️🌶️ 2 - Medium</span></label>
+                <label class="spice-btn"><input type="radio" name="spice" value="3"> <span>🌶️🌶️🌶️ 3 - Hot</span></label>
+                <label class="spice-btn"><input type="radio" name="spice" value="4"> <span>🌶️🌶️🌶️🌶️ 4 - Extra Hot</span></label>
+                <label class="spice-btn"><input type="radio" name="spice" value="5"> <span>🌶️🌶️🌶️🌶️🌶️ 5 - Thai Hot</span></label>
+              </div>
+            </div>
+
+            <!-- Add-ons -->
+            <div class="customizer-group addons-group">
+              <label class="custom-label">Optional Add-ons:</label>
+              <div class="addons-grid" data-addons>
+                <label class="addon-check"><input type="checkbox" value="extra_meat"> <span>Extra Meat (+$3.50)</span></label>
+                <label class="addon-check"><input type="checkbox" value="extra_veg"> <span>Extra Veggies (+$2.00)</span></label>
+                <label class="addon-check"><input type="checkbox" value="fried_egg"> <span>Thai Fried Egg (+$1.50)</span></label>
+                <label class="addon-check"><input type="checkbox" value="extra_rice"> <span>Extra Jasmine Rice (+$2.00)</span></label>
+              </div>
+            </div>
+
+            <!-- Exclusions (Allergy Safety) -->
+            <div class="customizer-group exclusions-group">
+              <label class="custom-label">Dietary Exclusions &amp; Kitchen Notes:</label>
+              <div class="exclusions-grid" data-exclusions>
+                <label class="exclusion-check"><input type="checkbox" value="no_peanuts"> <span>🥜 No Peanuts (Allergy)</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_egg"> <span>🥚 No Egg</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_fish_sauce"> <span>🌱 Strict Vegan (No Fish Sauce)</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_onions"> <span>🧅 No Onions</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_sprouts"> <span>🌱 No Bean Sprouts</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="gf_prep"> <span>🌾 Gluten-Free Prep</span></label>
+              </div>
+              <input type="text" class="custom-notes-input" placeholder="Special kitchen instructions (e.g. sauce on side)..." data-custom-notes>
+            </div>
+
+            <!-- Quantity & Add to Cart -->
+            <div class="dish-card-footer">
+              <div class="qty-selector">
+                <button type="button" class="btn-qty-minus">-</button>
+                <span class="qty-val" data-qty>1</span>
+                <button type="button" class="btn-qty-plus">+</button>
+              </div>
+              <button type="button" class="btn-add-to-cart" data-add-to-cart>Add to Order · <span data-card-total>$14.99</span></button>
+            </div>
+          </div>
+        </div>
+      </template>
 
       <!-- Search & Filters -->
       <div class="menu-controls">
@@ -2991,5 +3682,137 @@
       });
     });
   </script>
+
+  <!-- ==================== TASK 1: CHECKOUT DRAWER SHELL ==================== -->
+  <div id="checkoutDrawer" class="checkout-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">🛍️ Review &amp; Checkout</div>
+      <button type="button" class="drawer-close" onclick="document.getElementById('checkoutDrawer').classList.remove('open')">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Order Summary List -->
+      <div class="order-summary-box">
+        <div class="summary-title">Order Items</div>
+        <ul id="checkoutSummaryList" class="summary-items-list">
+          <!-- Injected by Claude -->
+        </ul>
+
+        <!-- Editable Promo Row -->
+        <div class="promo-row">
+          <input type="text" id="promo-code" placeholder="PROMO CODE (DIRECT15)">
+          <button type="button" id="promo-apply">Apply</button>
+        </div>
+      </div>
+
+      <!-- Pickup / Delivery Toggle Radios -->
+      <div class="order-type-toggle-group">
+        <label class="order-type-radio-label">
+          <input type="radio" id="order-type-pickup" name="order-type" value="pickup" checked>
+          <span>🛍️ Pickup</span>
+        </label>
+        <label class="order-type-radio-label">
+          <input type="radio" id="order-type-delivery" name="order-type" value="delivery">
+          <span>🛵 Delivery</span>
+        </label>
+      </div>
+
+      <!-- Delivery-Only Fieldset -->
+      <fieldset id="delivery-fields">
+        <label class="custom-label">Delivery Address &amp; Instructions:</label>
+        <input type="text" id="checkout-address" class="form-input" placeholder="Street Address, City, Zip">
+        <input type="text" id="checkout-notes" class="form-input" placeholder="Apt / Suite / Gate Code / Drop-off Notes">
+      </fieldset>
+
+      <!-- Customer Contact -->
+      <div class="checkout-input-group">
+        <label class="custom-label">Contact Details:</label>
+        <input type="text" id="checkout-name" class="form-input" placeholder="Your Name" required>
+        <input type="tel" id="checkout-phone" class="form-input" placeholder="Mobile Phone (for order SMS updates)" required>
+      </div>
+
+      <!-- Totals Block -->
+      <div class="totals-block">
+        <div class="totals-row">
+          <span>Subtotal:</span>
+          <span data-subtotal>$0.00</span>
+        </div>
+        <div class="totals-row discount-row">
+          <span>Direct 15% Discount:</span>
+          <span data-discount>-$0.00</span>
+        </div>
+        <div class="totals-row">
+          <span>Delivery Fee:</span>
+          <span data-delivery-fee>$0.00</span>
+        </div>
+        <div class="totals-row">
+          <span>Tax (8.25%):</span>
+          <span data-tax>$0.00</span>
+        </div>
+        <div class="totals-row grand-total-row">
+          <span>Total:</span>
+          <span data-total>$0.00</span>
+        </div>
+      </div>
+
+      <!-- Stripe Payment Element Frame (~300px min height) -->
+      <div class="payment-frame-container">
+        <label class="custom-label" style="margin-bottom:10px;">Payment (Apple Pay / Google Pay / Card):</label>
+        <div id="payment-element">
+          <!-- Stripe Payment Element rendered here by Claude -->
+        </div>
+      </div>
+
+      <!-- Error Text Alert -->
+      <div id="checkout-errors" role="alert"></div>
+
+      <!-- Place Order Button -->
+      <button type="button" id="place-order-btn">Place Order · <span data-total>$0.00</span></button>
+    </div>
+  </div>
+
+  <!-- ==================== TASK 2: ORDER CONFIRMATION MODAL & STEPPER ==================== -->
+  <div id="orderConfirmationOverlay" class="confirmation-overlay">
+    <div class="confirmation-card">
+      <span class="confirm-icon-badge">🎉</span>
+      <h2 style="color:#fff;font-size:22px;margin:0 0 6px;">Order Confirmed!</h2>
+      <p style="color:var(--text-muted);font-size:13px;margin:0;">Thank you for ordering direct from Tom Yum Thai.</p>
+
+      <div class="order-code-display">Order #<span data-order-code>TYT-2026-0042</span></div>
+      <div class="eta-badge">Estimated Ready: <span data-eta>15–20 min</span></div>
+
+      <!-- Status Stepper with 4 Steps -->
+      <ul id="order-status" class="status-stepper">
+        <li data-step="received" class="active">
+          <span class="step-icon">🟡</span>
+          <span>Received</span>
+        </li>
+        <li data-step="cooking">
+          <span class="step-icon">🍳</span>
+          <span>Cooking</span>
+        </li>
+        <li data-step="ready">
+          <span class="step-icon">🟢</span>
+          <span>Ready</span>
+        </li>
+        <li data-step="completed">
+          <span class="step-icon">✓</span>
+          <span>Done</span>
+        </li>
+      </ul>
+
+      <!-- Itemized Receipt with Bold Red Exclusions -->
+      <div class="receipt-container">
+        <div class="summary-title" style="margin-bottom:8px;">Itemized Receipt</div>
+        <ul data-receipt>
+          <!-- Receipt items injected by Claude -->
+        </ul>
+      </div>
+
+      <!-- Call Restaurant Button -->
+      <a href="tel:2147030391" class="btn-call-store">📞 Call Store: (214) 703-0391</a>
+    </div>
+  </div>
+
 </body>
 </html>
