@@ -1,0 +1,15 @@
+{
+  "name": "tomyumthai-ordering",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "migrate": "node db/migrate.mjs",
+    "seed": "node db/seed.mjs",
+    "check": "node --check api/menu.js && node --check api/health.js && node --check lib/db.js && node --check db/seed.mjs && node --check db/migrate.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}
