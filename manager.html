@@ -423,186 +423,139 @@
   <div id="loginScreen" class="login-container">
     <div class="login-card">
       <span class="login-icon">🏮</span>
-      <h1 class="login-title">Manager Portal</h1>
-      <p class="login-subtitle">Tom Yum Thai Restaurant (Garland, TX)</p>
+      <h1 class="login-title">Store Manager Portal</h1>
+      <p class="login-subtitle">Tom Yum Thai Restaurant • Garland, TX</p>
 
-      <div id="loginError" class="login-error">⚠️ Invalid Manager Password or PIN.</div>
+      <div id="loginError" class="login-error"></div>
 
-      <form id="loginForm" onsubmit="handleLogin(event)">
+      <form id="loginForm">
         <div class="input-group">
-          <label class="input-label">Manager Username:</label>
-          <input type="text" id="loginUsername" class="login-input" value="manager" required>
+          <label class="input-label" for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" class="login-input" autocomplete="username" required autofocus>
         </div>
 
         <div class="input-group">
-          <label class="input-label">Manager Password / PIN:</label>
-          <input type="password" id="loginPassword" class="login-input" placeholder="Enter PIN (Default: 2005)" required autofocus>
-          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Default Demo PIN: <strong>2005</strong></small>
+          <label class="input-label" for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" class="login-input" autocomplete="current-password" required>
         </div>
 
-        <button type="submit" class="btn-login">🔒 Log In to Manager Portal</button>
+        <div class="input-group">
+          <label class="input-label" for="loginTotp">Authenticator Code</label>
+          <input type="text" id="loginTotp" class="login-input" inputmode="numeric" autocomplete="one-time-code"
+                 placeholder="6-digit code (or a recovery code)" required>
+        </div>
+
+        <button type="submit" id="loginBtn" class="btn-login">🔒 Sign In</button>
       </form>
     </div>
   </div>
 
   <!-- ==================== AUTHENTICATED DASHBOARD ==================== -->
   <div id="dashboardScreen" class="dashboard-container">
-    
+
     <div class="manager-header">
       <div>
         <div class="brand-title">🏮 Tom Yum Thai — Store Manager Portal</div>
-        <div class="brand-subtitle">Logged in as <strong id="userDisplay">Store Manager</strong> • Garland, TX</div>
+        <div class="brand-subtitle">Signed in as <strong id="userDisplay"></strong> • Garland, TX</div>
       </div>
       <div class="header-actions">
-        <a href="/" target="_blank" class="btn-preview-site">🌐 View Live Website</a>
-        <button class="btn-logout" onclick="handleLogout()">🚪 Logout</button>
+        <a href="/" target="_blank" class="btn-preview-site">🌐 View Customer Site</a>
+        <button class="btn-logout" onclick="handleLogout()">🚪 Log Out</button>
       </div>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="tabs-nav">
-      <button class="tab-btn active" onclick="showTab('tabMenu', this)">📋 Menu & 1-Click 86 Stock</button>
-      <button class="tab-btn" onclick="showTab('tabSchedule', this)">🕒 Operating Hours & Drivers</button>
-      <button class="tab-btn" onclick="showTab('tabHolidays', this)">🗓️ Holiday Calendar Overrides</button>
-      <button class="tab-btn" onclick="showTab('tabSettings', this)">⚙️ Store & Promo Settings</button>
+      <button class="tab-btn active" onclick="showTab('tabMenu', this)">📋 Menu &amp; 1-Click 86</button>
+      <button class="tab-btn" onclick="showTab('tabHours', this)">🕒 Hours &amp; Ordering</button>
+      <button class="tab-btn" onclick="showTab('tabHolidays', this)">🗓️ Holiday Closures</button>
+      <button class="tab-btn" onclick="showTab('tabSettings', this)">⚙️ Store Settings</button>
     </div>
 
-    <!-- Tab 1: Menu & 86 Stock -->
+    <!-- Tab 1: Menu & 86 -->
     <div id="tabMenu" class="tab-panel active">
       <div class="panel-header">
         <div>
-          <div class="panel-title">Active Menu Items (<span id="menuCount">7</span> Dishes)</div>
-          <div class="panel-desc">Modify prices or 86 out-of-stock dishes with 1 click. Updates the customer site instantly!</div>
+          <div class="panel-title">Menu Items (<span id="menuCount">–</span>)</div>
+          <div class="panel-desc">86 a sold-out dish or change a price — the customer site updates within a minute. Every change is logged.</div>
         </div>
-        <button class="btn-primary" onclick="openAddItemPrompt()">+ Add New Menu Item</button>
       </div>
 
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th style="width:28%;">Dish Name</th>
-              <th style="width:16%;">Category</th>
-              <th style="width:16%;">Price ($)</th>
-              <th style="width:24%;">Live Stock Status</th>
-              <th style="width:16%;text-align:right;">Actions</th>
+              <th style="width:34%;">Dish</th>
+              <th style="width:20%;">Category</th>
+              <th style="width:14%;">Price ($)</th>
+              <th style="width:20%;">Stock</th>
+              <th style="width:12%;">On Menu</th>
             </tr>
           </thead>
           <tbody id="menuTableBody"></tbody>
         </table>
       </div>
+      <p style="font-size:11.5px;color:var(--text-muted);margin-top:12px;">
+        Adding brand-new dishes or changing descriptions is done with the menu seed script for now — ask your web admin.
+      </p>
     </div>
 
-    <!-- Tab 2: Hours & Drivers -->
-    <div id="tabSchedule" class="tab-panel">
+    <!-- Tab 2: Hours & Ordering -->
+    <div id="tabHours" class="tab-panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">Operating Hours & Driver Schedule</div>
-          <div class="panel-desc">Configure lunch and dinner windows and enable/disable delivery driver shifts per day.</div>
+          <div class="panel-title">Business Hours &amp; Online Ordering Window</div>
+          <div class="panel-desc">Hours are fixed from the printed menu. Online ordering stops automatically before closing time.</div>
         </div>
-        <button class="btn-primary" onclick="saveSchedule()">💾 Save Schedule</button>
       </div>
 
       <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th style="width:18%;">Day of Week</th>
-              <th style="width:30%;">Lunch Hours</th>
-              <th style="width:30%;">Dinner Hours</th>
-              <th style="width:22%;">Delivery Drivers</th>
-            </tr>
+            <tr><th style="width:30%;">Day</th><th>Online Ordering Accepted</th></tr>
           </thead>
-          <tbody id="scheduleTableBody">
-            <tr>
-              <td><strong>Monday</strong></td>
-              <td><em style="color:#64748b;">Closed for Lunch</em></td>
-              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" id="drv_mon" checked onchange="saveDriverShift('mon', this.checked)"> 🛵 On Duty</label></td>
-            </tr>
-            <tr>
-              <td><strong>Tuesday</strong></td>
-              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
-              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" id="drv_tue" checked onchange="saveDriverShift('tue', this.checked)"> 🛵 On Duty</label></td>
-            </tr>
-            <tr>
-              <td><strong>Wednesday</strong></td>
-              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
-              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" id="drv_wed" checked onchange="saveDriverShift('wed', this.checked)"> 🛵 On Duty</label></td>
-            </tr>
-            <tr>
-              <td><strong>Thursday</strong></td>
-              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
-              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" id="drv_thu" checked onchange="saveDriverShift('thu', this.checked)"> 🛵 On Duty</label></td>
-            </tr>
-            <tr>
-              <td><strong>Friday</strong></td>
-              <td><input type="time" class="form-input" value="11:00"> to <input type="time" class="form-input" value="14:30"></td>
-              <td><input type="time" class="form-input" value="17:00"> to <input type="time" class="form-input" value="21:30"></td>
-              <td><label><input type="checkbox" id="drv_fri" checked onchange="saveDriverShift('fri', this.checked)"> 🛵 On Duty</label></td>
-            </tr>
-            <tr>
-              <td><strong>Saturday</strong></td>
-              <td colspan="2"><input type="time" class="form-input" value="12:00"> to <input type="time" class="form-input" value="21:30"> <small style="color:var(--accent-gold);">(All Day Service)</small></td>
-              <td><label><input type="checkbox" id="drv_sat" checked onchange="saveDriverShift('sat', this.checked)"> 🛵 On Duty</label></td>
-            </tr>
-            <tr>
-              <td><strong>Sunday</strong></td>
-              <td colspan="2"><input type="time" class="form-input" value="12:00"> to <input type="time" class="form-input" value="21:30"> <small style="color:var(--accent-gold);">(All Day Service)</small></td>
-              <td><label><input type="checkbox" id="drv_sun" checked onchange="saveDriverShift('sun', this.checked)"> 🛵 On Duty</label></td>
-            </tr>
-          </tbody>
+          <tbody id="hoursTableBody"></tbody>
         </table>
+      </div>
+
+      <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);margin-top:20px;max-width:420px;">
+        <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Stop new orders this many minutes before close:</label>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="number" id="bufferInput" class="form-input" min="0" max="120" style="width:100px;">
+          <button class="btn-primary" onclick="saveBuffer()">Save</button>
+        </div>
       </div>
 
       <div class="emergency-pause-box">
         <div>
-          <strong style="color:#fca5a5;font-size:14px;">⚠️ 1-Click Emergency Delivery Pause</strong>
-          <p style="font-size:12px;color:#cbd5e1;margin-top:2px;">Turn off direct delivery immediately if a driver does not show up. Pickup remains open.</p>
+          <strong style="color:#fca5a5;font-size:14px;">⚠️ Emergency: Pause ALL Online Ordering</strong>
+          <p style="font-size:12px;color:#cbd5e1;margin-top:2px;">Instantly stops new online orders (kitchen slammed, out of rice, no driver). Phone and walk-in service are unaffected.</p>
         </div>
-        <button id="btnEmergencyPause" class="btn-action" style="background:#7f1d1d;color:#fca5a5;border-color:#ef4444;font-size:13px;padding:8px 16px;" onclick="toggleEmergencyPause()">
-          🔴 Emergency Pause Delivery
-        </button>
+        <button id="btnEmergencyPause" class="btn-action" style="font-size:13px;padding:8px 16px;" onclick="togglePause()"></button>
       </div>
     </div>
 
-    <!-- Tab 3: Holiday Calendar -->
+    <!-- Tab 3: Holiday Closures -->
     <div id="tabHolidays" class="tab-panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">Holiday Calendar & Closure Overrides</div>
-          <div class="panel-desc">Set specific holiday dates when Tom Yum Thai will be closed. A banner automatically displays on the website.</div>
+          <div class="panel-title">Holiday Closure Dates</div>
+          <div class="panel-desc">Online ordering is refused all day on these dates, and customers see the closed message from Store Settings.</div>
         </div>
       </div>
 
       <div style="background:#151821;padding:16px;border:1px solid var(--border-subtle);border-radius:8px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
         <div>
-          <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Holiday Date:</label>
-          <input type="date" id="holidayDateInput" class="form-input" value="2026-07-04">
+          <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Closure date:</label>
+          <input type="date" id="holidayDateInput" class="form-input">
         </div>
-        <div>
-          <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Holiday Name:</label>
-          <input type="text" id="holidayNameInput" class="form-input" placeholder="e.g. Labor Day" value="Independence Day">
-        </div>
-        <div>
-          <label style="font-size:11.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Website Alert Banner Note:</label>
-          <input type="text" id="holidayNoteInput" class="form-input" style="width:260px;" placeholder="e.g. Closed for 4th of July" value="Closed in observance of 4th of July">
-        </div>
-        <button class="btn-primary" onclick="addHolidayRow()">+ Add Holiday</button>
+        <button class="btn-primary" onclick="addHoliday()">+ Add Closure</button>
       </div>
 
       <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th style="width:20%;">Date</th>
-              <th style="width:25%;">Holiday Title</th>
-              <th style="width:40%;">Customer Banner Message</th>
-              <th style="width:15%;text-align:right;">Actions</th>
-            </tr>
+            <tr><th style="width:70%;">Date</th><th style="width:30%;text-align:right;">Actions</th></tr>
           </thead>
           <tbody id="holidayTableBody"></tbody>
         </table>
@@ -613,286 +566,305 @@
     <div id="tabSettings" class="tab-panel">
       <div class="panel-header">
         <div>
-          <div class="panel-title">Store & Promo Settings</div>
-          <div class="panel-desc">Configure delivery fees, free delivery minimums, and direct promo discount codes.</div>
+          <div class="panel-title">Store Settings</div>
+          <div class="panel-desc">Delivery pricing, prep-time estimates, and the message customers see when ordering is closed.</div>
         </div>
-        <button class="btn-primary" onclick="showToast('Store settings updated successfully!')">💾 Save Settings</button>
+        <button class="btn-primary" onclick="saveSettings()">💾 Save Settings</button>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
         <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
-          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Standard Delivery Fee ($):</label>
-          <input type="number" class="form-input" value="4.99" step="0.01" style="width:100%;">
-          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Charged on local 5-mile delivery orders.</small>
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Delivery Fee ($)</label>
+          <input type="number" id="setFee" class="form-input" step="0.01" min="0" style="width:100%;">
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Charged on 5-mile local delivery orders.</small>
         </div>
 
         <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
-          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Free Delivery Threshold ($):</label>
-          <input type="number" class="form-input" value="45.00" step="0.01" style="width:100%;">
-          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Orders over this amount get automatic 100% free delivery.</small>
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Delivery Minimum ($)</label>
+          <input type="number" id="setMinimum" class="form-input" step="0.01" min="0" style="width:100%;">
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Smallest order we deliver.</small>
         </div>
 
         <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
-          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Direct Order Promo Code:</label>
-          <input type="text" class="form-input" value="DIRECT15" style="width:100%;text-transform:uppercase;font-weight:bold;color:var(--accent-orange);">
-          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Prints on the 4x6" takeout bag insert.</small>
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Pickup ETA (minutes)</label>
+          <input type="text" id="setPickupEta" class="form-input" placeholder="15-20" style="width:100%;">
         </div>
 
         <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);">
-          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Promo Discount Amount (%):</label>
-          <input type="number" class="form-input" value="15" style="width:100%;">
-          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">15% discount applied at checkout.</small>
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Delivery ETA (minutes)</label>
+          <input type="text" id="setDeliveryEta" class="form-input" placeholder="35-45" style="width:100%;">
+        </div>
+
+        <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);grid-column:1/-1;">
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Closed Message (shown when ordering is paused or on holidays)</label>
+          <input type="text" id="setClosedMsg" class="form-input" maxlength="300" style="width:100%;"
+                 placeholder="Online ordering is paused right now — please call us at (214) 703-0391.">
+        </div>
+
+        <div style="background:#151821;padding:16px;border-radius:8px;border:1px solid var(--border-subtle);grid-column:1/-1;">
+          <label style="font-size:12px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;">Direct-Order Promo</label>
+          <div style="font-size:14px;font-weight:800;color:var(--accent-orange);">DIRECT15 — 15% off</div>
+          <small style="color:var(--text-muted);font-size:11px;margin-top:4px;display:block;">Validated at checkout on the server. Printed on the takeout bag insert.</small>
         </div>
       </div>
     </div>
 
   </div>
 
-  <div id="toastAlert" class="toast-alert">✓ Settings Saved!</div>
+  <div id="toastAlert" class="toast-alert"></div>
 
   <script>
-    // Master State with LocalStorage Persistence
-    const STORAGE_KEY_MENU = 'tomyum_shared_menu';
-    const STORAGE_KEY_HOLIDAYS = 'tomyum_shared_holidays';
-    const STORAGE_KEY_EMERGENCY = 'tomyum_emergency_pause';
-    const STORAGE_KEY_AUTH = 'tomyum_manager_auth';
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const dollars = cents => (cents / 100).toFixed(2);
+    const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-    const DEFAULT_MENU = [
-      { id: 'kmg', name: 'Thai Chicken Rice', thai: 'Khao Man Gai • ข้าวมันไก่', cat: 'Signatures', price: 14.99, inStock: true },
-      { id: 'tomyum', name: 'Authentic Tom Yum Soup', thai: 'Tom Yum Goong • ต้มยำ', cat: 'Signatures', price: 13.99, inStock: true },
-      { id: 'drunken', name: 'Pad Kee Mow (Drunken Noodles)', thai: 'Pad Kee Mao • ผัดขี้เมา', cat: 'Noodles', price: 13.99, inStock: true },
-      { id: 'padthai', name: 'Traditional Pad Thai', thai: 'Pad Thai • ผัดไทย', cat: 'Noodles', price: 13.99, inStock: true },
-      { id: 'panang', name: 'Panang Curry with Rice', thai: 'Gaeng Panang • แกงพะแนง', cat: 'Curries', price: 14.49, inStock: true },
-      { id: 'mango', name: 'Sweet Mango Sticky Rice', thai: 'Khao Niao Mamuang', cat: 'Desserts', price: 7.99, inStock: true },
-      { id: 'thaitea', name: 'Authentic Thai Iced Tea', thai: 'Cha Yen • ชาเย็น', cat: 'Drinks', price: 4.50, inStock: true }
-    ];
+    let menuItems = [];
+    let settings = null;
 
-    const DEFAULT_HOLIDAYS = [
-      { date: '2026-07-04', title: 'Independence Day', note: 'Closed for 4th of July Holiday' },
-      { date: '2026-11-26', title: 'Thanksgiving Day', note: 'Closed for Thanksgiving' },
-      { date: '2026-12-25', title: 'Christmas Day', note: 'Closed for Christmas' }
-    ];
+    async function api(path, opts = {}) {
+      const res = await fetch(path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...opts,
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+      });
+      if (res.status === 401) { showLogin(); throw new Error('unauthorized'); }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ('request failed (' + res.status + ')'));
+      return data;
+    }
 
-    let menuData = JSON.parse(localStorage.getItem(STORAGE_KEY_MENU)) || DEFAULT_MENU;
-    let holidayData = JSON.parse(localStorage.getItem(STORAGE_KEY_HOLIDAYS)) || DEFAULT_HOLIDAYS;
-    let isEmergencyPaused = localStorage.getItem(STORAGE_KEY_EMERGENCY) === 'true';
+    // ---------- auth ----------
+    function showLogin() {
+      $('dashboardScreen').style.display = 'none';
+      $('loginScreen').style.display = 'flex';
+    }
 
-    // Authentication Logic (PIN: 2005 or password: tomyum)
-    function handleLogin(e) {
+    async function showDashboard(me) {
+      $('loginScreen').style.display = 'none';
+      $('dashboardScreen').style.display = 'block';
+      $('userDisplay').innerText = me.email + ' (' + me.role + ')';
+      await loadAll();
+    }
+
+    $('loginForm').addEventListener('submit', async e => {
       e.preventDefault();
-      const user = document.getElementById('loginUsername').value.trim();
-      const pass = document.getElementById('loginPassword').value.trim();
-      const errorBox = document.getElementById('loginError');
-
-      if (pass === '2005' || pass === 'tomyum' || pass === 'garland2005') {
-        localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify({ user: user, time: Date.now() }));
-        showDashboard(user);
-      } else {
-        errorBox.style.display = 'block';
+      const btn = $('loginBtn'); const err = $('loginError');
+      btn.disabled = true; btn.innerText = 'Signing in…'; err.style.display = 'none';
+      try {
+        await api('/api/admin/login', { method: 'POST', body: {
+          email: $('loginEmail').value, password: $('loginPassword').value, totp: $('loginTotp').value,
+        }});
+        const me = await api('/api/admin/me');
+        $('loginPassword').value = ''; $('loginTotp').value = '';
+        await showDashboard(me);
+      } catch (ex) {
+        err.innerText = '⚠️ ' + ex.message;
+        err.style.display = 'block';
+      } finally {
+        btn.disabled = false; btn.innerText = '🔒 Sign In';
       }
+    });
+
+    async function handleLogout() {
+      try { await api('/api/admin/logout', { method: 'POST' }); } catch {}
+      showLogin();
     }
 
-    function handleLogout() {
-      localStorage.removeItem(STORAGE_KEY_AUTH);
-      document.getElementById('dashboardScreen').style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('loginPassword').value = '';
+    // ---------- data ----------
+    async function loadAll() {
+      const [menu, st] = await Promise.all([api('/api/admin/menu'), api('/api/admin/settings')]);
+      menuItems = menu.items; settings = st;
+      renderMenu(); renderHours(); renderHolidays(); renderSettings(); renderPause();
     }
 
-    function checkAuth() {
-      const auth = localStorage.getItem(STORAGE_KEY_AUTH);
-      if (auth) {
-        try {
-          const data = JSON.parse(auth);
-          showDashboard(data.user || 'Store Manager');
-        } catch(e) {
-          handleLogout();
-        }
-      }
-    }
-
-    function showDashboard(username) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboardScreen').style.display = 'block';
-      document.getElementById('userDisplay').innerText = username;
-      renderMenu();
-      renderHolidays();
-      updateEmergencyPauseUI();
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY_MENU, JSON.stringify(menuData));
-      localStorage.setItem(STORAGE_KEY_HOLIDAYS, JSON.stringify(holidayData));
-      localStorage.setItem(STORAGE_KEY_EMERGENCY, isEmergencyPaused ? 'true' : 'false');
-    }
-
+    // ---------- menu ----------
     function renderMenu() {
-      const tbody = document.getElementById('menuTableBody');
-      document.getElementById('menuCount').innerText = menuData.length;
-
+      $('menuCount').innerText = menuItems.length;
       let html = '';
-      menuData.forEach((item, index) => {
-        html += `
-          <tr>
-            <td>
-              <strong>${item.name}</strong><br>
-              <small style="color:var(--text-muted);">${item.thai}</small>
-            </td>
-            <td><span style="background:#141822;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;color:#fbd38d;">${item.cat}</span></td>
-            <td>
-              $<input type="number" step="0.01" class="price-input" value="${item.price.toFixed(2)}" onchange="updatePrice(${index}, this.value)">
-            </td>
-            <td>
-              <div class="stock-switch" onclick="toggleStock(${index})">
-                <input type="checkbox" ${item.inStock ? 'checked' : ''} style="cursor:pointer;">
-                <span class="stock-pill ${item.inStock ? 'stock-in' : 'stock-out'}">
-                  ${item.inStock ? '🟢 In Stock' : '🔴 86 (Out of Stock)'}
-                </span>
-              </div>
-            </td>
-            <td style="text-align:right;">
-              <button class="btn-action" onclick="deleteItem(${index})">🗑️ Delete</button>
-            </td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = html;
+      let lastCat = null;
+      for (const it of menuItems) {
+        if (it.category !== lastCat) {
+          lastCat = it.category;
+          html += '<tr><td colspan="5" style="background:#141720;font-weight:800;color:var(--accent-gold);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(lastCat) + '</td></tr>';
+        }
+        const priced = it.base_price_cents !== null;
+        html += '<tr style="' + (it.is_hidden ? 'opacity:0.45;' : '') + '">'
+          + '<td><strong>' + esc(it.name) + '</strong>' + (it.price_note ? '<br><small style="color:var(--text-muted);">' + esc(it.price_note) + '</small>' : '') + '</td>'
+          + '<td><span style="background:#141822;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;color:#fbd38d;">' + esc(it.category) + '</span></td>'
+          + '<td>' + (priced
+              ? '$<input type="number" step="0.01" min="0" class="price-input" value="' + dollars(it.base_price_cents) + '" onchange="updatePrice(\'' + it.id + '\', this)">'
+              : '<em style="color:var(--text-muted);font-size:12px;">market</em>') + '</td>'
+          + '<td><div class="stock-switch" onclick="toggle86(\'' + it.id + '\')">'
+          +   '<span class="stock-pill ' + (it.is_86ed ? 'stock-out' : 'stock-in') + '">' + (it.is_86ed ? '🔴 86 — Sold Out' : '🟢 In Stock') + '</span>'
+          + '</div></td>'
+          + '<td><button class="btn-action" onclick="toggleHidden(\'' + it.id + '\')">' + (it.is_hidden ? 'Show' : 'Hide') + '</button></td>'
+          + '</tr>';
+      }
+      $('menuTableBody').innerHTML = html;
     }
 
-    function toggleStock(index) {
-      menuData[index].inStock = !menuData[index].inStock;
-      saveState();
-      renderMenu();
-      const statusText = menuData[index].inStock ? 'marked IN STOCK' : 'marked 86 (OUT OF STOCK)';
-      showToast(`${menuData[index].name} ${statusText}! Live site updated.`);
-    }
-
-    function updatePrice(index, newPrice) {
-      menuData[index].price = parseFloat(newPrice) || menuData[index].price;
-      saveState();
-      showToast(`Updated price for ${menuData[index].name} to $${menuData[index].price.toFixed(2)}`);
-    }
-
-    function deleteItem(index) {
-      const name = menuData[index].name;
-      if (confirm(`Are you sure you want to delete ${name}?`)) {
-        menuData.splice(index, 1);
-        saveState();
+    async function toggle86(id) {
+      const it = menuItems.find(x => x.id === id);
+      try {
+        const r = await api('/api/admin/menu', { method: 'PATCH', body: { id, is_86ed: !it.is_86ed } });
+        it.is_86ed = r.item.is_86ed;
         renderMenu();
-        showToast(`Deleted ${name} from menu.`);
+        toast(it.name + (it.is_86ed ? ' marked 86 (sold out).' : ' back in stock.'));
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    async function toggleHidden(id) {
+      const it = menuItems.find(x => x.id === id);
+      try {
+        const r = await api('/api/admin/menu', { method: 'PATCH', body: { id, is_hidden: !it.is_hidden } });
+        it.is_hidden = r.item.is_hidden;
+        renderMenu();
+        toast(it.name + (it.is_hidden ? ' hidden from the menu.' : ' visible on the menu.'));
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    async function updatePrice(id, input) {
+      const it = menuItems.find(x => x.id === id);
+      const cents = Math.round(parseFloat(input.value) * 100);
+      if (!Number.isInteger(cents) || cents < 0) { input.value = dollars(it.base_price_cents); return; }
+      try {
+        const r = await api('/api/admin/menu', { method: 'PATCH', body: { id, base_price_cents: cents } });
+        it.base_price_cents = r.item.base_price_cents;
+        input.value = dollars(it.base_price_cents);
+        toast(it.name + ' price set to $' + dollars(it.base_price_cents));
+      } catch (ex) {
+        input.value = dollars(it.base_price_cents);
+        toast('Error: ' + ex.message, true);
       }
     }
 
-    function openAddItemPrompt() {
-      const name = prompt('Enter new dish name (e.g. Green Curry Chicken):');
-      if (!name) return;
-      const price = parseFloat(prompt('Enter dish price (e.g. 14.49):')) || 13.99;
-      const cat = prompt('Enter category (Signatures, Noodles, Curries, Starters, Desserts):') || 'Signatures';
-      
-      menuData.push({
-        id: 'item_' + Date.now(),
-        name: name,
-        thai: name + ' • เมนูใหม่',
-        cat: cat,
-        price: price,
-        inStock: true
-      });
-      saveState();
-      renderMenu();
-      showToast(`Added ${name} ($${price.toFixed(2)}) to menu!`);
-    }
+    // ---------- hours ----------
+    const fmt12 = hhmm => {
+      let [h, m] = hhmm.split(':').map(Number);
+      const ap = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return h + (m ? ':' + String(m).padStart(2, '0') : '') + ' ' + ap;
+    };
 
-    function renderHolidays() {
-      const tbody = document.getElementById('holidayTableBody');
+    function renderHours() {
       let html = '';
-      holidayData.forEach((h, idx) => {
-        html += `
-          <tr>
-            <td><strong>${h.date}</strong></td>
-            <td>${h.title}</td>
-            <td><span style="color:#fca5a5;font-weight:bold;">⚠️ ${h.note}</span></td>
-            <td style="text-align:right;">
-              <button class="btn-action" onclick="deleteHoliday(${idx})">Delete</button>
-            </td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = html;
+      for (let d = 0; d < 7; d++) {
+        const ranges = (settings.business_hours[String(d)] || []);
+        const text = ranges.length
+          ? ranges.map(r => fmt12(r[0]) + ' – ' + fmt12(r[1])).join(' and ')
+          : 'Closed';
+        html += '<tr><td><strong>' + DAY_NAMES[d] + '</strong></td><td>' + text + '</td></tr>';
+      }
+      $('hoursTableBody').innerHTML = html;
+      $('bufferInput').value = settings.last_order_buffer_minutes;
     }
 
-    function addHolidayRow() {
-      const d = document.getElementById('holidayDateInput').value;
-      const title = document.getElementById('holidayNameInput').value;
-      const note = document.getElementById('holidayNoteInput').value;
+    async function saveBuffer() {
+      try {
+        const r = await api('/api/admin/settings', { method: 'PATCH', body: { last_order_buffer_minutes: Number($('bufferInput').value) } });
+        settings.last_order_buffer_minutes = r.settings.last_order_buffer_minutes;
+        toast('Last-order buffer saved: ' + settings.last_order_buffer_minutes + ' minutes before close.');
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
 
-      if (!d || !title) {
-        alert('Please provide holiday date and title');
-        return;
-      }
+    // ---------- pause ----------
+    function renderPause() {
+      const btn = $('btnEmergencyPause');
+      const paused = settings.store_open_override === 'closed';
+      btn.innerText = paused ? '🟢 Resume Online Ordering' : '🔴 Pause Online Ordering';
+      btn.style.background = paused ? '#14532d' : '#7f1d1d';
+      btn.style.borderColor = paused ? '#22c55e' : '#ef4444';
+      btn.style.color = paused ? '#86efac' : '#fca5a5';
+    }
 
-      holidayData.push({ date: d, title: title, note: note || ('Closed for ' + title) });
-      saveState();
+    async function togglePause() {
+      const next = settings.store_open_override === 'closed' ? 'auto' : 'closed';
+      try {
+        const r = await api('/api/admin/settings', { method: 'PATCH', body: { store_open_override: next } });
+        settings.store_open_override = r.settings.store_open_override;
+        renderPause();
+        toast(next === 'closed' ? '⚠️ Online ordering PAUSED.' : '🟢 Online ordering resumed (normal hours).');
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    // ---------- holidays ----------
+    function renderHolidays() {
+      const dates = [...(settings.holiday_dates || [])].map(d => String(d).slice(0, 10)).sort();
+      $('holidayTableBody').innerHTML = dates.map(d =>
+        '<tr><td><strong>' + esc(d) + '</strong></td>'
+        + '<td style="text-align:right;"><button class="btn-action" onclick="removeHoliday(\'' + esc(d) + '\')">Remove</button></td></tr>'
+      ).join('') || '<tr><td colspan="2" style="color:var(--text-muted);">No holiday closures set.</td></tr>';
+    }
+
+    async function saveHolidays(dates) {
+      const r = await api('/api/admin/settings', { method: 'PATCH', body: { holiday_dates: dates } });
+      settings.holiday_dates = r.settings.holiday_dates;
       renderHolidays();
-      showToast(`Holiday override added for ${d} (${title})`);
     }
 
-    function deleteHoliday(idx) {
-      holidayData.splice(idx, 1);
-      saveState();
-      renderHolidays();
-      showToast('Holiday override removed.');
+    async function addHoliday() {
+      const d = $('holidayDateInput').value;
+      if (!d) { toast('Pick a date first.', true); return; }
+      const dates = new Set((settings.holiday_dates || []).map(x => String(x).slice(0, 10)));
+      dates.add(d);
+      try { await saveHolidays([...dates]); toast('Closed on ' + d + '.'); }
+      catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
-    function toggleEmergencyPause() {
-      isEmergencyPaused = !isEmergencyPaused;
-      saveState();
-      updateEmergencyPauseUI();
-      if (isEmergencyPaused) {
-        showToast('⚠️ Delivery is PAUSED on live website. Pickup active.');
-      } else {
-        showToast('🟢 Delivery shifts RESUMED on live website.');
-      }
+    async function removeHoliday(d) {
+      const dates = (settings.holiday_dates || []).map(x => String(x).slice(0, 10)).filter(x => x !== d);
+      try { await saveHolidays(dates); toast('Closure removed for ' + d + '.'); }
+      catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
-    function updateEmergencyPauseUI() {
-      const btn = document.getElementById('btnEmergencyPause');
-      if (isEmergencyPaused) {
-        btn.innerText = '🟢 Resume Delivery Shift';
-        btn.style.background = '#14532d';
-        btn.style.borderColor = '#22c55e';
-        btn.style.color = '#86efac';
-      } else {
-        btn.innerText = '🔴 Emergency Pause Delivery';
-        btn.style.background = '#7f1d1d';
-        btn.style.borderColor = '#ef4444';
-        btn.style.color = '#fca5a5';
-      }
+    // ---------- settings ----------
+    function renderSettings() {
+      $('setFee').value = dollars(settings.delivery_fee_cents);
+      $('setMinimum').value = dollars(settings.delivery_minimum_cents);
+      $('setPickupEta').value = settings.pickup_eta_minutes;
+      $('setDeliveryEta').value = settings.delivery_eta_minutes;
+      $('setClosedMsg').value = settings.closed_message || '';
     }
 
-    function saveSchedule() {
-      saveState();
-      showToast('Operating schedule and driver shifts saved!');
+    async function saveSettings() {
+      try {
+        await api('/api/admin/settings', { method: 'PATCH', body: {
+          delivery_fee_cents: Math.round(parseFloat($('setFee').value) * 100),
+          delivery_minimum_cents: Math.round(parseFloat($('setMinimum').value) * 100),
+          pickup_eta_minutes: $('setPickupEta').value.trim(),
+          delivery_eta_minutes: $('setDeliveryEta').value.trim(),
+          closed_message: $('setClosedMsg').value.trim() || null,
+        }});
+        toast('Store settings saved.');
+      } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
+    // ---------- ui ----------
     function showTab(tabId, btn) {
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
+      $(tabId).classList.add('active');
       btn.classList.add('active');
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById('toastAlert');
-      toast.innerText = '✓ ' + msg;
-      toast.style.display = 'block';
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
+    function toast(msg, isError) {
+      const t = $('toastAlert');
+      t.innerText = (isError ? '✗ ' : '✓ ') + msg;
+      t.style.background = isError ? '#7f1d1d' : '#14532d';
+      t.style.borderColor = isError ? '#ef4444' : '#22c55e';
+      t.style.color = isError ? '#fca5a5' : '#86efac';
+      t.style.display = 'block';
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => { t.style.display = 'none'; }, 3500);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      checkAuth();
-    });
+    // ---------- boot ----------
+    (async () => {
+      try { await showDashboard(await api('/api/admin/me')); }
+      catch { showLogin(); }
+    })();
   </script>
 </body>
 </html>

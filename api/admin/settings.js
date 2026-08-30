@@ -49,6 +49,13 @@ export default requireAdmin(async (req, res, admin) => {
         push(col, String(body[col]));
       }
     }
+    for (const col of ['delivery_fee_cents', 'delivery_minimum_cents']) {
+      if (body[col] !== undefined) {
+        const n = Number(body[col]);
+        if (!Number.isInteger(n) || n < 0 || n > 20_000) return res.status(400).json({ error: `${col} must be an integer 0..20000` });
+        push(col, n);
+      }
+    }
     if (sets.length === 0) return res.status(400).json({ error: 'nothing to update' });
 
     await query(`UPDATE settings SET ${sets.join(', ')}`, vals);
