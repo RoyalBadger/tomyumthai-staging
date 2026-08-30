@@ -6,6 +6,13 @@ accepts losing Aldelo/Masa+ POS integration in exchange for a native checkout, a
 Aldelo entirely later. Microsoft 365 SSO is dropped; manager access uses **password + TOTP MFA**
 (authenticator app). Claude owns backend/coding; Gemini owns design/marketing (see `GEMINI_TODO.md`).
 
+**Update (2026-08-30, later):** **Option B confirmed** — Stripe + our own Postgres (Square
+considered and declined). **Security takes priority over features.** **Prepaid only:** the
+pay-at-store option is dropped as the fake-order defense — no order reaches the kitchen
+until payment is confirmed. Customers check out as **guest** (Stripe Link gives returning
+guests the "site knows my phone" experience) or with a **phone-verified account** for order
+history (Phase 5).
+
 ---
 
 ## Architecture
@@ -50,8 +57,8 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 2. Stripe Payment Element with PaymentIntents; card data never touches our code (PCI SAQ-A).
    Apple Pay / Google Pay come free with the Payment Element + domain registration.
 3. Webhook (`payment_intent.succeeded`) with signature verification marks orders paid.
-   An order is only shown to the kitchen after the webhook confirms payment (or is flagged
-   `pay-at-store`).
+   **Prepaid only:** an order reaches the kitchen queue ONLY after the webhook confirms
+   payment — there is no unpaid path. Cash customers phone in or walk in, same as today.
 4. Manager auth: email + password (argon2) + **TOTP** (RFC 6238, any authenticator app),
    httpOnly SameSite cookies, server-side sessions in Postgres, rate limiting on login and
    order creation. Every `/api/admin/*` route checks the session server-side. No client-side
@@ -61,6 +68,12 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 6. Customer PII (name, phone, address): retained 90 days then scrubbed by cron; never in logs.
 7. The current `manager.html` with PIN 2005/"tomyum" in source is retired at Phase 2; until
    then the staging deployment gets an unguessable path or is taken down.
+8. Customer accounts are passwordless: phone number + SMS code via **Twilio Verify**
+   (managed rate-limiting and fraud checks — we never write our own OTP logic). A customer
+   can only ever read orders tied to their own verified phone. Guest checkout stays
+   first-class and never requires an account.
+9. Hardening baseline: security headers (CSP, HSTS, frame-deny) in `vercel.json`, minimal
+   npm dependency footprint, audit log rows for every admin action (who 86'd what, when).
 
 ## Data model (Postgres)
 
@@ -69,9 +82,12 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 - `orders` (id, public_code `TYT-YYYY-NNNN`, type pickup/delivery, status
   `pending_payment → received → cooking → ready → completed | canceled`, customer name/phone,
   address+notes, subtotal/discount/tax/delivery_fee/total cents, promo_code,
-  stripe_payment_intent, pay_at_store bool, timestamps)
+  stripe_payment_intent, customer_id nullable FK, timestamps)
 - `order_items` (order_id, item snapshot: name, price, qty, spice 1–5, exclusions text)
 - `promo_codes` (code, percent_off, active, valid window)
+- `customers` (id, phone_e164 unique, verified_at, name, created_at, last_seen) — guests
+  leave `orders.customer_id` null; an account is nothing more than a verified phone
+- `admin_audit_log` (admin_user, action, target, timestamp)
 - `admin_users` (email, password_hash, totp_secret, recovery_codes, role), `sessions`
 - `settings` (store open/closed override, holiday dates, delivery radius miles, prep-time
   estimates) — replaces all localStorage state
@@ -86,6 +102,8 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 - [ ] Confirm Claude can push to the `tomyumthai-staging` GitHub repo (or hand over the repo).
 - [ ] Decide the second admin (family member) for the manager portal.
 - [ ] Rename/remove the current public `manager.html` on staging.
+- [ ] Twilio account (Verify + SMS) — needed by Phase 5 and for order-ready texts; not a
+      launch blocker.
 
 ### Phase 1 — Backend foundation (Claude)
 - Restructure repo: `/public/index.html`, `/public/manager.html`, `/api/*`, `/lib/*`,
@@ -106,8 +124,8 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 ### Phase 3 — Payments (Claude; Gemini styles drawer + confirmation)
 - `POST /api/orders`: validate cart against menu, recompute totals, apply promo, create
   PaymentIntent, return client_secret. Idempotency keys.
-- Payment Element in the checkout drawer (Apple Pay/Google Pay/cards in one component);
-  `pay-at-store` path (order goes to kitchen unpaid, flagged).
+- Payment Element in the checkout drawer (Apple Pay/Google Pay/cards + Stripe Link in one
+  component). Prepaid only — no unpaid order path exists in the code.
 - Webhook endpoint with signature verification; order state machine.
 - Apple Pay domain association file on the ordering domain.
 - Order confirmation + `GET /api/orders/:code` status page with prep-time estimate.
@@ -126,7 +144,16 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 - Optional: Twilio SMS "order ready" (adds a vendor — owner's call; can ship without it).
 - **Exit test:** live dry-run during one dinner service, staff-only orders, before launch.
 
-### Phase 5 — Launch
+### Phase 5 — Customer accounts & order history (Claude; may ship after launch —
+guest checkout + Stripe Link already covers returning-customer convenience)
+- "Sign in with your phone": Twilio Verify OTP, no passwords, rate-limited.
+- `GET /api/me/orders` behind the verified-phone session; one-tap reorder; saved
+  name/phone defaults.
+- "My orders" section in index.html (Gemini designs — GEMINI_TODO A6).
+- **Exit tests:** OTP brute force blocked (Twilio Verify limits confirmed); customer A can
+  never read customer B's orders (verified with curl); session cookie httpOnly/SameSite.
+
+### Phase 6 — Launch
 - DNS: add `order` CNAME → Vercel in WP.com DNS (MX/email records untouched).
 - Live Stripe keys; small real-card test + refund test.
 - WordPress "Order now" buttons → `order.mytomyumthai.com` (one consistent story; retire the
@@ -144,6 +171,9 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 - Refunds stay in the Stripe dashboard initially (runbook documents the 4 clicks).
 
 ## Accepted trade-offs (owner sign-off 2026-08-30)
+- Online orders are prepaid only — no pay-at-store option (fake-order defense). Cash
+  customers call or walk in, unchanged from today. If pay-at-store is ever wanted back, it
+  returns only behind a verified phone + first-order limits + no-show blocklist.
 - Orders no longer flow into Aldelo; kitchen works from the queue screen + printed tickets.
 - Someone must watch/hear the queue during service; auto-print mitigates.
 - This codebase requires a developer (or Claude session) to maintain; mitigated by the kill

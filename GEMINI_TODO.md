@@ -27,6 +27,9 @@
    the item card template (`<template id="menu-item-tpl">`) — spice selector 1–5, meat
    options, exclusions notes, 86'd style (grayed, "Sold out today").
 5. Closed/holiday banner design (`#store-closed-banner`) and delivery-radius error state.
+6. **"My orders" section**: phone sign-in (tel input + 6-digit code field `#otp-code`),
+   order-history list (`<ul data-order-history>`), one-tap "Reorder" button per past order.
+   Frame it as "See your past orders — verify your phone"; never the word "password".
 
 ## B. Manager portal — `manager.html`
 1. **Login screen**: email + password + 6-digit TOTP code field (`#totp-code`), plus an
@@ -34,7 +37,8 @@
    No "default PIN" hints anywhere.
 2. **Kitchen queue tab**: order card design — big order code, items with spice level and
    bold red exclusions, elapsed-time badge, status buttons (Received → Cooking → Ready →
-   Completed), pay-at-store flag, unobtrusive "new order" visual pulse (audio is Claude's).
+   Completed), unobtrusive "new order" visual pulse (audio is Claude's). All orders shown
+   are already paid — no payment-status badge needed.
 3. **80 mm thermal receipt template** (`<template id="receipt-tpl">` + `@media print` CSS):
    fits 80 mm width, large item text, huge spice/exclusion callouts, order code + phone,
    pickup vs delivery block. This is what the kitchen reads — clarity over beauty.
