@@ -128,11 +128,11 @@ accounts via `db/create-admin.mjs`, rewire manager.html, retire the PIN login.)
   API calls without a session return 401 (verified with curl).
 
 ### Phase 3 — Payments (Claude; Gemini styles drawer + confirmation)
-(Backend DONE + E2E-verified 2026-08-30 in Stripe sandbox: order TYT-2026-0001 created via
-/api/orders — totals matched hand-computed values incl. DIRECT15 and tax — paid with test
-Visa, webhook flipped it to 'received' in <5s, order-status endpoint confirmed. Webhook
-we_1UAGXx registered. Remaining: Payment Element wiring in the checkout drawer once
-Gemini's shell lands; Apple Pay domain file at launch.)
+(DONE — backend E2E 2026-08-30 (TYT-2026-0001, API-level) AND full browser E2E 2026-08-31
+(TYT-2026-0002): real clicks through menu → customizer (Extra Beef, NO PEANUTS, qty 2) →
+cart → checkout drawer → Payment Element (Card/Link/Cash App tabs rendered) → test Visa →
+confirmation modal with live stepper on "Received" → DB record exact to the cent. Webhook
+we_1UAGXx registered. Remaining at launch: Apple Pay domain association file, live keys.)
 - `POST /api/orders`: validate cart against menu, recompute totals, apply promo, create
   PaymentIntent, return client_secret. Idempotency keys.
 - Payment Element in the checkout drawer (Apple Pay/Google Pay/cards + Stripe Link in one
