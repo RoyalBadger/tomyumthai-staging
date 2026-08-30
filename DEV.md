@@ -24,8 +24,12 @@
 | Var | Phase | Notes |
 | --- | --- | --- |
 | `DATABASE_URL` | 1 | set automatically by the Neon integration |
-| `STRIPE_SECRET_KEY` | 3 | test key first (`sk_test_…`), live at launch |
-| `STRIPE_WEBHOOK_SECRET` | 3 | from the Stripe webhook endpoint config |
+| `STRIPE_SECRET_KEY` | 3 | test key first (`sk_test_…`), live at launch. REQUIRED for /api/orders + webhook. |
+| `STRIPE_PUBLISHABLE_KEY` | 3 | optional override; the test key is committed in lib/stripe.js (publishable keys are public by design) |
+
+Webhook: registered programmatically at `/api/stripe-webhook` for `payment_intent.succeeded`.
+No signing secret needed — the handler re-fetches the PaymentIntent from api.stripe.com by id
+and only trusts what Stripe returns (see api/stripe-webhook.js header comment).
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_VERIFY_SID` | 5 | phone OTP |
 
 Never put any of these in HTML/JS files. The browser only ever sees the Stripe
