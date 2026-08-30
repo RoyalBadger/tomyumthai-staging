@@ -7,7 +7,8 @@
   "scripts": {
     "migrate": "node db/migrate.mjs",
     "seed": "node db/seed.mjs",
-    "check": "node --check api/menu.js && node --check api/health.js && node --check lib/db.js && node --check db/seed.mjs && node --check db/migrate.mjs"
+    "check": "node --check api/menu.js && node --check api/health.js && node --check lib/db.js && node --check lib/hours.js && node --check db/seed.mjs && node --check db/migrate.mjs",
+    "test": "node tests/hours.test.mjs"
   },
   "dependencies": {
     "pg": "^8.13.1"

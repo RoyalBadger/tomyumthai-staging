@@ -47,10 +47,12 @@ Edit `db/seed.mjs`, re-run `npm run seed` (upserts in place), commit.
 
 ## Data notes / open questions for the owner
 
-- Prices seeded from **To-Go Menu Rev. 09-2025**. Review line by line before launch.
-- **Hours conflict:** the menu PDF says Fri dinner 5–10pm and Sat–Sun 12–10pm; the website
-  says 9:30pm close every day. Which is right? (Affects the ordering-hours logic AND the
-  WordPress site.)
+- Prices seeded from **To-Go Menu Rev. 09-2025**. Owner will review line by line before
+  launch (confirmed 2026-08-30 — don't chase inconsistencies until then).
+- **Hours resolved (owner, 2026-08-30): the PDF is right.** Lunch Tue–Fri 11–2:30;
+  Dinner Mon–Thu 5–9:30, Fri 5–10; Sat–Sun 12–10. Encoded in migration 002 as
+  `settings.business_hours`; WordPress site updated to match. Online ordering stops
+  `last_order_buffer_minutes` (default 20) before close.
 - Whole-fish specials are display-only online ("Market Price — call us").
 - Glass Noodle Salad shrimp/seafood substitution is described in text; modeled as a plain
   item for now.

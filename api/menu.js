@@ -1,5 +1,6 @@
 // GET /api/menu — public menu with 86/closed state. Cached at the edge for 60s.
 import { query } from '../lib/db.js';
+import { orderingWindow, closedMessage } from '../lib/hours.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'method not allowed' });
@@ -15,7 +16,8 @@ export default async function handler(req, res) {
       query('SELECT id, label, delta_cents FROM extra_protein_options WHERE active ORDER BY sort', []),
       query(`SELECT store_open_override, closed_message, holiday_dates,
                     delivery_radius_miles, delivery_fee_cents, delivery_minimum_cents,
-                    pickup_eta_minutes, delivery_eta_minutes
+                    pickup_eta_minutes, delivery_eta_minutes,
+                    business_hours, last_order_buffer_minutes
              FROM settings`, []),
     ]);
 
@@ -44,12 +46,26 @@ export default async function handler(req, res) {
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
     const holidayToday = (st.holiday_dates || []).some(d =>
       new Date(d).toISOString().slice(0, 10) === today);
-    const accepting = st.store_open_override === 'auto' && !holidayToday;
+    const win = orderingWindow(st.business_hours, st.last_order_buffer_minutes);
+
+    let accepting = true;
+    let message = null;
+    if (st.store_open_override === 'closed') {
+      accepting = false;
+      message = st.closed_message || 'Online ordering is paused right now — please call us at (214) 703-0391.';
+    } else if (holidayToday) {
+      accepting = false;
+      message = st.closed_message || 'We are closed today for a holiday. See you soon!';
+    } else if (!win.open) {
+      accepting = false;
+      message = closedMessage(win.reason);
+    }
 
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
     res.status(200).json({
       accepting_orders: accepting,
-      closed_message: accepting ? null : (st.closed_message || 'Online ordering is paused right now — please call us at (214) 703-0391.'),
+      closed_message: message,
+      hours: st.business_hours, // 0=Sunday..6=Saturday, America/Chicago — single source of truth
       etas: { pickup: st.pickup_eta_minutes, delivery: st.delivery_eta_minutes },
       delivery: {
         radius_miles: Number(st.delivery_radius_miles),
