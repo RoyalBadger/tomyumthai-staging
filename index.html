@@ -2882,12 +2882,14 @@
 
     function proceedToAldeloCheckout() {
       if (orderMode === 'delivery' && !isAddressVerified) {
-        alert('Please check and verify your delivery address before checkout!');
+        alert('Please verify your delivery address before checkout!');
         document.getElementById('orderSection').scrollIntoView();
         closeCart();
         return;
       }
-      alert('Connecting to Aldelo Express Masa+ Cloud Checkout!\\n\\nIn production, all your selected meats, spice levels, add-ons, and exclusions (NO PEANUTS, NO EGG) auto-print directly on your in-store Aldelo kitchen printer.');
+      // Direct Link to Tom Yum Thai Masa+ Store 5797
+      const masaUrl = 'https://masa.plus/store/5797';
+      window.open(masaUrl, '_blank');
     }
 
     
