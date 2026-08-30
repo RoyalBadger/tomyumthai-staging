@@ -105,7 +105,10 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 - [ ] Twilio account (Verify + SMS) — needed by Phase 5 and for order-ready texts; not a
       launch blocker.
 
-### Phase 1 — Backend foundation (Claude)
+### Phase 1 — Backend foundation (Claude) ✅ DONE 2026-08-30
+(Neon live; 78 items seeded; exit test passed: 86'd item vanished from live /api/menu and
+came back on restore. Front-end wiring to the API moved into Phase 2/3 alongside Gemini's
+template work.)
 - Restructure repo: `/public/index.html`, `/public/manager.html`, `/api/*`, `/lib/*`,
   `vercel.json` routes. Keep single-file front-ends intact for Gemini.
 - Provision Neon Postgres through Vercel; migrations + seed script.
@@ -115,6 +118,9 @@ Kitchen station  ──> Chrome kiosk on tablet/PC → thermal printer
 - **Exit test:** 86 an item via SQL → customer page reflects it within a minute.
 
 ### Phase 2 — Auth + manager API (Claude; Gemini styles the screens)
+(Server side shipped 2026-08-30: TOTP per RFC 6238 + scrypt + sessions + rate limits +
+admin menu/settings API + audit log, all zero-dependency. Remaining: create the two admin
+accounts via `db/create-admin.mjs`, rewire manager.html, retire the PIN login.)
 - Login: password + TOTP; enrollment flow with QR code; recovery codes; sessions; rate limits.
 - `/api/admin/*`: menu CRUD, 86 toggle, price edit, holiday/closed override, settings.
 - Rewire manager.html to the API; delete all localStorage logic and hardcoded credentials.
