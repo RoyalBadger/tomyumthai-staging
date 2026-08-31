@@ -72,21 +72,6 @@
       padding: 0 20px;
     }
 
-    .top-bar {
-      background: linear-gradient(90deg, #c44e00 0%, #ff781f 50%, #c44e00 100%);
-      color: #ffffff;
-      font-size: 13px;
-      font-weight: 700;
-      text-align: center;
-      padding: 8px 12px;
-      letter-spacing: 0.5px;
-    }
-
-    .top-bar strong {
-      color: #fff9e6;
-      text-decoration: underline;
-    }
-
     header {
       background: rgba(26, 29, 36, 0.96);
       backdrop-filter: blur(12px);
@@ -108,14 +93,10 @@
       flex-direction: column;
     }
 
-    .brand-title {
-      font-family: var(--font-title);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      color: #ffffff;
-      line-height: 1.1;
-      text-transform: uppercase;
+    .brand-logo-img {
+      height: 52px;
+      width: auto;
+      display: block;
     }
 
     .brand-subtitle {
@@ -2714,16 +2695,11 @@
 </head>
 <body>
 
-  <!-- Top Announcement -->
-  <div class="top-bar">
-    🛵 Order Direct & Save: Use Coupon Code <strong>DIRECT15</strong> at Checkout for 15% OFF!
-  </div>
-
   <!-- Header Navigation -->
   <header>
     <div class="container nav-wrapper">
       <a href="#" class="brand-logo">
-        <span class="brand-title">Tom Yum Thai</span>
+        <img src="/logo.svg" alt="Tom Yum Thai — Authentic Thai Cuisine" class="brand-logo-img">
         <span class="brand-subtitle">Garland's Neighborhood Thai Staple • Since 2005</span>
       </a>
 
