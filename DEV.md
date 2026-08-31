@@ -27,11 +27,12 @@
 | `STRIPE_SECRET_KEY` | 3 | test key first (`sk_test_…`), live at launch. REQUIRED for /api/orders + webhook. |
 | `STRIPE_PUBLISHABLE_KEY` | 3 | optional override; the test key is committed in lib/stripe.js (publishable keys are public by design) |
 
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_VERIFY_SID` | 5 | phone OTP |
+| `GOOGLE_MAPS_API_KEY` | 4 | driving-distance zone checks (/api/distance). Without it, distances are straight-line × 1.3 labeled "est.". Setup: console.cloud.google.com → new project → enable **Routes API** → billing → Credentials → API key → restrict to Routes API. |
+
 Webhook: registered programmatically at `/api/stripe-webhook` for `payment_intent.succeeded`.
 No signing secret needed — the handler re-fetches the PaymentIntent from api.stripe.com by id
 and only trusts what Stripe returns (see api/stripe-webhook.js header comment).
-| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_VERIFY_SID` | 5 | phone OTP |
-| `GOOGLE_MAPS_API_KEY` | 4 | driving-distance zone checks (/api/distance). Without it, distances are straight-line × 1.3 labeled "est.". Setup: console.cloud.google.com → new project → enable **Routes API** → billing → Credentials → API key → restrict to Routes API. |
 
 Never put any of these in HTML/JS files. The browser only ever sees the Stripe
 *publishable* key, which is designed to be public.
