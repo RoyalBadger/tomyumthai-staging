@@ -2990,7 +2990,7 @@
             <span class="search-icon">🔍</span>
             <input type="text" id="menuSearch" class="search-input" placeholder="Search dishes (e.g. Khao Man Gai, Pad Thai, Tom Yum, Curry, Tofu)...">
           </div>
-          <button type="button" id="btnToggleAllMenu" class="btn-toggle-all-menu" onclick="toggleAllMenuSections()">📖 Expand / Collapse All Sections</button>
+          
         </div>
 
         <!-- Fast Category Jump Navigation Chips -->
@@ -3333,89 +3333,148 @@
         node.querySelector('[data-sold-out]').style.display = 'inline-block';
       }
 
-      const uid = item.id; // namespace radio groups per card
-      const sizesBox = node.querySelector('[data-sizes]');
-      if (item.sizes.length) {
-        sizesBox.innerHTML = item.sizes.map((s, i) =>
-          pillRadio('size-pill', `size-${uid}`, s.label, `${s.label} — ${money(s.price_cents)}`, i === 0)).join('');
-      } else {
-        sizesBox.closest('.customizer-group').style.display = 'none';
-      }
-
-      const protBox = node.querySelector('[data-proteins]');
-      if (item.protein_choice) {
-        protBox.innerHTML = MENU.options.protein_choice.map((p, i) =>
-          pillRadio('protein-radio', `protein-${uid}`, p.id,
-            p.delta_cents ? `${p.label} (+${money(p.delta_cents)})` : p.label, i === 0)).join('');
-      } else {
-        protBox.closest('.customizer-group').style.display = 'none';
-      }
-
-      const addonBox = node.querySelector('[data-addons]');
-      if (item.extra_protein) {
-        addonBox.innerHTML = MENU.options.extra_protein.map(x =>
-          `<label class="addon-check"><input type="checkbox" value="${esc(x.id)}" data-delta="${x.delta_cents}"> <span>${esc(x.label)} (+${money(x.delta_cents)})</span></label>`).join('');
-      } else {
-        addonBox.closest('.customizer-group').style.display = 'none';
-      }
-
-      const spiceBox = node.querySelector('[data-spice]');
-      if (item.spice_selectable) {
-        spiceBox.innerHTML = MENU.options.spice_levels.map(s =>
-          pillRadio('spice-btn', `spice-${uid}`, s.level, `${'🌶️'.repeat(s.level)} ${s.level} — ${s.label}`, s.level === 2)).join('');
-      } else {
-        spiceBox.closest('.customizer-group').style.display = 'none';
-      }
-
-      // If the dish is not orderable online (market price), hide the customizer entirely.
-      if (!item.orderable && !item.sold_out) {
-        node.querySelector('.dish-customizer-section').style.display = 'none';
-      }
-
-      // qty + live card total
-      let qty = 1;
-      const qtyVal = node.querySelector('[data-qty]');
-      const cardTotal = node.querySelector('[data-card-total]');
-      const unitCents = () => {
-        let base = item.sizes.length
-          ? (item.sizes.find(s => s.label === node.querySelector(`input[name="size-${uid}"]:checked`)?.value)?.price_cents ?? item.sizes[0].price_cents)
-          : (item.price_cents ?? 0);
-        if (item.protein_choice) {
-          const pid = node.querySelector(`input[name="protein-${uid}"]:checked`)?.value;
-          base += MENU.options.protein_choice.find(p => p.id === pid)?.delta_cents ?? 0;
+      // Popup-customizer flow: cards stay compact; the button opens the modal.
+      node.querySelector('.dish-customizer-section')?.remove();
+      const cta = node.querySelector('.btn-toggle-customizer');
+      if (cta) {
+        if (!item.orderable) {
+          cta.style.display = 'none';
+        } else {
+          cta.innerHTML = '⚙️ Customize &amp; Add to Order';
+          cta.onclick = () => openDishModal(item);
         }
-        node.querySelectorAll('[data-addons] input:checked').forEach(cb => { base += Number(cb.dataset.delta) || 0; });
-        return base;
-      };
-      const refresh = () => { qtyVal.innerText = qty; cardTotal.innerText = money(unitCents() * qty); };
-      node.addEventListener('change', refresh);
-      node.querySelector('.btn-qty-minus').addEventListener('click', () => { qty = Math.max(1, qty - 1); refresh(); });
-      node.querySelector('.btn-qty-plus').addEventListener('click', () => { qty = Math.min(20, qty + 1); refresh(); });
-      refresh();
-
-      node.querySelector('[data-add-to-cart]').addEventListener('click', () => {
-        if (!MENU.accepting_orders) { showBannerNudge(); return; }
-        if (!item.orderable) return;
-        const sizeLabel = item.sizes.length ? node.querySelector(`input[name="size-${uid}"]:checked`)?.value : null;
-        const proteinId = item.protein_choice ? node.querySelector(`input[name="protein-${uid}"]:checked`)?.value : null;
-        const extras = [...node.querySelectorAll('[data-addons] input:checked')].map(cb => cb.value);
-        const spice = item.spice_selectable ? Number(node.querySelector(`input[name="spice-${uid}"]:checked`)?.value) || null : null;
-        const exclusions = [...node.querySelectorAll('[data-exclusions] input:checked')]
-          .map(cb => cb.parentElement.innerText.trim().replace(/^[^A-Za-z]+/, ''));
-        const notes = node.querySelector('[data-custom-notes]')?.value.trim() || null;
-        cart.push({
-          id: item.id, name: item.name, size_label: sizeLabel, protein: proteinId,
-          extras, spice_level: spice, exclusions: exclusions.join(', ') || null, notes,
-          qty, unit_cents: unitCents(),
-          display: {
-            protein: MENU.options.protein_choice.find(p => p.id === proteinId)?.label || null,
-            extras: extras.map(x => MENU.options.extra_protein.find(e => e.id === x)?.label || x),
-          },
-        });
-        renderCart();
-        openCart();
-      });
+      }
       return node;
+    }
+
+    /* ==================== DISH CUSTOMIZER POPUP MODAL ==================== */
+    let modalDish = null, modalQty = 1;
+    const EXCLUSION_CHOICES = ['🥜 No Peanuts (Allergy)', '🥚 No Egg', '🌱 Strict Vegan (No Fish Sauce)', '🧅 No Onions', '🌱 No Bean Sprouts', '🌾 Gluten-Free Prep'];
+
+    function ensureDishModal() {
+      if ($id('dishModal')) return;
+      const el = document.createElement('div');
+      el.id = 'dishModal';
+      el.className = 'custom-modal-overlay';
+      el.innerHTML = `
+        <div class="custom-modal-card">
+          <div class="custom-modal-header">
+            <div>
+              <h3 class="modal-dish-title" data-m-name></h3>
+              <div class="modal-dish-thai" data-m-thai></div>
+            </div>
+            <button type="button" class="modal-close-btn" data-m-close>&times;</button>
+          </div>
+          <div class="custom-modal-body">
+            <p class="modal-desc-box" data-m-desc></p>
+            <div class="customizer-group" data-m-group="sizes"><label class="custom-label">Choose Size:</label><div class="size-pills" data-m-sizes></div></div>
+            <div class="customizer-group" data-m-group="proteins"><label class="custom-label">Choice of Protein:</label><div class="protein-options" data-m-proteins></div></div>
+            <div class="customizer-group" data-m-group="spice"><label class="custom-label">Spice Level (1 Mild – 5 Extremely Spicy):</label><div class="spice-levels" data-m-spice></div></div>
+            <div class="customizer-group" data-m-group="addons"><label class="custom-label">Optional Add-ons:</label><div class="addons-grid" data-m-addons></div></div>
+            <div class="customizer-group"><label class="custom-label">Dietary Exclusions &amp; Kitchen Notes:</label>
+              <div class="exclusions-grid" data-m-exclusions></div>
+              <input type="text" class="custom-notes-input" data-m-notes placeholder="Special kitchen instructions (e.g. sauce on side)...">
+            </div>
+          </div>
+          <div class="custom-modal-footer">
+            <div class="qty-selector">
+              <button type="button" class="btn-qty-minus" data-m-minus>-</button>
+              <span class="qty-val" data-m-qty>1</span>
+              <button type="button" class="btn-qty-plus" data-m-plus>+</button>
+            </div>
+            <button type="button" class="btn-modal-add" data-m-add>Add to Order · <span data-m-total></span></button>
+          </div>
+        </div>`;
+      document.body.appendChild(el);
+      el.addEventListener('click', e => { if (e.target === el) closeDishModal(); });
+      el.querySelector('[data-m-close]').onclick = closeDishModal;
+      el.querySelector('[data-m-minus]').onclick = () => { modalQty = Math.max(1, modalQty - 1); refreshModalTotal(); };
+      el.querySelector('[data-m-plus]').onclick = () => { modalQty = Math.min(20, modalQty + 1); refreshModalTotal(); };
+      el.addEventListener('change', refreshModalTotal);
+      el.querySelector('[data-m-add]').onclick = addModalToCart;
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDishModal(); });
+    }
+
+    function openDishModal(item) {
+      ensureDishModal();
+      modalDish = item; modalQty = 1;
+      const m = $id('dishModal');
+      m.querySelector('[data-m-name]').innerText = item.name;
+      m.querySelector('[data-m-thai]').innerText = item.thai || '';
+      m.querySelector('[data-m-desc]').innerText = item.description || '';
+      const show = (g, on) => { m.querySelector(`[data-m-group="${g}"]`).style.display = on ? '' : 'none'; };
+      m.querySelector('[data-m-sizes]').innerHTML = item.sizes.map((s, i) =>
+        pillRadio('size-pill', 'm-size', s.label, `${s.label} — ${money(s.price_cents)}`, i === 0)).join('');
+      show('sizes', item.sizes.length > 0);
+      m.querySelector('[data-m-proteins]').innerHTML = item.protein_choice
+        ? MENU.options.protein_choice.map((p, i) => pillRadio('protein-radio', 'm-protein', p.id,
+            p.delta_cents ? `${p.label} (+${money(p.delta_cents)})` : p.label, i === 0)).join('') : '';
+      show('proteins', item.protein_choice);
+      m.querySelector('[data-m-spice]').innerHTML = item.spice_selectable
+        ? MENU.options.spice_levels.map(s => pillRadio('spice-btn', 'm-spice', s.level,
+            `${'🌶️'.repeat(s.level)} ${s.level} — ${s.label}`, s.level === 2)).join('') : '';
+      show('spice', item.spice_selectable);
+      m.querySelector('[data-m-addons]').innerHTML = item.extra_protein
+        ? MENU.options.extra_protein.map(x => `<label class="addon-check"><input type="checkbox" value="${esc(x.id)}" data-delta="${x.delta_cents}"> <span>${esc(x.label)} (+${money(x.delta_cents)})</span></label>`).join('') : '';
+      show('addons', item.extra_protein);
+      m.querySelector('[data-m-exclusions]').innerHTML = EXCLUSION_CHOICES.map(x =>
+        `<label class="exclusion-check"><input type="checkbox"> <span>${x}</span></label>`).join('');
+      m.querySelector('[data-m-notes]').value = '';
+      refreshModalTotal();
+      m.style.display = 'flex';
+    }
+
+    function closeDishModal() {
+      const m = $id('dishModal');
+      if (m) m.style.display = 'none';
+      modalDish = null;
+    }
+
+    function modalUnitCents() {
+      const m = $id('dishModal');
+      if (!modalDish) return 0;
+      let base = modalDish.sizes.length
+        ? (modalDish.sizes.find(s => s.label === m.querySelector('input[name="m-size"]:checked')?.value)?.price_cents ?? modalDish.sizes[0].price_cents)
+        : (modalDish.price_cents ?? 0);
+      if (modalDish.protein_choice) {
+        const pid = m.querySelector('input[name="m-protein"]:checked')?.value;
+        base += MENU.options.protein_choice.find(p => p.id === pid)?.delta_cents ?? 0;
+      }
+      m.querySelectorAll('[data-m-addons] input:checked').forEach(cb => { base += Number(cb.dataset.delta) || 0; });
+      return base;
+    }
+
+    function refreshModalTotal() {
+      const m = $id('dishModal');
+      if (!m || !modalDish) return;
+      m.querySelector('[data-m-qty]').innerText = modalQty;
+      m.querySelector('[data-m-total]').innerText = money(modalUnitCents() * modalQty);
+    }
+
+    function addModalToCart() {
+      if (!modalDish) return;
+      if (!MENU.accepting_orders) { closeDishModal(); showBannerNudge(); return; }
+      const m = $id('dishModal');
+      const item = modalDish;
+      const sizeLabel = item.sizes.length ? m.querySelector('input[name="m-size"]:checked')?.value : null;
+      const proteinId = item.protein_choice ? m.querySelector('input[name="m-protein"]:checked')?.value : null;
+      const extras = [...m.querySelectorAll('[data-m-addons] input:checked')].map(cb => cb.value);
+      const spice = item.spice_selectable ? Number(m.querySelector('input[name="m-spice"]:checked')?.value) || null : null;
+      const exclusions = [...m.querySelectorAll('[data-m-exclusions] input:checked')]
+        .map(cb => cb.parentElement.innerText.trim().replace(/^[^A-Za-z]+/, ''));
+      const notes = m.querySelector('[data-m-notes]').value.trim() || null;
+      cart.push({
+        id: item.id, name: item.name, size_label: sizeLabel, protein: proteinId,
+        extras, spice_level: spice, exclusions: exclusions.join(', ') || null, notes,
+        qty: modalQty, unit_cents: modalUnitCents(),
+        display: {
+          protein: MENU.options.protein_choice.find(p => p.id === proteinId)?.label || null,
+          extras: extras.map(x => MENU.options.extra_protein.find(e => e.id === x)?.label || x),
+        },
+      });
+      closeDishModal();
+      renderCart();
+      openCart();
     }
 
     function showBannerNudge() {
