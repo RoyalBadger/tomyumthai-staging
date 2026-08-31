@@ -42,6 +42,7 @@ export default async function handler(req, res) {
   const phone = normalizePhoneUS(body.customer?.phone);
   if (!name) return res.status(400).json({ error: 'Please enter your name.' });
   if (!phone) return res.status(400).json({ error: 'Please enter a valid 10-digit US phone number.' });
+  const smsOptIn = body.customer?.sms_opt_in === true;
   const email = cleanEmail(body.customer?.email);
   if (String(body.customer?.email || '').trim() && !email) {
     return res.status(400).json({ error: 'Please enter a valid email address, or leave it blank.' });
@@ -76,11 +77,11 @@ export default async function handler(req, res) {
     const code = `TYT-${year}-${String(seq).padStart(4, '0')}`;
     order = (await client.query(
       `INSERT INTO orders (public_code, order_type, status, customer_name, customer_phone,
-         customer_email, delivery_address, delivery_notes, subtotal_cents, discount_cents,
+         customer_email, sms_opt_in, delivery_address, delivery_notes, subtotal_cents, discount_cents,
          tax_cents, delivery_fee_cents, total_cents, promo_code)
-       VALUES ($1,$2,'pending_payment',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       VALUES ($1,$2,'pending_payment',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
        RETURNING id, public_code`,
-      [code, body.order_type, name, phone, email, address, deliveryNotes,
+      [code, body.order_type, name, phone, email, smsOptIn, address, deliveryNotes,
        priced.subtotal_cents, priced.discount_cents, priced.tax_cents,
        priced.delivery_fee_cents, priced.total_cents, priced.promo_code])).rows[0];
     for (const l of priced.lines) {

@@ -11,7 +11,7 @@ export default requireAdmin(async (req, res, admin) => {
   if (req.method === 'GET') {
     const orders = (await query(
       `SELECT o.id, o.public_code, o.order_type, o.status, o.customer_name, o.customer_phone,
-              o.delivery_address, o.delivery_notes, o.subtotal_cents, o.discount_cents,
+              o.sms_opt_in, o.delivery_address, o.delivery_notes, o.subtotal_cents, o.discount_cents,
               o.tax_cents, o.delivery_fee_cents, o.total_cents, o.promo_code,
               o.paid_at, o.created_at, o.updated_at
        FROM orders o
