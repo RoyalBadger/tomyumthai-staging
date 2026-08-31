@@ -2625,6 +2625,7 @@
       color: #fff;
     }
 
+    .dist-tag.dist-out { color: #f87171 !important; }
     .dist-tag {
       font-size: 11px;
       color: var(--accent-gold);
@@ -3749,7 +3750,7 @@
       }
       dropdown.innerHTML = items.slice(0, 6).map(item => {
         const safe = item.display.replace(/'/g, "\\'");
-        return `<div class="autocomplete-item" onpointerdown="selectSuggestedAddress('${esc(safe)}', ${item.inZone}, '${esc(item.dist)}')"><span>📍 ${esc(item.display)}</span><span class="dist-tag">${esc(item.dist)}</span></div>`;
+        return `<div class="autocomplete-item" onpointerdown="selectSuggestedAddress('${esc(safe)}', ${item.inZone}, '${esc(item.dist)}')"><span>📍 ${esc(item.display)}</span><span class="dist-tag${item.inZone ? '' : ' dist-out'}">${esc(item.dist)}${item.inZone ? '' : ' · outside zone'}</span></div>`;
       }).join('');
       dropdown.style.display = 'block';
     }
