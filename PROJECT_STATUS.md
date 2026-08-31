@@ -63,7 +63,7 @@
 
 ### Gemini (design lane)
 - [ ] Food photography (shot list in GEMINI_TODO.md C3 — Khao Man Gai hero minimum) — site has ZERO images
-- [ ] Favicon
+- [x] Favicon — DONE 2026-08-31 by Claude (mortar emblem from owner logo via Adobe crop + bg removal)
 - [ ] Marketing assets: DIRECT15 graphics, table tents, final bag insert (swap URL to order.mytomyumthai.com)
 - [ ] Optional: restyle Claude's #dishModal / "My Orders" shell (A6) — logic stays Claude's
 
