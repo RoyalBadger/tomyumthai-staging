@@ -2003,17 +2003,178 @@
       pointer-events: none;
     }
 
-    /* Customizer inside Card */
-    .dish-customizer-section {
+    /* ==================== CLEAN POPUP CUSTOMIZER MODAL ==================== */
+    .custom-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      z-index: 10500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .custom-modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+      overflow: hidden;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .custom-modal-header {
+      background: var(--bg-card);
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .modal-dish-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+    }
+
+    .modal-dish-thai {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-style: italic;
+      color: var(--accent-orange);
+      margin-top: 2px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 26px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px;
+    }
+    .modal-close-btn:hover { color: #fff; }
+
+    .custom-modal-body {
+      padding: 20px 22px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .modal-desc-box {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .customizer-group {
       background: var(--bg-base);
       border-radius: var(--radius-sm);
       padding: 14px;
-      margin-top: 12px;
       border: 1px solid var(--border-subtle);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
+
+    .custom-modal-footer {
+      background: var(--bg-card);
+      padding: 16px 22px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .btn-modal-add {
+      flex: 1;
+      background: linear-gradient(135deg, #ec5a30 0%, #d44319 100%);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(236, 90, 48, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-modal-add:hover {
+      box-shadow: 0 6px 20px rgba(236, 90, 48, 0.6);
+      transform: translateY(-1px);
+    }
+
+    /* Category Collapsible Section Header */
+    .menu-category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+    .menu-category-header:hover {
+      border-color: var(--accent-orange);
+    }
+
+    .menu-category-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-toggle-icon {
+      font-size: 14px;
+      color: var(--accent-orange);
+      transition: transform 0.2s;
+    }
+
+    .menu-category-header.collapsed .category-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .menu-category-content.collapsed {
+      display: none;
+    }
+
+    .btn-toggle-all-menu {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--accent-gold);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-toggle-all-menu:hover {
+      border-color: var(--accent-gold);
+      background: rgba(245, 176, 65, 0.1);
+    }
+
 
     .custom-label {
       font-size: 12px;
@@ -2316,98 +2477,32 @@
             <div class="dish-badges-row">
               <span data-sold-out class="badge badge-sold-out" style="display:none;">Sold Out Today</span>
             </div>
-            <p class="dish-desc" data-desc>Tender poached chicken over fragrant ginger rice with our homemade dipping sauce.</p>
+            <p class="dish-desc" data-desc>Tender poached chicken over fragrant ginger rice with our famous homemade dipping sauce.</p>
           </div>
-
-          <!-- Customizer Container for this dish -->
-          <div class="dish-customizer-section">
-            <!-- Size Pills -->
-            <div class="customizer-group size-group">
-              <label class="custom-label">Choose Size:</label>
-              <div class="size-pills" data-sizes>
-                <label class="size-pill"><input type="radio" name="size" value="regular" checked> <span>Regular (16 oz)</span></label>
-                <label class="size-pill"><input type="radio" name="size" value="large"> <span>Large (32 oz)</span></label>
-              </div>
-            </div>
-
-            <!-- Choice of Protein -->
-            <div class="customizer-group protein-group">
-              <label class="custom-label">Choice of Protein:</label>
-              <div class="protein-options" data-proteins>
-                <label class="protein-radio"><input type="radio" name="protein" value="chicken" checked> <span>Chicken (+$0.00)</span></label>
-                <label class="protein-radio"><input type="radio" name="protein" value="pork"> <span>Pork (+$0.00)</span></label>
-                <label class="protein-radio"><input type="radio" name="protein" value="tofu"> <span>Tofu (+$0.00)</span></label>
-                <label class="protein-radio"><input type="radio" name="protein" value="veggie"> <span>Vegetables (+$0.00)</span></label>
-                <label class="protein-radio"><input type="radio" name="protein" value="beef"> <span>Beef (+$3.00)</span></label>
-                <label class="protein-radio"><input type="radio" name="protein" value="shrimp"> <span>Shrimp (+$3.00)</span></label>
-                <label class="protein-radio"><input type="radio" name="protein" value="seafood"> <span>Seafood Trio (+$4.00)</span></label>
-              </div>
-            </div>
-
-            <!-- Spice Level 1 to 5 -->
-            <div class="customizer-group spice-group">
-              <label class="custom-label">Spice Level (1 Mild – 5 Thai Hot):</label>
-              <div class="spice-levels" data-spice>
-                <label class="spice-btn"><input type="radio" name="spice" value="1"> <span>🌶️ 1 - Mild</span></label>
-                <label class="spice-btn"><input type="radio" name="spice" value="2" checked> <span>🌶️🌶️ 2 - Medium</span></label>
-                <label class="spice-btn"><input type="radio" name="spice" value="3"> <span>🌶️🌶️🌶️ 3 - Hot</span></label>
-                <label class="spice-btn"><input type="radio" name="spice" value="4"> <span>🌶️🌶️🌶️🌶️ 4 - Extra Hot</span></label>
-                <label class="spice-btn"><input type="radio" name="spice" value="5"> <span>🌶️🌶️🌶️🌶️🌶️ 5 - Thai Hot</span></label>
-              </div>
-            </div>
-
-            <!-- Add-ons -->
-            <div class="customizer-group addons-group">
-              <label class="custom-label">Optional Add-ons:</label>
-              <div class="addons-grid" data-addons>
-                <label class="addon-check"><input type="checkbox" value="extra_meat"> <span>Extra Meat (+$3.50)</span></label>
-                <label class="addon-check"><input type="checkbox" value="extra_veg"> <span>Extra Veggies (+$2.00)</span></label>
-                <label class="addon-check"><input type="checkbox" value="fried_egg"> <span>Thai Fried Egg (+$1.50)</span></label>
-                <label class="addon-check"><input type="checkbox" value="extra_rice"> <span>Extra Jasmine Rice (+$2.00)</span></label>
-              </div>
-            </div>
-
-            <!-- Exclusions (Allergy Safety) -->
-            <div class="customizer-group exclusions-group">
-              <label class="custom-label">Dietary Exclusions &amp; Kitchen Notes:</label>
-              <div class="exclusions-grid" data-exclusions>
-                <label class="exclusion-check"><input type="checkbox" value="no_peanuts"> <span>🥜 No Peanuts (Allergy)</span></label>
-                <label class="exclusion-check"><input type="checkbox" value="no_egg"> <span>🥚 No Egg</span></label>
-                <label class="exclusion-check"><input type="checkbox" value="no_fish_sauce"> <span>🌱 Strict Vegan (No Fish Sauce)</span></label>
-                <label class="exclusion-check"><input type="checkbox" value="no_onions"> <span>🧅 No Onions</span></label>
-                <label class="exclusion-check"><input type="checkbox" value="no_sprouts"> <span>🌱 No Bean Sprouts</span></label>
-                <label class="exclusion-check"><input type="checkbox" value="gf_prep"> <span>🌾 Gluten-Free Prep</span></label>
-              </div>
-              <input type="text" class="custom-notes-input" placeholder="Special kitchen instructions (e.g. sauce on side)..." data-custom-notes>
-            </div>
-
-            <!-- Quantity & Add to Cart -->
-            <div class="dish-card-footer">
-              <div class="qty-selector">
-                <button type="button" class="btn-qty-minus">-</button>
-                <span class="qty-val" data-qty>1</span>
-                <button type="button" class="btn-qty-plus">+</button>
-              </div>
-              <button type="button" class="btn-add-to-cart" data-add-to-cart>Add to Order · <span data-card-total>$14.99</span></button>
-            </div>
+          <div class="dish-card-action">
+            <button type="button" class="btn-customize-dish" data-open-customizer>⚙️ Customize &amp; Add</button>
           </div>
         </div>
       </template>
 
-      <!-- Search & Filters -->
+      <!-- Search & Category Jump Navigation -->
       <div class="menu-controls">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="menuSearch" class="search-input" placeholder="Search dishes (e.g. Khao Man Gai, Pad Thai, Tom Yum, Curry, Tofu)...">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+          <div class="search-box" style="flex:1;min-width:280px;margin-bottom:0;">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="menuSearch" class="search-input" placeholder="Search dishes (e.g. Khao Man Gai, Pad Thai, Tom Yum, Curry, Tofu)...">
+          </div>
+          <button type="button" id="btnToggleAllMenu" class="btn-toggle-all-menu" onclick="toggleAllMenuSections()">📖 Expand / Collapse All Sections</button>
         </div>
 
+        <!-- Fast Category Jump Navigation Chips -->
         <div class="category-tabs" id="categoryTabs">
-          <button class="cat-btn active" data-category="all">All Items</button>
-          <button class="cat-btn" data-category="signatures">👑 Signature Favorites</button>
-          <button class="cat-btn" data-category="starters">Starters & Soups</button>
-          <button class="cat-btn" data-category="noodles">Noodles & Fried Rice</button>
-          <button class="cat-btn" data-category="curries">Authentic Curries</button>
-          <button class="cat-btn" data-category="desserts">Drinks & Desserts</button>
+          <button type="button" class="cat-btn active" data-category="all" onclick="jumpToCategory('all')">All Items</button>
+          <button type="button" class="cat-btn" data-category="signatures" onclick="jumpToCategory('signatures')">👑 Chef Signatures</button>
+          <button type="button" class="cat-btn" data-category="starters" onclick="jumpToCategory('starters')">🍲 Starters &amp; Soups</button>
+          <button type="button" class="cat-btn" data-category="noodles" onclick="jumpToCategory('noodles')">🍜 Noodles &amp; Fried Rice</button>
+          <button type="button" class="cat-btn" data-category="curries" onclick="jumpToCategory('curries')">🍛 Authentic Curries</button>
+          <button type="button" class="cat-btn" data-category="desserts" onclick="jumpToCategory('desserts')">🥭 Drinks &amp; Desserts</button>
         </div>
 
         <div class="dietary-chips">
@@ -3343,6 +3438,97 @@
 
       <!-- Call Restaurant Button -->
       <a href="tel:2147030391" class="btn-call-store">📞 Call Store: (214) 703-0391</a>
+    </div>
+  </div>
+
+
+  <!-- ==================== DEDICATED CLEAN CUSTOMIZER POPUP MODAL ==================== -->
+  <div id="customModal" class="custom-modal-overlay">
+    <div class="custom-modal-card">
+      <div class="custom-modal-header">
+        <div>
+          <h3 id="modalDishName" class="modal-dish-title">Customize Dish</h3>
+          <div id="modalDishThai" class="modal-dish-thai"></div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeCustomModal()">&times;</button>
+      </div>
+
+      <div class="custom-modal-body">
+        <div class="modal-desc-box">
+          <p id="modalDishDesc" class="modal-dish-desc"></p>
+        </div>
+
+        <!-- Size Options -->
+        <div class="customizer-group size-group" id="modalSizeGroup">
+          <label class="custom-label">Choose Size:</label>
+          <div class="size-pills">
+            <label class="size-pill"><input type="radio" name="modal_size" value="regular" checked> <span>Regular (16 oz)</span></label>
+            <label class="size-pill"><input type="radio" name="modal_size" value="large"> <span>Large (32 oz)</span></label>
+          </div>
+        </div>
+
+        <!-- Choice of Protein -->
+        <div class="customizer-group protein-group" id="modalProteinGroup">
+          <label class="custom-label">Choice of Protein:</label>
+          <div class="protein-options">
+            <label class="protein-radio"><input type="radio" name="modal_protein" value="chicken" checked> <span>Chicken (+$0.00)</span></label>
+            <label class="protein-radio"><input type="radio" name="modal_protein" value="pork"> <span>Pork (+$0.00)</span></label>
+            <label class="protein-radio"><input type="radio" name="modal_protein" value="tofu"> <span>Tofu (+$0.00)</span></label>
+            <label class="protein-radio"><input type="radio" name="modal_protein" value="veggie"> <span>Vegetables (+$0.00)</span></label>
+            <label class="protein-radio"><input type="radio" name="modal_protein" value="beef"> <span>Beef (+$3.00)</span></label>
+            <label class="protein-radio"><input type="radio" name="modal_protein" value="shrimp"> <span>Shrimp (+$3.00)</span></label>
+            <label class="protein-radio"><input type="radio" name="modal_protein" value="seafood"> <span>Seafood Trio (+$4.00)</span></label>
+          </div>
+        </div>
+
+        <!-- Spice Level 1 to 5 -->
+        <div class="customizer-group spice-group" id="modalSpiceGroup">
+          <label class="custom-label">Spice Level (1 Mild – 5 Thai Hot):</label>
+          <div class="spice-levels">
+            <label class="spice-btn"><input type="radio" name="modal_spice" value="1"> <span>🌶️ 1 - Mild</span></label>
+            <label class="spice-btn"><input type="radio" name="modal_spice" value="2" checked> <span>🌶️🌶️ 2 - Medium</span></label>
+            <label class="spice-btn"><input type="radio" name="modal_spice" value="3"> <span>🌶️🌶️🌶️ 3 - Hot</span></label>
+            <label class="spice-btn"><input type="radio" name="modal_spice" value="4"> <span>🌶️🌶️🌶️🌶️ 4 - Extra Hot</span></label>
+            <label class="spice-btn"><input type="radio" name="modal_spice" value="5"> <span>🌶️🌶️🌶️🌶️🌶️ 5 - Thai Hot</span></label>
+          </div>
+        </div>
+
+        <!-- Add-ons -->
+        <div class="customizer-group addons-group" id="modalAddonsGroup">
+          <label class="custom-label">Optional Add-ons:</label>
+          <div class="addons-grid">
+            <label class="addon-check"><input type="checkbox" value="extra_meat"> <span>Extra Meat (+$3.50)</span></label>
+            <label class="addon-check"><input type="checkbox" value="extra_veg"> <span>Extra Veggies (+$2.00)</span></label>
+            <label class="addon-check"><input type="checkbox" value="fried_egg"> <span>Thai Fried Egg (+$1.50)</span></label>
+            <label class="addon-check"><input type="checkbox" value="extra_rice"> <span>Extra Jasmine Rice (+$2.00)</span></label>
+          </div>
+        </div>
+
+        <!-- Exclusions (Allergy Safety - Bold Red) -->
+        <div class="customizer-group exclusions-group">
+          <label class="custom-label">Dietary Exclusions (Allergy Safety):</label>
+          <div class="exclusions-grid">
+            <label class="exclusion-check"><input type="checkbox" value="no_peanuts"> <span class="exclusion-badge">🥜 No Peanuts (Allergy)</span></label>
+            <label class="exclusion-check"><input type="checkbox" value="no_egg"> <span class="exclusion-badge">🥚 No Egg</span></label>
+            <label class="exclusion-check"><input type="checkbox" value="no_fish_sauce"> <span class="exclusion-badge">🌱 Strict Vegan (No Fish Sauce)</span></label>
+            <label class="exclusion-check"><input type="checkbox" value="no_onions"> <span class="exclusion-badge">🧅 No Onions</span></label>
+            <label class="exclusion-check"><input type="checkbox" value="no_sprouts"> <span class="exclusion-badge">🌱 No Bean Sprouts</span></label>
+            <label class="exclusion-check"><input type="checkbox" value="gf_prep"> <span class="exclusion-badge">🌾 Gluten-Free Prep</span></label>
+          </div>
+          <input type="text" id="modalCustomNotes" class="custom-notes-input" placeholder="Special kitchen instructions (e.g. sauce on side)...">
+        </div>
+      </div>
+
+      <div class="custom-modal-footer">
+        <div class="qty-selector">
+          <button type="button" class="btn-qty-minus" onclick="changeModalQty(-1)">-</button>
+          <span id="modalQtyVal" class="qty-val">1</span>
+          <button type="button" class="btn-qty-plus" onclick="changeModalQty(1)">+</button>
+        </div>
+        <button type="button" id="modalAddToCartBtn" class="btn-modal-add" onclick="addModalItemToCart()">
+          Add to Order · <span id="modalFinalPrice">$14.99</span>
+        </button>
+      </div>
     </div>
   </div>
 
