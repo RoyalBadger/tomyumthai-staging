@@ -3240,6 +3240,7 @@
     let activeOrder = null;     // {code, client_secret} during payment
     let stripeInstance = null, stripeElements = null;
     let statusPollTimer = null;
+    const SUGGESTION_COORDS = {}; // display string -> [lat, lon] for driving-distance check
 
     // Restaurant Origin Point (3313 Belt Line Rd, Garland, TX 75044)
     const RESTAURANT_LAT = 32.94554;
@@ -3729,9 +3730,10 @@
           const street = p.street || p.name;
           const full = `${num ? num + ' ' : ''}${street}, ${p.city || 'Garland'}, TX${p.postcode ? ' ' + p.postcode : ''}`;
           const dist = calculateDistance(RESTAURANT_LAT, RESTAURANT_LON, c[1], c[0]);
-          return { display: full, distVal: dist, dist: `${dist.toFixed(1)} mi away`, inZone: dist <= 5.5 };
+          return { display: full, lat: c[1], lon: c[0], distVal: dist, dist: `≈ ${dist.toFixed(1)} mi`, inZone: dist <= 5.5 };
         });
         items.sort((a, b) => a.distVal - b.distVal);
+        items.forEach(it => { SUGGESTION_COORDS[it.display] = [it.lat, it.lon]; });
         if (items.length) renderAddressDropdown(items, q);
       }).catch(() => {});
     }
@@ -3754,21 +3756,40 @@
       }).join('');
       dropdown.style.display = 'block';
     }
-    function selectSuggestedAddress(addressText, inZone, distText) {
-      $id('deliveryAddressInput').value = addressText;
-      $id('addressDropdown').style.display = 'none';
+    function showZoneResult(inZone, distText) {
       const statusBox = $id('zoneStatus');
       if (inZone) {
         statusBox.className = 'zone-status-box zone-success';
         statusBox.style.display = 'flex';
         statusBox.innerHTML = `<div><strong>✓ You are within our 5-Mile Delivery Zone!</strong> (${esc(distText)})<br><span style="font-size:11.5px;">Estimated delivery: ${esc(MENU?.etas?.delivery || '35-45')} mins • Hot &amp; fresh to your door.</span></div><span style="font-weight:bold;color:#22c55e;">In Zone</span>`;
         isAddressVerified = true;
-        $id('checkout-address') && ($id('checkout-address').value = addressText);
+        $id('checkout-address') && ($id('checkout-address').value = $id('deliveryAddressInput').value);
       } else {
         statusBox.className = 'zone-status-box zone-warning';
         statusBox.style.display = 'block';
         statusBox.innerHTML = `<strong>⚠️ Outside our 5-Mile Local Delivery Radius</strong> (${esc(distText)})<br><span style="font-size:11.5px;">We would love to prepare this for <strong>🛍️ Pickup (Ready in ${esc(MENU?.etas?.pickup || '15-20')}m)</strong>!</span>`;
         isAddressVerified = false;
+      }
+    }
+
+    async function selectSuggestedAddress(addressText, inZone, distText) {
+      $id('deliveryAddressInput').value = addressText;
+      $id('addressDropdown').style.display = 'none';
+      const coords = SUGGESTION_COORDS[addressText];
+      if (!coords || coords[0] == null) { showZoneResult(inZone, distText); return; }
+      // Authoritative check: DRIVING distance from the restaurant address (Google when
+      // configured server-side; labeled estimate otherwise) — never straight-line alone.
+      const statusBox = $id('zoneStatus');
+      statusBox.className = 'zone-status-box zone-warning';
+      statusBox.style.display = 'block';
+      statusBox.innerHTML = '⏳ Checking driving distance…';
+      try {
+        const res = await fetch(`/api/distance?lat=${coords[0]}&lon=${coords[1]}`);
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || 'check failed');
+        showZoneResult(d.in_zone, `${d.miles} driving mi${d.source === 'estimate' ? ' est.' : ''}`);
+      } catch {
+        showZoneResult(inZone, distText + ' straight-line');
       }
     }
     function checkDeliveryRadius() {
