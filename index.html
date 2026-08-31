@@ -3717,7 +3717,7 @@
     function fetchLiveGeocode(q) {
       // House numbers + appended city names confuse Photon: geocode the street only,
       // rely on lat/lon bias, and re-attach the typed house number to the results.
-      const hm = q.match(/^s*(d+)s+(.+)$/);
+      const hm = q.match(/^ *([0-9]+) +(.+)$/);
       const houseNum = hm ? hm[1] : null;
       const streetQ = hm ? hm[2] : q;
       const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(streetQ)}&limit=8&lat=${RESTAURANT_LAT}&lon=${RESTAURANT_LON}`;
