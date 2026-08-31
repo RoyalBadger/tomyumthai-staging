@@ -3333,16 +3333,18 @@
         node.querySelector('[data-sold-out]').style.display = 'inline-block';
       }
 
-      // Popup-customizer flow: cards stay compact; the button opens the modal.
+      // Popup-customizer flow: cards stay compact; clicking anywhere on the card opens the modal.
       node.querySelector('.dish-customizer-section')?.remove();
       const cta = node.querySelector('.btn-toggle-customizer');
-      if (cta) {
-        if (!item.orderable) {
-          cta.style.display = 'none';
-        } else {
+      if (item.orderable) {
+        node.onclick = () => openDishModal(item);
+        if (cta) {
           cta.innerHTML = '⚙️ Customize &amp; Add to Order';
-          cta.onclick = () => openDishModal(item);
+          cta.onclick = (e) => { e.stopPropagation(); openDishModal(item); };
         }
+      } else {
+        node.style.cursor = 'default';
+        if (cta) cta.style.display = 'none';
       }
       return node;
     }
