@@ -1,7 +1,7 @@
 // Tests for Stripe form encoding and input validation helpers (no network, no DB).
 // Run: node tests/stripe.test.mjs
 import { formEncode } from '../lib/stripe.js';
-import { normalizePhoneUS, cleanName, cleanLine } from '../lib/validate.js';
+import { normalizePhoneUS, cleanName, cleanLine, cleanEmail } from '../lib/validate.js';
 
 let fail = 0;
 const check = (name, ok) => { console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`); if (!ok) fail++; };
@@ -25,6 +25,13 @@ check('rejects 9 digits', normalizePhoneUS('214703039') === null);
 check('rejects leading 0 area', normalizePhoneUS('014 703 0391') === null);
 check('rejects leading 1 area', normalizePhoneUS('114 703 0391') === null);
 check('rejects empty', normalizePhoneUS('') === null);
+
+// emails (optional field: empty -> null, invalid -> null; caller distinguishes)
+check('valid email normalized', cleanEmail('  S.Triplett@Example.COM ') === 's.triplett@example.com');
+check('empty email is null', cleanEmail('') === null && cleanEmail('   ') === null);
+check('rejects missing @', cleanEmail('not-an-email') === null);
+check('rejects missing tld', cleanEmail('a@b') === null);
+check('rejects spaces inside', cleanEmail('a b@c.com') === null);
 
 // names / lines
 check('cleans name whitespace', cleanName('  Shawn   T  ') === 'Shawn T');

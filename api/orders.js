@@ -9,7 +9,7 @@ import { loadPricingContext, priceCart, CartError } from '../lib/pricing.js';
 import { orderingWindow, closedMessage } from '../lib/hours.js';
 import { rateLimit, clientIp, readJsonBody } from '../lib/auth.js';
 import { stripeFetch, PUBLISHABLE_KEY, StripeError } from '../lib/stripe.js';
-import { normalizePhoneUS, cleanName, cleanLine } from '../lib/validate.js';
+import { normalizePhoneUS, cleanName, cleanLine, cleanEmail } from '../lib/validate.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'method not allowed' });
@@ -42,6 +42,10 @@ export default async function handler(req, res) {
   const phone = normalizePhoneUS(body.customer?.phone);
   if (!name) return res.status(400).json({ error: 'Please enter your name.' });
   if (!phone) return res.status(400).json({ error: 'Please enter a valid 10-digit US phone number.' });
+  const email = cleanEmail(body.customer?.email);
+  if (String(body.customer?.email || '').trim() && !email) {
+    return res.status(400).json({ error: 'Please enter a valid email address, or leave it blank.' });
+  }
   let address = null, deliveryNotes = null;
   if (body.order_type === 'delivery') {
     address = cleanLine(body.delivery?.address);
@@ -72,11 +76,11 @@ export default async function handler(req, res) {
     const code = `TYT-${year}-${String(seq).padStart(4, '0')}`;
     order = (await client.query(
       `INSERT INTO orders (public_code, order_type, status, customer_name, customer_phone,
-         delivery_address, delivery_notes, subtotal_cents, discount_cents, tax_cents,
-         delivery_fee_cents, total_cents, promo_code)
-       VALUES ($1,$2,'pending_payment',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+         customer_email, delivery_address, delivery_notes, subtotal_cents, discount_cents,
+         tax_cents, delivery_fee_cents, total_cents, promo_code)
+       VALUES ($1,$2,'pending_payment',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        RETURNING id, public_code`,
-      [code, body.order_type, name, phone, address, deliveryNotes,
+      [code, body.order_type, name, phone, email, address, deliveryNotes,
        priced.subtotal_cents, priced.discount_cents, priced.tax_cents,
        priced.delivery_fee_cents, priced.total_cents, priced.promo_code])).rows[0];
     for (const l of priced.lines) {
@@ -105,6 +109,7 @@ export default async function handler(req, res) {
       automatic_payment_methods: { enabled: true },
       description: `Tom Yum Thai ${order.public_code} (${body.order_type})`,
       metadata: { order_id: order.id, order_code: order.public_code },
+      ...(email ? { receipt_email: email } : {}),
     }, { idempotencyKey: `pi-${order.id}` });
     await query('UPDATE orders SET stripe_payment_intent = $2, updated_at = now() WHERE id = $1',
       [order.id, intent.id]);
