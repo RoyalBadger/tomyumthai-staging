@@ -2293,6 +2293,185 @@
       box-shadow: 0 4px 15px rgba(236, 90, 48, 0.4);
     }
 
+  
+    /* ==================== COLLAPSIBLE DISH CUSTOMIZER ACCORDION ==================== */
+    .dish-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .dish-card:hover {
+      border-color: var(--accent-orange);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    }
+
+    .dish-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .dish-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .dish-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+      margin: 0;
+    }
+
+    .dish-thai-name {
+      font-family: var(--font-serif);
+      font-size: 12.5px;
+      font-style: italic;
+      color: var(--accent-orange);
+      margin-top: 2px;
+    }
+
+    .dish-price-wrap {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .dish-price {
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .dish-price-note {
+      font-size: 11px;
+      color: var(--text-dim);
+      display: block;
+    }
+
+    .dish-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 4px 0 0;
+    }
+
+    .btn-toggle-customizer {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: #ff9d5c;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+      transition: all 0.2s ease;
+    }
+    .btn-toggle-customizer:hover {
+      background: rgba(236, 90, 48, 0.15);
+      border-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    /* COLLAPSIBLE ACCORDION CONTAINER */
+    .dish-customizer-section {
+      display: none; /* COLLAPSED BY DEFAULT */
+      background: var(--bg-base);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid var(--border-subtle);
+      flex-direction: column;
+      gap: 12px;
+      animation: customizerSlide 0.2s ease-out;
+    }
+
+    .dish-customizer-section.open {
+      display: flex;
+    }
+
+    @keyframes customizerSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* "OUR MENU" BIG CTA BANNER TRIGGER */
+    .our-menu-cta-bar {
+      background: linear-gradient(135deg, #242a36 0%, #1a1e27 100%);
+      border: 2px solid var(--accent-orange);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .our-menu-cta-bar:hover {
+      box-shadow: 0 12px 35px rgba(236, 90, 48, 0.25);
+      border-color: #ff9d5c;
+    }
+
+    .our-menu-title {
+      font-family: var(--font-title);
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    .our-menu-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .btn-our-menu-trigger {
+      background: linear-gradient(135deg, #ec5a30 0%, #d44319 100%);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(236, 90, 48, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-our-menu-trigger:hover {
+      transform: scale(1.03);
+    }
+
+    /* COLLAPSIBLE MENU CONTAINER */
+    #menuExpandableWrapper {
+      display: block;
+      transition: all 0.3s ease;
+    }
+    #menuExpandableWrapper.collapsed {
+      display: none;
+    }
+
   </style>
 </head>
 <body>
@@ -2448,8 +2627,22 @@
       <div class="section-header">
         <span class="section-tag">Cooked Fresh To Order</span>
         <h2 class="section-title">Authentic Thai Menu</h2>
-        <p style="color:var(--text-muted);font-size:14.5px;">Click any dish to customize meat choices, spice levels, add-ons, and allergies.</p>
+        <p style="color:var(--text-muted);font-size:14.5px;">Click "Our Menu" to explore our full 78-dish catalog, customize spice levels, and order direct.</p>
       </div>
+
+      <!-- "OUR MENU" HERO EXPANSION CTA BAR -->
+      <div class="our-menu-cta-bar" onclick="toggleMenuExpansion()">
+        <div>
+          <div class="our-menu-title">📖 Our Menu (78 Authentic Dishes)</div>
+          <div class="our-menu-subtitle">Signatures, Curries, Noodles, Soups, Fried Rice &amp; Desserts — Click to browse &amp; order.</div>
+        </div>
+        <button type="button" id="btnOurMenuToggle" class="btn-our-menu-trigger">
+          <span id="ourMenuBtnText">📖 Browse Our Menu ▼</span>
+        </button>
+      </div>
+
+      <!-- Expandable Menu Container -->
+      <div id="menuExpandableWrapper">
 
       <!-- Store Closed Banner -->
       <div id="store-closed-banner">
@@ -2461,6 +2654,7 @@
       <div data-menu-root></div>
 
       <!-- Menu Item Card Template -->
+            <!-- Menu Item Card Template -->
       <template id="menu-item-tpl">
         <div class="dish-card" data-item-id="">
           <div class="dish-card-body">
@@ -2477,10 +2671,63 @@
             <div class="dish-badges-row">
               <span data-sold-out class="badge badge-sold-out" style="display:none;">Sold Out Today</span>
             </div>
-            <p class="dish-desc" data-desc>Tender poached chicken over fragrant ginger rice with our famous homemade dipping sauce.</p>
+            <p class="dish-desc" data-desc>Tender poached chicken over fragrant ginger rice with our homemade dipping sauce.</p>
           </div>
-          <div class="dish-card-action">
-            <button type="button" class="btn-customize-dish" data-open-customizer>⚙️ Customize &amp; Add</button>
+
+          <!-- 1-Click Accordion Toggle Button -->
+          <button type="button" class="btn-toggle-customizer" onclick="toggleCardCustomizer(this)">
+            ⚙️ Customize Options &amp; Add ▼
+          </button>
+
+          <!-- Collapsible Customizer Section (Collapsed by default) -->
+          <div class="dish-customizer-section">
+            <!-- Size Pills -->
+            <div class="customizer-group size-group">
+              <label class="custom-label">Choose Size:</label>
+              <div class="size-pills" data-sizes></div>
+            </div>
+
+            <!-- Choice of Protein -->
+            <div class="customizer-group protein-group">
+              <label class="custom-label">Choice of Protein:</label>
+              <div class="protein-options" data-proteins></div>
+            </div>
+
+            <!-- Spice Level 1 to 5 -->
+            <div class="customizer-group spice-group">
+              <label class="custom-label">Spice Level (1 Mild – 5 Thai Hot):</label>
+              <div class="spice-levels" data-spice></div>
+            </div>
+
+            <!-- Add-ons -->
+            <div class="customizer-group addons-group">
+              <label class="custom-label">Optional Add-ons:</label>
+              <div class="addons-grid" data-addons></div>
+            </div>
+
+            <!-- Exclusions (Allergy Safety) -->
+            <div class="customizer-group exclusions-group">
+              <label class="custom-label">Dietary Exclusions &amp; Kitchen Notes:</label>
+              <div class="exclusions-grid" data-exclusions>
+                <label class="exclusion-check"><input type="checkbox" value="no_peanuts"> <span>🥜 No Peanuts (Allergy)</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_egg"> <span>🥚 No Egg</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_fish_sauce"> <span>🌱 Strict Vegan (No Fish Sauce)</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_onions"> <span>🧅 No Onions</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="no_sprouts"> <span>🌱 No Bean Sprouts</span></label>
+                <label class="exclusion-check"><input type="checkbox" value="gf_prep"> <span>🌾 Gluten-Free Prep</span></label>
+              </div>
+              <input type="text" class="custom-notes-input" placeholder="Special kitchen instructions (e.g. sauce on side)..." data-custom-notes>
+            </div>
+
+            <!-- Quantity & Add to Cart -->
+            <div class="dish-card-footer">
+              <div class="qty-selector">
+                <button type="button" class="btn-qty-minus">-</button>
+                <span class="qty-val" data-qty>1</span>
+                <button type="button" class="btn-qty-plus">+</button>
+              </div>
+              <button type="button" class="btn-add-to-cart" data-add-to-cart>Add to Order · <span data-card-total>$14.99</span></button>
+            </div>
           </div>
         </div>
       </template>
@@ -3284,6 +3531,63 @@
         if (d) d.style.display = 'none';
       }
     });
+
+    
+    /* ==================== EXPAND/COLLAPSE & ACCORDION HELPERS ==================== */
+    let isMenuExpanded = true;
+    function toggleMenuExpansion(forceOpen = false) {
+      const wrapper = $id('menuExpandableWrapper');
+      const btnText = $id('ourMenuBtnText');
+      if (!wrapper) return;
+      if (forceOpen) isMenuExpanded = false;
+      isMenuExpanded = !isMenuExpanded;
+      if (isMenuExpanded) {
+        wrapper.classList.remove('collapsed');
+        if (btnText) btnText.innerHTML = '🔼 Collapse Menu View ▲';
+        wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        wrapper.classList.add('collapsed');
+        if (btnText) btnText.innerHTML = '📖 Browse Our Menu (78 Dishes) ▼';
+      }
+    }
+
+    function toggleCardCustomizer(btn) {
+      const card = btn.closest('.dish-card');
+      const customizer = card.querySelector('.dish-customizer-section');
+      if (!customizer) return;
+      const isOpen = customizer.classList.contains('open');
+      if (isOpen) {
+        customizer.classList.remove('open');
+        btn.innerHTML = '⚙️ Customize Options &amp; Add ▼';
+      } else {
+        customizer.classList.add('open');
+        btn.innerHTML = '🔼 Close Customizer ▲';
+      }
+    }
+
+    function toggleAllMenuSections() {
+      const customizers = document.querySelectorAll('.dish-customizer-section');
+      const anyOpen = Array.from(customizers).some(c => c.classList.contains('open'));
+      customizers.forEach(c => {
+        const btn = c.closest('.dish-card').querySelector('.btn-toggle-customizer');
+        if (anyOpen) {
+          c.classList.remove('open');
+          if (btn) btn.innerHTML = '⚙️ Customize Options &amp; Add ▼';
+        } else {
+          c.classList.add('open');
+          if (btn) btn.innerHTML = '🔼 Close Customizer ▲';
+        }
+      });
+    }
+
+    function jumpToCategory(catId) {
+      toggleMenuExpansion(true);
+      const tabs = document.querySelectorAll('#categoryTabs .cat-btn');
+      tabs.forEach(b => b.classList.remove('active'));
+      const targetTab = document.querySelector(`#categoryTabs .cat-btn[data-category="${catId}"]`);
+      if (targetTab) targetTab.classList.add('active');
+      filterDishes();
+    }
 
     /* ==================== BOOT ==================== */
     document.addEventListener('DOMContentLoaded', () => {
