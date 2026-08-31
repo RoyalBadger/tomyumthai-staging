@@ -28,6 +28,7 @@
 | `STRIPE_PUBLISHABLE_KEY` | 3 | optional override; the test key is committed in lib/stripe.js (publishable keys are public by design) |
 
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_VERIFY_SID` | 5 | phone OTP |
+| `GOOGLE_DAILY_CAP` | 4 | optional; max Google distance calls per day across all visitors (default 500) — past it, labeled estimates serve instead. |
 | `GOOGLE_MAPS_API_KEY` | 4 | driving-distance zone checks (/api/distance). Without it, distances are straight-line × 1.3 labeled "est.". Setup: console.cloud.google.com → new project → enable **Routes API** → billing → Credentials → API key → restrict to Routes API. |
 
 Webhook: registered programmatically at `/api/stripe-webhook` for `payment_intent.succeeded`.

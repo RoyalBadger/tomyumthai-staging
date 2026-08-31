@@ -25,7 +25,11 @@ export default async function handler(req, res) {
 
   const radius = Number((await query('SELECT delivery_radius_miles FROM settings', []))
     .rows[0].delivery_radius_miles);
-  const { miles, source } = await drivingMilesFromRestaurant(lat, lon);
+  // Global spend guard: at most N Google calls per day across ALL visitors; past the cap
+  // (or on any Google failure) we serve the labeled straight-line estimate instead.
+  const DAILY_GOOGLE_CAP = Number(process.env.GOOGLE_DAILY_CAP || 500);
+  const allowGoogle = await rateLimit('google-distance:daily:global', DAILY_GOOGLE_CAP, 86_400);
+  const { miles, source } = await drivingMilesFromRestaurant(lat, lon, { allowGoogle });
 
   res.status(200).json({
     miles: Math.round(miles * 10) / 10,
