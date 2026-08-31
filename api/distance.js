@@ -25,10 +25,16 @@ export default async function handler(req, res) {
 
   const radius = Number((await query('SELECT delivery_radius_miles FROM settings', []))
     .rows[0].delivery_radius_miles);
-  // Global spend guard: at most N Google calls per day across ALL visitors; past the cap
-  // (or on any Google failure) we serve the labeled straight-line estimate instead.
+  // Global spend guards enforced by OUR code, independent of Google console settings:
+  // a daily cap AND a monthly cap kept below Google's free allowance, so the bill is $0
+  // by construction. Past either cap (or on any Google failure) we serve the labeled
+  // straight-line estimate instead — customers never see breakage.
   const DAILY_GOOGLE_CAP = Number(process.env.GOOGLE_DAILY_CAP || 500);
-  const allowGoogle = await rateLimit('google-distance:daily:global', DAILY_GOOGLE_CAP, 86_400);
+  const MONTHLY_GOOGLE_CAP = Number(process.env.GOOGLE_MONTHLY_CAP || 9000);
+  const month = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' }).slice(0, 7);
+  const dailyOk = await rateLimit('google-distance:daily:global', DAILY_GOOGLE_CAP, 86_400);
+  const monthlyOk = await rateLimit(`google-distance:month:${month}`, MONTHLY_GOOGLE_CAP, 32 * 86_400);
+  const allowGoogle = dailyOk && monthlyOk;
   const { miles, source } = await drivingMilesFromRestaurant(lat, lon, { allowGoogle });
 
   res.status(200).json({
