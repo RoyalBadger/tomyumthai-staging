@@ -3279,7 +3279,10 @@
       tabs.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', () => {
         tabs.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        if (typeof isMenuExpanded !== 'undefined' && !isMenuExpanded) toggleMenuExpansion(true);
         filterDishes();
+        const cat = btn.dataset.category;
+        if (cat !== 'all') document.querySelector(`[data-menu-root] .menu-category-section[data-cat="${cat}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }));
       const chips = document.querySelector('.dietary-chips');
       if (chips) chips.style.display = 'none'; // tags not in menu data yet
@@ -3297,6 +3300,7 @@
         if (!cat.items.length) continue;
         const section = document.createElement('div');
         section.className = 'menu-category-section';
+        section.dataset.cat = cat.id;
         section.innerHTML = `<h3 class="menu-category-title">${esc(cat.name)}</h3>`;
         const grid = document.createElement('div');
         grid.className = 'menu-grid';
@@ -3711,14 +3715,22 @@
       if (q.length >= 3) geocodeDebounceTimer = setTimeout(() => fetchLiveGeocode(q), 300);
     }
     function fetchLiveGeocode(q) {
-      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q + ' Garland Richardson TX')}&limit=5&lat=${RESTAURANT_LAT}&lon=${RESTAURANT_LON}`;
+      // House numbers + appended city names confuse Photon: geocode the street only,
+      // rely on lat/lon bias, and re-attach the typed house number to the results.
+      const hm = q.match(/^s*(d+)s+(.+)$/);
+      const houseNum = hm ? hm[1] : null;
+      const streetQ = hm ? hm[2] : q;
+      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(streetQ)}&limit=8&lat=${RESTAURANT_LAT}&lon=${RESTAURANT_LON}`;
       fetch(url).then(r => r.json()).then(data => {
-        const items = (data?.features || []).map(f => {
+        const items = (data?.features || []).filter(f => (f.properties.state || '') === 'Texas' && (f.properties.street || f.properties.name)).map(f => {
           const p = f.properties, c = f.geometry.coordinates;
-          const full = `${p.name ? p.name + ', ' : ''}${p.street ? p.street + ', ' : ''}${p.city || 'Garland'}, TX ${p.postcode || '75044'}`.replace(', ,', ',');
+          const num = p.housenumber || houseNum;
+          const street = p.street || p.name;
+          const full = `${num ? num + ' ' : ''}${street}, ${p.city || 'Garland'}, TX${p.postcode ? ' ' + p.postcode : ''}`;
           const dist = calculateDistance(RESTAURANT_LAT, RESTAURANT_LON, c[1], c[0]);
-          return { display: full, dist: `${dist.toFixed(1)} mi away`, inZone: dist <= 5.5 };
+          return { display: full, distVal: dist, dist: `${dist.toFixed(1)} mi away`, inZone: dist <= 5.5 };
         });
+        items.sort((a, b) => a.distVal - b.distVal);
         if (items.length) renderAddressDropdown(items, q);
       }).catch(() => {});
     }
@@ -4015,96 +4027,6 @@
     </div>
   </div>
 
-
-  <!-- ==================== DEDICATED CLEAN CUSTOMIZER POPUP MODAL ==================== -->
-  <div id="customModal" class="custom-modal-overlay">
-    <div class="custom-modal-card">
-      <div class="custom-modal-header">
-        <div>
-          <h3 id="modalDishName" class="modal-dish-title">Customize Dish</h3>
-          <div id="modalDishThai" class="modal-dish-thai"></div>
-        </div>
-        <button type="button" class="modal-close-btn" onclick="closeCustomModal()">&times;</button>
-      </div>
-
-      <div class="custom-modal-body">
-        <div class="modal-desc-box">
-          <p id="modalDishDesc" class="modal-dish-desc"></p>
-        </div>
-
-        <!-- Size Options -->
-        <div class="customizer-group size-group" id="modalSizeGroup">
-          <label class="custom-label">Choose Size:</label>
-          <div class="size-pills">
-            <label class="size-pill"><input type="radio" name="modal_size" value="regular" checked> <span>Regular (16 oz)</span></label>
-            <label class="size-pill"><input type="radio" name="modal_size" value="large"> <span>Large (32 oz)</span></label>
-          </div>
-        </div>
-
-        <!-- Choice of Protein -->
-        <div class="customizer-group protein-group" id="modalProteinGroup">
-          <label class="custom-label">Choice of Protein:</label>
-          <div class="protein-options">
-            <label class="protein-radio"><input type="radio" name="modal_protein" value="chicken" checked> <span>Chicken (+$0.00)</span></label>
-            <label class="protein-radio"><input type="radio" name="modal_protein" value="pork"> <span>Pork (+$0.00)</span></label>
-            <label class="protein-radio"><input type="radio" name="modal_protein" value="tofu"> <span>Tofu (+$0.00)</span></label>
-            <label class="protein-radio"><input type="radio" name="modal_protein" value="veggie"> <span>Vegetables (+$0.00)</span></label>
-            <label class="protein-radio"><input type="radio" name="modal_protein" value="beef"> <span>Beef (+$3.00)</span></label>
-            <label class="protein-radio"><input type="radio" name="modal_protein" value="shrimp"> <span>Shrimp (+$3.00)</span></label>
-            <label class="protein-radio"><input type="radio" name="modal_protein" value="seafood"> <span>Seafood Trio (+$4.00)</span></label>
-          </div>
-        </div>
-
-        <!-- Spice Level 1 to 5 -->
-        <div class="customizer-group spice-group" id="modalSpiceGroup">
-          <label class="custom-label">Spice Level (1 Mild – 5 Thai Hot):</label>
-          <div class="spice-levels">
-            <label class="spice-btn"><input type="radio" name="modal_spice" value="1"> <span>🌶️ 1 - Mild</span></label>
-            <label class="spice-btn"><input type="radio" name="modal_spice" value="2" checked> <span>🌶️🌶️ 2 - Medium</span></label>
-            <label class="spice-btn"><input type="radio" name="modal_spice" value="3"> <span>🌶️🌶️🌶️ 3 - Hot</span></label>
-            <label class="spice-btn"><input type="radio" name="modal_spice" value="4"> <span>🌶️🌶️🌶️🌶️ 4 - Extra Hot</span></label>
-            <label class="spice-btn"><input type="radio" name="modal_spice" value="5"> <span>🌶️🌶️🌶️🌶️🌶️ 5 - Thai Hot</span></label>
-          </div>
-        </div>
-
-        <!-- Add-ons -->
-        <div class="customizer-group addons-group" id="modalAddonsGroup">
-          <label class="custom-label">Optional Add-ons:</label>
-          <div class="addons-grid">
-            <label class="addon-check"><input type="checkbox" value="extra_meat"> <span>Extra Meat (+$3.50)</span></label>
-            <label class="addon-check"><input type="checkbox" value="extra_veg"> <span>Extra Veggies (+$2.00)</span></label>
-            <label class="addon-check"><input type="checkbox" value="fried_egg"> <span>Thai Fried Egg (+$1.50)</span></label>
-            <label class="addon-check"><input type="checkbox" value="extra_rice"> <span>Extra Jasmine Rice (+$2.00)</span></label>
-          </div>
-        </div>
-
-        <!-- Exclusions (Allergy Safety - Bold Red) -->
-        <div class="customizer-group exclusions-group">
-          <label class="custom-label">Dietary Exclusions (Allergy Safety):</label>
-          <div class="exclusions-grid">
-            <label class="exclusion-check"><input type="checkbox" value="no_peanuts"> <span class="exclusion-badge">🥜 No Peanuts (Allergy)</span></label>
-            <label class="exclusion-check"><input type="checkbox" value="no_egg"> <span class="exclusion-badge">🥚 No Egg</span></label>
-            <label class="exclusion-check"><input type="checkbox" value="no_fish_sauce"> <span class="exclusion-badge">🌱 Strict Vegan (No Fish Sauce)</span></label>
-            <label class="exclusion-check"><input type="checkbox" value="no_onions"> <span class="exclusion-badge">🧅 No Onions</span></label>
-            <label class="exclusion-check"><input type="checkbox" value="no_sprouts"> <span class="exclusion-badge">🌱 No Bean Sprouts</span></label>
-            <label class="exclusion-check"><input type="checkbox" value="gf_prep"> <span class="exclusion-badge">🌾 Gluten-Free Prep</span></label>
-          </div>
-          <input type="text" id="modalCustomNotes" class="custom-notes-input" placeholder="Special kitchen instructions (e.g. sauce on side)...">
-        </div>
-      </div>
-
-      <div class="custom-modal-footer">
-        <div class="qty-selector">
-          <button type="button" class="btn-qty-minus" onclick="changeModalQty(-1)">-</button>
-          <span id="modalQtyVal" class="qty-val">1</span>
-          <button type="button" class="btn-qty-plus" onclick="changeModalQty(1)">+</button>
-        </div>
-        <button type="button" id="modalAddToCartBtn" class="btn-modal-add" onclick="addModalItemToCart()">
-          Add to Order · <span id="modalFinalPrice">$14.99</span>
-        </button>
-      </div>
-    </div>
-  </div>
 
 </body>
 </html>
