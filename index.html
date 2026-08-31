@@ -550,6 +550,9 @@
       border-top: 1px solid var(--border-subtle);
     }
 
+    a.trust-item { text-decoration: none; color: inherit; transition: transform 0.15s; }
+    a.trust-item:hover { transform: translateY(-2px); }
+    a.trust-item:hover .trust-label { color: #ff9d5c; }
     .trust-item {
       display: flex;
       flex-direction: column;
@@ -2849,18 +2852,22 @@
 
       <!-- Trust Proof Indicators -->
       <div class="trust-bar">
-        <div class="trust-item">
+        <a class="trust-item" href="https://www.ubereats.com/store/tom-yum-thai-garland/-Oi8ZughQk2qSZXCP9xMcQ" target="_blank" rel="noopener noreferrer">
           <span class="trust-score">⭐ 4.9 / 5.0</span>
           <span class="trust-label">900+ Ratings on Uber Eats</span>
-        </div>
-        <div class="trust-item">
+        </a>
+        <a class="trust-item" href="https://www.grubhub.com/restaurant/tom-yum-thai-3313-belt-line-rd-garland/223816" target="_blank" rel="noopener noreferrer">
+          <span class="trust-score">⭐ 4.8 / 5.0</span>
+          <span class="trust-label">2,500+ Ratings on Grubhub</span>
+        </a>
+        <a class="trust-item" href="https://www.doordash.com/store/tom-yum-thai-garland-41188/" target="_blank" rel="noopener noreferrer">
           <span class="trust-score">⭐ 4.7 / 5.0</span>
           <span class="trust-label">1,000+ Ratings on DoorDash</span>
-        </div>
-        <div class="trust-item">
+        </a>
+        <a class="trust-item" href="https://www.tripadvisor.com/Restaurant_Review-g55884-d3442687-Reviews-Tom_Yum_Thai-Garland_Texas.html" target="_blank" rel="noopener noreferrer">
           <span class="trust-score">🏆 #1 Thai in Garland</span>
           <span class="trust-label">Ranked on TripAdvisor</span>
-        </div>
+        </a>
         <div class="trust-item">
           <span class="trust-score">🌶️ 5 Spice Levels</span>
           <span class="trust-label">Level 1 Mild to Level 5 Thai Hot</span>
