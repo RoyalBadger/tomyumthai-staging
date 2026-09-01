@@ -51,7 +51,9 @@ export default async function handler(req, res) {
 
     let accepting = true;
     let message = null;
-    if (st.store_open_override === 'closed') {
+    if (st.store_open_override === 'open') {
+      // Force-open override (testing): ignore hours and holidays entirely.
+    } else if (st.store_open_override === 'closed') {
       accepting = false;
       message = st.closed_message || 'Online ordering is paused right now — please call us at (214) 703-0391.';
     } else if (holidayToday) {

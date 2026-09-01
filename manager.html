@@ -927,6 +927,14 @@
         </div>
         <button id="btnEmergencyPause" class="btn-action" style="font-size:13px;padding:8px 16px;" onclick="togglePause()"></button>
       </div>
+
+      <div class="emergency-pause-box" style="margin-top:12px;border-color:#eab308;">
+        <div>
+          <strong style="color:#fde047;font-size:14px;">🧪 Test Mode: Ignore Business Hours</strong>
+          <p style="font-size:12px;color:#cbd5e1;margin-top:2px;">Lets you place test orders at any hour — the site behaves as if the store is open. Remember to turn this OFF before real service.</p>
+        </div>
+        <button id="btnTestMode" class="btn-action" style="font-size:13px;padding:8px 16px;" onclick="toggleTestMode()"></button>
+      </div>
     </div>
 
     <!-- Tab 3: Holiday Closures -->
@@ -1199,6 +1207,24 @@
       btn.style.background = paused ? '#14532d' : '#7f1d1d';
       btn.style.borderColor = paused ? '#22c55e' : '#ef4444';
       btn.style.color = paused ? '#86efac' : '#fca5a5';
+      const t = $('btnTestMode');
+      const testing = settings.store_open_override === 'open';
+      t.innerText = testing ? '🧪 Test Mode is ON — click to restore normal hours' : '🧪 Turn ON Test Mode (ignore business hours)';
+      t.style.background = testing ? '#713f12' : '#1f2937';
+      t.style.borderColor = testing ? '#eab308' : '#4b5563';
+      t.style.color = testing ? '#fde047' : '#9ca3af';
+    }
+
+    async function toggleTestMode() {
+      const next = settings.store_open_override === 'open' ? 'auto' : 'open';
+      try {
+        const r = await api('/api/admin/settings', { method: 'PATCH', body: { store_open_override: next } });
+        settings.store_open_override = r.settings.store_open_override;
+        renderPause();
+        toast(next === 'open'
+          ? 'TEST MODE ON — the site now accepts orders at any hour. Turn this off before real service!'
+          : 'Test mode off — normal business hours enforced.');
+      } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
     async function togglePause() {

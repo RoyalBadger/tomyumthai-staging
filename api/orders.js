@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
   const holidayToday = (st.holiday_dates || []).some(d => new Date(d).toISOString().slice(0, 10) === today);
   const win = orderingWindow(st.business_hours, st.last_order_buffer_minutes);
-  if (st.store_open_override === 'closed' || holidayToday || !win.open) {
+  if (st.store_open_override !== 'open' && (st.store_open_override === 'closed' || holidayToday || !win.open)) {
     const message = st.store_open_override === 'closed' || holidayToday
       ? (st.closed_message || 'Online ordering is paused right now — please call us at (214) 703-0391.')
       : closedMessage(win.reason);

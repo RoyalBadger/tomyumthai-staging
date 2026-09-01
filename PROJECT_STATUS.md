@@ -76,6 +76,7 @@
       update Twilio campaign URLs to production domain; runbook; family continuity sheet
       (Vercel/Neon/Stripe/GitHub/Google Cloud/Twilio/WordPress/domain/email accounts); key rotation.
 - [ ] Kitchen dry-run during one dinner service before launch
+- [ ] Turn OFF Test Mode (store_open_override → auto) before launch — enabled 2026-09-01 for owner testing
 
 ### Parked (marketing track)
 - Influencer playbook cleanup (placeholder handles, FTC disclosure line, tasting-menu verification),

@@ -24,8 +24,8 @@ export default requireAdmin(async (req, res, admin) => {
     const push = (col, val) => { vals.push(val); sets.push(`${col} = $${vals.length}`); changes[col] = val; };
 
     if (body.store_open_override !== undefined) {
-      if (!['auto', 'closed'].includes(body.store_open_override)) {
-        return res.status(400).json({ error: "store_open_override must be 'auto' or 'closed'" });
+      if (!['auto', 'closed', 'open'].includes(body.store_open_override)) {
+        return res.status(400).json({ error: "store_open_override must be 'auto', 'closed', or 'open'" });
       }
       push('store_open_override', body.store_open_override);
     }
