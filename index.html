@@ -3270,8 +3270,21 @@
         const cat = btn.dataset.category;
         if (cat !== 'all') document.querySelector(`[data-menu-root] .menu-category-section[data-cat="${cat}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }));
+      // Vegetarian Menu filter — wired to the is_vegetarian flag the owner controls
+      // from the manager portal. (Popular/GF chips stay hidden: no data behind them yet.)
       const chips = document.querySelector('.dietary-chips');
-      if (chips) chips.style.display = 'none'; // tags not in menu data yet
+      if (chips) {
+        chips.querySelectorAll('[data-filter="popular"], [data-filter="gf"]').forEach(b => b.remove());
+        chips.querySelector('[data-filter="veg"]').innerHTML = '🌱 Vegetarian Menu';
+        chips.querySelectorAll('.chip-btn').forEach(btn => btn.onclick = () => {
+          window.__vegOnly = btn.dataset.filter === 'veg' && !btn.classList.contains('active');
+          chips.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+          (window.__vegOnly ? btn : chips.querySelector('[data-filter="all"]')).classList.add('active');
+          if (typeof isMenuExpanded !== 'undefined' && !isMenuExpanded) toggleMenuExpansion(true);
+          filterDishes();
+        });
+        chips.querySelector('[data-filter="all"]').classList.add('active');
+      }
     }
 
     function pillRadio(cls, name, value, label, checked) {
@@ -3301,6 +3314,7 @@
       const node = tpl.content.firstElementChild.cloneNode(true);
       node.dataset.itemId = item.id;
       node.dataset.category = catId;
+      node.dataset.veg = item.vegetarian ? '1' : '0';
       node.querySelector('[data-name]').innerText = item.name;
       node.querySelector('[data-thai]').innerText = item.thai || '';
       node.querySelector('[data-desc]').innerText = item.description || '';
@@ -3331,7 +3345,36 @@
 
     /* ==================== DISH CUSTOMIZER POPUP MODAL ==================== */
     let modalDish = null, modalQty = 1;
-    const EXCLUSION_CHOICES = ['🥜 No Peanuts (Allergy)', '🥚 No Egg', '🌱 Strict Vegan (No Fish Sauce)', '🧅 No Onions', '🌱 No Bean Sprouts', '🌾 Gluten-Free Prep'];
+    // Removable ingredients are derived from each dish's own name + description, so a
+    // dish only offers "No X" for ingredients it actually contains. The last two
+    // (vegan prep / gluten-free prep) are kitchen-wide requests and always shown.
+    const INGREDIENT_VOCAB = [
+      [/\bpeanut/i, '🥜 No Peanuts (Allergy)'],
+      [/\begg(?!\s*roll)/i, '🥚 No Egg'],
+      [/\bonion/i, '🧅 No Onions'],
+      [/\bbean sprout/i, 'No Bean Sprouts'],
+      [/\bscallion/i, 'No Scallions'],
+      [/\btomato/i, '🍅 No Tomatoes'],
+      [/\bbell pepper/i, 'No Bell Peppers'],
+      [/\bjalapeno/i, '🌶️ No Jalapeños'],
+      [/\bbasil/i, '🌿 No Basil'],
+      [/\bbroccoli/i, '🥦 No Broccoli'],
+      [/\bcarrot/i, '🥕 No Carrots'],
+      [/\bmushroom/i, '🍄 No Mushrooms'],
+      [/\bcilantro/i, 'No Cilantro'],
+      [/\bcucumber/i, '🥒 No Cucumber'],
+      [/\bcashew/i, 'No Cashews'],
+      [/\braisin/i, 'No Raisins'],
+      [/\bpineapple/i, '🍍 No Pineapple'],
+      [/\bpotato/i, '🥔 No Potatoes'],
+      [/\bbamboo/i, 'No Bamboo Shoots'],
+      [/\bzucchini/i, 'No Zucchini'],
+      [/\bcabbage/i, 'No Cabbage'],
+      [/\bcelery/i, 'No Celery'],
+      [/\bgarlic/i, '🧄 No Garlic'],
+      [/\bginger(?!\s*rice)/i, 'No Ginger'],
+    ];
+    const GLOBAL_PREP_CHOICES = ['🌱 Strict Vegan (No Fish Sauce)', '🌾 Gluten-Free Prep'];
 
     function ensureDishModal() {
       if ($id('dishModal')) return;
@@ -3396,10 +3439,18 @@
         ? MENU.options.spice_levels.map(s => pillRadio('spice-btn', 'm-spice', s.level,
             `${'🌶️'.repeat(s.level)} ${s.level} — ${s.label}`, s.level === 2)).join('') : '';
       show('spice', item.spice_selectable);
+      const addonSubhead = t => `<div style="grid-column:1/-1;font-weight:800;font-size:12px;color:var(--accent-orange,#ff781f);margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;">${t}</div>`;
+      const addonChecks = opts => opts.map(x => `<label class="addon-check"><input type="checkbox" value="${esc(x.id)}" data-delta="${x.delta_cents}"> <span>${esc(x.label)} (+${money(x.delta_cents)})</span></label>`).join('');
+      const addonGroup = (t, opts) => opts.length ? addonSubhead(t) + addonChecks(opts) : '';
       m.querySelector('[data-m-addons]').innerHTML = item.extra_protein
-        ? MENU.options.extra_protein.map(x => `<label class="addon-check"><input type="checkbox" value="${esc(x.id)}" data-delta="${x.delta_cents}"> <span>${esc(x.label)} (+${money(x.delta_cents)})</span></label>`).join('') : '';
+        ? addonGroup('Proteins', MENU.options.extra_protein.filter(x => x.option_group !== 'vegetable'))
+          + addonGroup('Vegetables', MENU.options.extra_protein.filter(x => x.option_group === 'vegetable'))
+        : '';
       show('addons', item.extra_protein);
-      m.querySelector('[data-m-exclusions]').innerHTML = EXCLUSION_CHOICES.map(x =>
+      const ingredientText = (item.name || '') + ' ' + (item.description || '');
+      const removals = INGREDIENT_VOCAB.filter(([re]) => re.test(ingredientText)).map(([, label]) => label)
+        .concat(GLOBAL_PREP_CHOICES);
+      m.querySelector('[data-m-exclusions]').innerHTML = removals.map(x =>
         `<label class="exclusion-check"><input type="checkbox"> <span>${x}</span></label>`).join('');
       m.querySelector('[data-m-notes]').value = '';
       refreshModalTotal();
@@ -3474,7 +3525,8 @@
         section.querySelectorAll('.dish-card').forEach(card => {
           const catMatch = activeCat === 'all' || card.dataset.category === activeCat;
           const textMatch = !q || card.innerText.toLowerCase().includes(q);
-          const show = catMatch && textMatch;
+          const vegMatch = !window.__vegOnly || card.dataset.veg === '1';
+          const show = catMatch && textMatch && vegMatch;
           card.style.display = show ? '' : 'none';
           if (show) visible++;
         });

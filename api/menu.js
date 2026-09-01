@@ -9,11 +9,11 @@ export default async function handler(req, res) {
       query('SELECT id, name FROM menu_categories ORDER BY sort', []),
       query(`SELECT id, category_id, name, thai_name, description, base_price_cents,
                     price_note, protein_choice, extra_protein, spice_selectable,
-                    is_orderable, is_86ed
+                    is_orderable, is_86ed, is_vegetarian
              FROM menu_items WHERE NOT is_hidden ORDER BY sort`, []),
       query('SELECT item_id, label, price_cents FROM item_sizes ORDER BY sort', []),
       query('SELECT id, label, delta_cents FROM protein_options WHERE active ORDER BY sort', []),
-      query('SELECT id, label, delta_cents FROM extra_protein_options WHERE active ORDER BY sort', []),
+      query('SELECT id, label, delta_cents, option_group FROM extra_protein_options WHERE active ORDER BY sort', []),
       query(`SELECT store_open_override, closed_message, holiday_dates,
                     delivery_radius_miles, delivery_fee_cents, delivery_minimum_cents,
                     pickup_eta_minutes, delivery_eta_minutes,
@@ -37,6 +37,7 @@ export default async function handler(req, res) {
         protein_choice: it.protein_choice,
         extra_protein: it.extra_protein,
         spice_selectable: it.spice_selectable,
+        vegetarian: it.is_vegetarian,
         orderable: it.is_orderable && !it.is_86ed,
         sold_out: it.is_86ed,
       });
