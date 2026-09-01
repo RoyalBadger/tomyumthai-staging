@@ -3374,7 +3374,7 @@
       [/\bgarlic/i, '🧄 No Garlic'],
       [/\bginger(?!\s*rice)/i, 'No Ginger'],
     ];
-    const GLOBAL_PREP_CHOICES = ['🌱 Strict Vegan (No Fish Sauce)', '🌾 Gluten-Free Prep'];
+    const GLOBAL_PREP_CHOICES = ['🌾 Gluten-Free Prep'];
 
     function ensureDishModal() {
       if ($id('dishModal')) return;
@@ -3394,6 +3394,10 @@
             <p class="modal-desc-box" data-m-desc></p>
             <div class="customizer-group" data-m-group="sizes"><label class="custom-label">Choose Size:</label><div class="size-pills" data-m-sizes></div></div>
             <div class="customizer-group" data-m-group="proteins"><label class="custom-label">Choice of Protein:</label><div class="protein-options" data-m-proteins></div></div>
+            <div class="customizer-group" data-m-group="vegprep">
+              <label class="addon-check" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" data-m-veg> <span>🌱 <strong>Make it Vegetarian</strong> — prepared with no fish sauce or oyster sauce</span></label>
+              <div data-m-error style="display:none;color:#f87171;font-weight:800;font-size:13px;margin-top:6px;"></div>
+            </div>
             <div class="customizer-group" data-m-group="spice"><label class="custom-label">Spice Level (1 Mild – 5 Extremely Spicy):</label><div class="spice-levels" data-m-spice></div></div>
             <div class="customizer-group" data-m-group="addons"><label class="custom-label">Optional Add-ons:</label><div class="addons-grid" data-m-addons></div></div>
             <div class="customizer-group"><label class="custom-label">Dietary Exclusions &amp; Kitchen Notes:</label>
@@ -3435,6 +3439,10 @@
         ? MENU.options.protein_choice.map((p, i) => pillRadio('protein-radio', 'm-protein', p.id,
             p.delta_cents ? `${p.label} (+${money(p.delta_cents)})` : p.label, i === 0)).join('') : '';
       show('proteins', item.protein_choice);
+      m.querySelector('[data-m-veg]').checked = false;
+      const vegErr = m.querySelector('[data-m-error]');
+      vegErr.style.display = 'none';
+      show('vegprep', item.vegetarian === true);
       m.querySelector('[data-m-spice]').innerHTML = item.spice_selectable
         ? MENU.options.spice_levels.map(s => pillRadio('spice-btn', 'm-spice', s.level,
             `${'🌶️'.repeat(s.level)} ${s.level} — ${s.label}`, s.level === 2)).join('') : '';
@@ -3493,8 +3501,28 @@
       const proteinId = item.protein_choice ? m.querySelector('input[name="m-protein"]:checked')?.value : null;
       const extras = [...m.querySelectorAll('[data-m-addons] input:checked')].map(cb => cb.value);
       const spice = item.spice_selectable ? Number(m.querySelector('input[name="m-spice"]:checked')?.value) || null : null;
+
+      // Vegetarian = explicit customer request (kitchen prepares without fish/oyster
+      // sauce). Only Tofu / Vegetable / No Protein and meatless add-ons are allowed.
+      const vegChecked = item.vegetarian === true && m.querySelector('[data-m-veg]')?.checked;
+      if (vegChecked) {
+        const MEATLESS = ['tofu', 'vegetable', 'no-protein'];
+        const meatProtein = proteinId && !MEATLESS.includes(proteinId);
+        const meatExtra = extras.some(x => !['extra-tofu', 'extra-veggies'].includes(x));
+        if (meatProtein || meatExtra) {
+          const err = m.querySelector('[data-m-error]');
+          err.innerText = meatProtein
+            ? 'Vegetarian orders can only use Tofu, Vegetable, or No Protein — please change your protein choice.'
+            : 'Vegetarian orders can only add Tofu or Mixed Veggies — please uncheck the meat add-ons.';
+          err.style.display = 'block';
+          err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+      }
+
       const exclusions = [...m.querySelectorAll('[data-m-exclusions] input:checked')]
         .map(cb => cb.parentElement.innerText.trim().replace(/^[^A-Za-z]+/, ''));
+      if (vegChecked) exclusions.unshift('VEGETARIAN (no fish/oyster sauce)');
       const notes = m.querySelector('[data-m-notes]').value.trim() || null;
       cart.push({
         id: item.id, name: item.name, size_label: sizeLabel, protein: proteinId,

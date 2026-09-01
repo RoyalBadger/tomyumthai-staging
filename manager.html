@@ -1368,20 +1368,17 @@
       } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
-    // A line is vegetarian only as ORDERED: tofu/vegetable protein (or an inherently
-    // vegetarian dish) and no meat/seafood add-ons.
+    // A line is vegetarian ONLY when the customer checked the "Make it Vegetarian"
+    // box (owner rule: meatless is not vegetarian — sauces may contain fish/oyster).
+    // The request travels in the exclusions snapshot: "VEGETARIAN (NO FISH/OYSTER SAUCE)".
     function isVegLine(it) {
-      if ((it.extras || []).some(x => /beef|chicken|pork|shrimp|seafood/i.test(x))) return false;
-      const p = (it.protein || '').toLowerCase();
-      if (p) return p === 'tofu' || p === 'vegetable' || p === 'mixed vegetable';
-      return !!it.item_vegetarian;
+      return /vegetarian/i.test(it.exclusions || '');
     }
 
     function ticketItemsHtml(items) {
       return items.map(it => `
         <div class="receipt-item-row">
           <div class="receipt-item-main">${it.qty} x ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}</div>
-          ${isVegLine(it) ? '<div class="receipt-exclusion">*** VEGETARIAN ***</div>' : ''}
           <div>${it.protein ? esc(it.protein) : ''}${it.spice_level ? ' - SPICE LV ' + it.spice_level : ''}${it.extras && it.extras.length ? ' - +' + esc(it.extras.join(', +')) : ''}</div>
           ${it.exclusions ? '<div class="receipt-exclusion">*** ' + esc(it.exclusions) + ' ***</div>' : ''}
           ${it.notes ? '<div>NOTE: ' + esc(it.notes) + '</div>' : ''}
