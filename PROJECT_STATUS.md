@@ -31,7 +31,7 @@
   Stripe `receipt_email` (verified). Live Stripe account activated; sandbox keys stay until launch.
 - **Phase 4 — Kitchen (server + UI):** queue polling with new-order chime, guarded lifecycle
   (received→cooking→ready→completed, no skips, optimistic concurrency), giant allergy callouts,
-  80mm thermal receipt template + print button. Printing tier undecided (need printer model).
+  80mm thermal receipt template + print button. Printer identified: Star TSP143IIIW (TSP100III futurePRNT, Wi-Fi). No native WebPRNT on this series — print tier = futurePRNT Windows driver + existing window.print receipt flow; validate at kitchen dry-run.
 - **Delivery zone:** Google Routes API **driving miles from the restaurant address** (fixed the
   straight-line bug the owner caught — Lake Highlands 5.1 mi crow-flies is 6.6+ mi by road, now
   correctly refused). Autocomplete geocodes street-only with location bias, re-attaches the typed
@@ -55,7 +55,7 @@
 
 ### Owner
 - [ ] Mobile walkthrough on a real phone (especially the new customization modal)
-- [ ] Printer make/model photo → decides browser-direct (Epson/Star) vs. Chrome-kiosk printing
+- [x] Printer identified 2026-09-01: Star TSP143IIIW (photo) — decision: driver + browser print, no new code
 - [ ] Delete the old unused Google API key; rotate Twilio auth token at launch (both passed through chat)
 - [ ] Name the second admin (family member) for the manager portal
 - [ ] Wait out Twilio toll-free review (submitted; days–2 weeks)
