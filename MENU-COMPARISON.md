@@ -21,9 +21,9 @@ this was extracted from our own restaurant's public listing pages.
 2. **Platform prices run ≈ +$1.00 over our in-store prices** (UE and DD, consistently across
    entrees, appetizers, soups, chef's specials). **Grubhub lists at in-store prices** ($13.99
    entrees, $5.99 apps — matches our PDF). Our site correctly uses in-store pricing.
-3. **⚠️ ONE DISCREPANCY FOR OWNER REVIEW — Beef upcharge:** Uber Eats charges **Beef +$2.00**
+3. **Beef upcharge — RESOLVED (owner ruling 2026-09-01: ours is correct, Beef +$3.00; no change).** Original finding: Uber Eats charges **Beef +$2.00**
    (both as protein choice and extra protein). Our DB has **Beef +$3.00** (from the PDF).
-   Which is right for the direct site? (Shrimp +$3 and Seafood +$4 match everywhere.)
+   (Shrimp +$3 and Seafood +$4 match everywhere. Uber Eats' +$2 beef is their listing's issue, not ours.)
 4. Soups: we sell Small/Large ($6.99/$10.99); UE & DD list a single ~$7.99 soup (small only).
    Our size structure is richer — nothing to change.
 5. Beverages: UE's 16oz/32oz + "No Ice" variants at $3.50/$7.00/$4.00/$8.00 exactly match our
