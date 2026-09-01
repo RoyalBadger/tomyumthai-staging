@@ -3218,6 +3218,27 @@
 
     let MENU = null;            // /api/menu payload
     let cart = [];              // [{id,name,size_label,protein,extras,spice_level,exclusions,notes,qty,unit_cents,display}]
+
+    // Cart survives page refreshes via localStorage (device-local only — nothing is
+    // sent anywhere). Saved on every render, restored after the menu loads (lines are
+    // validated against the live menu), expires after 24h, and clears itself when an
+    // order is placed (renderCart runs on the emptied cart).
+    const CART_KEY = 'tyt_cart_v1';
+    function saveCart() {
+      try { localStorage.setItem(CART_KEY, JSON.stringify({ t: Date.now(), lines: cart })); } catch {}
+    }
+    function restoreCart() {
+      try {
+        const raw = localStorage.getItem(CART_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (!saved || !Array.isArray(saved.lines) || Date.now() - saved.t > 24 * 60 * 60 * 1000) return;
+        const live = {};
+        for (const c of MENU.categories) for (const it of c.items) live[it.id] = it;
+        cart = saved.lines.filter(l => l && live[l.id] && live[l.id].orderable && l.qty >= 1 && l.qty <= 20);
+        if (cart.length) renderCart();
+      } catch {}
+    }
     let orderMode = 'pickup';
     let promoCode = 'DIRECT15'; // pre-filled; server validates at order time
     let isAddressVerified = false;
@@ -3244,6 +3265,7 @@
       renderClosedState();
       renderCategoryTabs();
       renderMenu();
+      restoreCart();
       renderCart();
     }
 
@@ -3572,6 +3594,7 @@
     };
 
     function renderCart() {
+      saveCart();
       const container = $id('cartItemsContainer');
       const footer = $id('cartFooter');
       const count = cart.reduce((s, l) => s + l.qty, 0);
