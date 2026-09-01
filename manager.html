@@ -628,13 +628,16 @@
       body * {
         visibility: hidden;
       }
-      .thermal-receipt, .thermal-receipt * {
+      #print-root, #print-root * {
         visibility: visible;
       }
-      .thermal-receipt {
+      #print-root {
         position: absolute;
         left: 0;
         top: 0;
+        width: 80mm;
+      }
+      .thermal-receipt {
         width: 80mm;
         max-width: 80mm;
         padding: 2mm;
@@ -644,6 +647,15 @@
         font-family: 'Courier New', Courier, monospace;
         font-size: 11pt;
         line-height: 1.25;
+        page-break-after: always;
+      }
+      .receipt-station {
+        font-size: 14pt;
+        font-weight: 900;
+        text-align: center;
+        border: 3px double #000;
+        padding: 1mm 0;
+        margin-bottom: 1mm;
       }
       .receipt-header {
         text-align: center;
@@ -859,11 +871,12 @@
         <table>
           <thead>
             <tr>
-              <th style="width:34%;">Dish</th>
-              <th style="width:20%;">Category</th>
-              <th style="width:14%;">Price ($)</th>
-              <th style="width:20%;">Stock</th>
-              <th style="width:12%;">On Menu</th>
+              <th style="width:30%;">Dish</th>
+              <th style="width:16%;">Category</th>
+              <th style="width:13%;">Price ($)</th>
+              <th style="width:18%;">Stock</th>
+              <th style="width:13%;">Chef Station</th>
+              <th style="width:10%;">On Menu</th>
             </tr>
           </thead>
           <tbody id="menuTableBody"></tbody>
@@ -1062,7 +1075,7 @@
       for (const it of menuItems) {
         if (it.category !== lastCat) {
           lastCat = it.category;
-          html += '<tr><td colspan="5" style="background:#141720;font-weight:800;color:var(--accent-gold);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(lastCat) + '</td></tr>';
+          html += '<tr><td colspan="6" style="background:#141720;font-weight:800;color:var(--accent-gold);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(lastCat) + '</td></tr>';
         }
         const priced = it.base_price_cents !== null;
         html += '<tr style="' + (it.is_hidden ? 'opacity:0.45;' : '') + '">'
@@ -1073,6 +1086,9 @@
               : '<em style="color:var(--text-muted);font-size:12px;">market</em>') + '</td>'
           + '<td><div class="stock-switch" onclick="toggle86(\'' + it.id + '\')">'
           +   '<span class="stock-pill ' + (it.is_86ed ? 'stock-out' : 'stock-in') + '">' + (it.is_86ed ? '🔴 86 — Sold Out' : '🟢 In Stock') + '</span>'
+          + '</div></td>'
+          + '<td><div class="stock-switch" onclick="toggleStation(\'' + it.id + '\')" title="Click to switch which kitchen ticket this dish prints on">'
+          +   '<span class="stock-pill" style="' + (it.station === 'second' ? 'background:#312e81;color:#c7d2fe;border:1px solid #6366f1;' : 'background:#1f2937;color:#d1d5db;border:1px solid #4b5563;') + '">' + (it.station === 'second' ? '👨‍🍳 Chef 2' : '👨‍🍳 Chef 1') + '</span>'
           + '</div></td>'
           + '<td><button class="btn-action" onclick="toggleHidden(\'' + it.id + '\')">' + (it.is_hidden ? 'Show' : 'Hide') + '</button></td>'
           + '</tr>';
@@ -1097,6 +1113,17 @@
         it.is_hidden = r.item.is_hidden;
         renderMenu();
         toast(it.name + (it.is_hidden ? ' hidden from the menu.' : ' visible on the menu.'));
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    async function toggleStation(id) {
+      const it = menuItems.find(x => x.id === id);
+      const next = it.station === 'second' ? 'main' : 'second';
+      try {
+        const r = await api('/api/admin/menu', { method: 'PATCH', body: { id, station: next } });
+        it.station = r.item.station;
+        renderMenu();
+        toast(it.name + ' now prints on the ' + (it.station === 'second' ? 'CHEF 2' : 'MAIN KITCHEN') + ' ticket.');
       } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
@@ -1306,7 +1333,7 @@
         });
         const printBtn = document.createElement('button');
         printBtn.className = 'btn-queue btn-done';
-        printBtn.innerText = '🖨️ Print Ticket';
+        printBtn.innerText = '🖨️ Print Tickets';
         printBtn.onclick = () => printReceipt(o);
         node.querySelector('.queue-action-btns').appendChild(printBtn);
         list.appendChild(node);
@@ -1321,28 +1348,62 @@
       } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
-    function printReceipt(o) {
-      const node = $('receipt-tpl').content.firstElementChild.cloneNode(true);
-      node.querySelector('[data-receipt-type]').innerText = o.order_type.toUpperCase();
-      node.querySelector('[data-receipt-code]').innerText = o.public_code;
-      node.querySelector('[data-receipt-time]').innerText = new Date(o.created_at).toLocaleString('en-US', { timeZone: 'America/Chicago' });
-      node.querySelector('[data-receipt-customer]').innerText = o.customer_name;
-      node.querySelector('[data-receipt-phone]').innerText = o.customer_phone;
-      node.querySelector('[data-receipt-address]').innerText = o.order_type === 'delivery'
-        ? (o.delivery_address || '') + (o.delivery_notes ? ' / ' + o.delivery_notes : '') : '';
-      node.querySelector('[data-receipt-items]').innerHTML = o.items.map(it => `
+    function ticketItemsHtml(items) {
+      return items.map(it => `
         <div class="receipt-item-row">
           <div class="receipt-item-main">${it.qty} x ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}</div>
           <div>${it.protein ? esc(it.protein) : ''}${it.spice_level ? ' - SPICE LV ' + it.spice_level : ''}${it.extras && it.extras.length ? ' - +' + esc(it.extras.join(', +')) : ''}</div>
           ${it.exclusions ? '<div class="receipt-exclusion">*** ' + esc(it.exclusions) + ' ***</div>' : ''}
           ${it.notes ? '<div>NOTE: ' + esc(it.notes) + '</div>' : ''}
         </div>`).join('');
-      node.querySelector('[data-receipt-subtotal]').innerText = '$' + dollars(o.subtotal_cents - o.discount_cents);
-      node.querySelector('[data-receipt-tax]').innerText = '$' + dollars(o.tax_cents);
-      node.querySelector('[data-receipt-total]').innerText = '$' + dollars(o.total_cents);
-      document.body.appendChild(node);
+    }
+
+    // One print job = up to 3 tickets; the auto-cutter cuts between pages:
+    //   1) customer receipt (pickup/delivery info + totals)
+    //   2) CHEF 2 kitchen ticket (items the owner assigned to the second chef)
+    //   3) MAIN KITCHEN ticket (all other items)
+    // The order code prints large on every ticket. Empty kitchen tickets are skipped.
+    function printReceipt(o) {
+      const root = document.createElement('div');
+      root.id = 'print-root';
+
+      const rec = $('receipt-tpl').content.firstElementChild.cloneNode(true);
+      rec.querySelector('[data-receipt-type]').innerText = o.order_type.toUpperCase();
+      rec.querySelector('[data-receipt-code]').innerText = o.public_code;
+      rec.querySelector('[data-receipt-time]').innerText = new Date(o.created_at).toLocaleString('en-US', { timeZone: 'America/Chicago' });
+      rec.querySelector('[data-receipt-customer]').innerText = o.customer_name;
+      rec.querySelector('[data-receipt-phone]').innerText = o.customer_phone;
+      rec.querySelector('[data-receipt-address]').innerText = o.order_type === 'delivery'
+        ? (o.delivery_address || '') + (o.delivery_notes ? ' / ' + o.delivery_notes : '') : '';
+      rec.querySelector('[data-receipt-items]').innerHTML = ticketItemsHtml(o.items);
+      rec.querySelector('[data-receipt-subtotal]').innerText = '$' + dollars(o.subtotal_cents - o.discount_cents);
+      rec.querySelector('[data-receipt-tax]').innerText = '$' + dollars(o.tax_cents);
+      rec.querySelector('[data-receipt-total]').innerText = '$' + dollars(o.total_cents);
+      root.appendChild(rec);
+
+      const kitchenTicket = (label, items) => {
+        if (!items.length) return;
+        const d = document.createElement('div');
+        d.className = 'thermal-receipt';
+        d.innerHTML = `
+          <div class="receipt-header">
+            <div class="receipt-station">${label}</div>
+            <div class="receipt-code">${esc(o.public_code)}</div>
+            <div class="receipt-type">${esc(o.order_type.toUpperCase())}</div>
+            <div class="receipt-time">${new Date(o.created_at).toLocaleString('en-US', { timeZone: 'America/Chicago' })}</div>
+          </div>
+          <div class="receipt-divider">================================</div>
+          <div class="receipt-items-list">${ticketItemsHtml(items)}</div>
+          <div class="receipt-divider">================================</div>
+          <div class="receipt-cust-name">${esc(o.customer_name)}</div>`;
+        root.appendChild(d);
+      };
+      kitchenTicket('** CHEF 2 **', o.items.filter(it => it.station === 'second'));
+      kitchenTicket('** MAIN KITCHEN **', o.items.filter(it => it.station !== 'second'));
+
+      document.body.appendChild(root);
       window.print();
-      setTimeout(() => node.remove(), 500);
+      setTimeout(() => root.remove(), 500);
     }
 
     // ---------- ui ----------

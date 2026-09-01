@@ -23,7 +23,7 @@ export default requireAdmin(async (req, res, admin) => {
     if (orders.length) {
       items = (await query(
         `SELECT order_id, name, size_label, protein, extras, spice_level, exclusions, notes,
-                unit_price_cents, qty
+                unit_price_cents, qty, COALESCE(station, 'main') AS station
          FROM order_items WHERE order_id = ANY($1::uuid[]) ORDER BY id`,
         [orders.map(o => o.id)])).rows;
     }

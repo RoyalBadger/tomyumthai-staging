@@ -87,10 +87,10 @@ export default async function handler(req, res) {
     for (const l of priced.lines) {
       await client.query(
         `INSERT INTO order_items (order_id, item_id, name, size_label, protein, extras,
-           spice_level, exclusions, notes, unit_price_cents, qty)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+           spice_level, exclusions, notes, unit_price_cents, qty, station)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
         [order.id, l.item_id, l.name, l.size_label, l.protein, l.extras,
-         l.spice_level, l.exclusions, l.notes, l.unit_price_cents, l.qty]);
+         l.spice_level, l.exclusions, l.notes, l.unit_price_cents, l.qty, l.station || 'main']);
     }
     await client.query('COMMIT');
   } catch (e) {

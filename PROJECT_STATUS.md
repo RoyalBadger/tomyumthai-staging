@@ -31,7 +31,7 @@
   Stripe `receipt_email` (verified). Live Stripe account activated; sandbox keys stay until launch.
 - **Phase 4 — Kitchen (server + UI):** queue polling with new-order chime, guarded lifecycle
   (received→cooking→ready→completed, no skips, optimistic concurrency), giant allergy callouts,
-  80mm thermal receipt template + print button. Printer identified: Star TSP143IIIW (TSP100III futurePRNT, Wi-Fi). No native WebPRNT on this series — print tier = futurePRNT Windows driver + existing window.print receipt flow; validate at kitchen dry-run.
+  80mm thermal receipt template + print button. Printer identified: Star TSP143IIIW (TSP100III futurePRNT, Wi-Fi). No native WebPRNT on this series — print tier = futurePRNT Windows driver + existing window.print receipt flow; validate at kitchen dry-run. Three-ticket printing added 2026-09-01: one print job = customer receipt + CHEF 2 ticket + MAIN KITCHEN ticket (auto-cut between pages, order code large on all three); owner assigns each dish a chef station in the manager menu tab.
 - **Delivery zone:** Google Routes API **driving miles from the restaurant address** (fixed the
   straight-line bug the owner caught — Lake Highlands 5.1 mi crow-flies is 6.6+ mi by road, now
   correctly refused). Autocomplete geocodes street-only with location bias, re-attaches the typed
