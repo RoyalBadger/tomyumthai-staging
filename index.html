@@ -2711,7 +2711,7 @@
       <ul class="nav-links">
         <li><a href="#menu">Menu</a></li>
         <li><a href="#story">About Us</a></li>
-        <li><a href="#specials">Direct Specials</a></li>
+
         <li><a href="#location">Hours & Location</a></li>
       </ul>
 
@@ -2860,6 +2860,9 @@
         </button>
       </div>
 
+      <!-- Quick links straight into each menu section -->
+      <div id="quickCatLinks" class="category-tabs" style="margin-top:12px;justify-content:center;"></div>
+
       <!-- Expandable Menu Container -->
       <div id="menuExpandableWrapper">
 
@@ -2983,23 +2986,6 @@
     </div>
   </section>
 
-  <!-- ==================== DIRECT ORDERING PROMO BOX ==================== -->
-  <div class="container">
-    <div id="specials" class="promo-banner">
-      <div class="promo-badge">Direct Ordering Perk</div>
-      <h2 class="promo-title">Save 15% When You Order Direct</h2>
-      <p class="promo-desc">
-        Skip third-party delivery app markups! Order directly through our website to enjoy our lowest menu prices, and 100% of your support stays right here with our local kitchen.
-      </p>
-      <div class="promo-code-pill">
-        <span>🎟️ Coupon Code:</span>
-        <strong style="color:#ffffff;letter-spacing:2px;">DIRECT15</strong>
-      </div>
-      <div>
-        <a href="#menu" class="btn-customize-dish" style="display:inline-flex;width:auto;padding:12px 28px;font-size:15px;">🛵 Order Direct Now & Save 15%</a>
-      </div>
-    </div>
-  </div>
 
   <!-- ==================== ABOUT US / NEIGHBORHOOD GEM STORY ==================== -->
   <section id="story" class="story-section">
@@ -3086,7 +3072,7 @@
             <strong>Tom Yum Thai Restaurant</strong><br>
             3313 Belt Line Rd<br>
             Garland, TX 75044<br>
-            <span style="font-size:12.5px;color:var(--accent-orange);">Near Jupiter Rd (Garland / Richardson Border)</span>
+
           </div>
 
           <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
@@ -3101,14 +3087,11 @@
   <!-- ==================== FOOTER ==================== -->
   <footer>
     <div class="container">
-      <div class="footer-brand">TOM YUM THAI RESTAURANT</div>
-      <p>3313 Belt Line Rd, Garland, TX 75044 • (214) 703-0391</p>
-      
       <ul class="footer-links">
         <li><a href="#menu">Menu</a></li>
         <li><a href="#story">About Us</a></li>
         <li><a href="#location">Hours & Location</a></li>
-        <li><a href="https://www.facebook.com/people/Tom-Yum-Thai-Restaurant/100057476564639/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+
         <li><a href="/privacy">Privacy &amp; SMS Policy</a></li>
       </ul>
 
@@ -3152,7 +3135,7 @@
 
       <div class="cart-drawer-footer" id="cartFooter" style="display:none;">
         <div class="promo-input-row">
-          <input type="text" class="promo-input" id="promoCodeInput" value="DIRECT15" placeholder="Promo code">
+          <input type="text" class="promo-input" id="promoCodeInput" value="" placeholder="Promo code">
           <button class="btn-apply-promo" onclick="applyPromo()">Apply</button>
         </div>
 
@@ -3162,7 +3145,7 @@
             <td id="subtotalVal">$0.00</td>
           </tr>
           <tr class="discount-row" id="discountRow">
-            <td>Direct Order Discount (15% OFF):</td>
+            <td>Promo Discount:</td>
             <td id="discountVal">-$0.00</td>
           </tr>
           <tr id="deliveryFeeRow" style="display:none;">
@@ -3228,7 +3211,7 @@
       } catch {}
     }
     let orderMode = 'pickup';
-    let promoCode = 'DIRECT15'; // pre-filled; server validates at order time
+    let promoCode = null; // set when the customer applies a code; server validates at order time
     let isAddressVerified = false;
     let activeOrder = null;     // {code, client_secret} during payment
     let stripeInstance = null, stripeElements = null;
@@ -3294,6 +3277,17 @@
           filterDishes();
         });
         chips.querySelector('[data-filter="all"]').classList.add('active');
+      }
+
+      // Quick category links under the Browse Our Menu bar: expand + jump.
+      const quick = $id('quickCatLinks');
+      if (quick) {
+        quick.innerHTML = MENU.categories.map(c =>
+          `<button type="button" class="cat-btn" data-quick="${esc(c.id)}">${esc(c.name)}</button>`).join('');
+        quick.querySelectorAll('[data-quick]').forEach(b => b.addEventListener('click', () => {
+          const target = tabs.querySelector(`.cat-btn[data-category="${b.dataset.quick}"]`);
+          if (target) target.click();
+        }));
       }
     }
 
@@ -4135,7 +4129,7 @@
 
         <!-- Editable Promo Row -->
         <div class="promo-row">
-          <input type="text" id="promo-code" placeholder="PROMO CODE (DIRECT15)">
+          <input type="text" id="promo-code" placeholder="Promo code">
           <button type="button" id="promo-apply">Apply</button>
         </div>
       </div>
