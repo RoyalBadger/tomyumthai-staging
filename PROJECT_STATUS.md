@@ -80,6 +80,30 @@
   do not compromise to save the fee.
 - Migrations 006–011; ~95 unit tests green throughout.
 
+### September 1 evening — owner-driven polish pass (all deployed & verified)
+- **Cart:** lines are editable (✏️ Edit reopens the Customize popup prefilled; "Update Item"
+  replaces in place). Friend-reported gap closed.
+- **Homepage trims:** perks row, hero badge + paragraph, "Cooked Fresh/Authentic Thai Menu"
+  heading, footer brand block, Facebook link, Jupiter Rd note, CTA-bar title, "(78 Dishes)"
+  button text — all removed. Header subtitle: "Since 2005" centered under the logo.
+- **DIRECT15 retired from view:** promo section, nav item, prefills, 15% labels and the
+  social-share blurb are gone. The promo-code input + server validation remain for future
+  codes. NOTE: the DIRECT15 code itself is still active in the promo_codes table — ask the
+  owner whether to deactivate.
+- **Trust bar:** spice tile → ⭐ 4.6/5.0 · 750+ Google Reviews (sourced via Birdeye: 762 of
+  its 764 aggregated reviews are Google), linked to the Maps listing.
+- **Menu navigation:** quick category chips under the Browse bar (single line) are the only
+  category nav; old in-menu tab bar and Show All/Vegetarian filter chips removed (per-dish
+  Vegetarian checkbox covers it). Search bar moved above Signatures.
+- **Cards:** CTA reads "Customize"; trailing parentheticals auto-move into the orange Thai
+  sub-line (cart/kitchen keep full names); market-price whole fish hidden until the planned
+  weekly manager-pricing flow exists (portal Show button reverses).
+- **Dish photo placement (final after 3 iterations):** photos appear ONLY inside the
+  Customize popup, full-width under the dish name; cards stay text-only.
+- **Thai names:** Opus subagent generated romanization + Thai script for 68 dishes
+  (5 skipped as non-Thai dishes, 14 flagged uncertain); applied with an only-if-empty
+  guard, audited. Owner review sheet: THAI-NAMES.md — family is the language authority.
+
 ## 🔲 Remaining
 
 ### Owner
