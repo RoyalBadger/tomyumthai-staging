@@ -3314,13 +3314,27 @@
       filterDishes();
     }
 
+    // "Thai Chicken Rice (Khao Man Gai)" -> title "Thai Chicken Rice", with the
+    // parenthetical joining the orange sub-line next to the Thai script (skipped
+    // when the sub-line already contains it). Cart and kitchen keep the full name.
+    function splitDishName(item) {
+      const mm = /^(.+?) *\((.+)\)$/.exec(item.name || '');
+      if (!mm) return { title: item.name, sub: item.thai || '' };
+      const paren = mm[2];
+      let sub = item.thai || '';
+      if (!sub) sub = paren;
+      else if (!sub.toLowerCase().includes(paren.toLowerCase())) sub = paren + ' • ' + sub;
+      return { title: mm[1], sub };
+    }
+
     function buildCard(tpl, item, catId) {
       const node = tpl.content.firstElementChild.cloneNode(true);
       node.dataset.itemId = item.id;
       node.dataset.category = catId;
       node.dataset.veg = item.vegetarian ? '1' : '0';
-      node.querySelector('[data-name]').innerText = item.name;
-      node.querySelector('[data-thai]').innerText = item.thai || '';
+      const nm = splitDishName(item);
+      node.querySelector('[data-name]').innerText = nm.title;
+      node.querySelector('[data-thai]').innerText = nm.sub;
       node.querySelector('[data-desc]').innerText = item.description || '';
       node.querySelector('[data-price-note]').innerText = item.price_note || '';
       node.querySelector('[data-price]').innerText =
@@ -3455,8 +3469,9 @@
       modalDish = item; modalQty = 1;
       modalEditIdx = typeof editIdx === 'number' ? editIdx : null;
       const m = $id('dishModal');
-      m.querySelector('[data-m-name]').innerText = item.name;
-      m.querySelector('[data-m-thai]').innerText = item.thai || '';
+      const nm = splitDishName(item);
+      m.querySelector('[data-m-name]').innerText = nm.title;
+      m.querySelector('[data-m-thai]').innerText = nm.sub;
       m.querySelector('[data-m-desc]').innerText = item.description || '';
       const photo = m.querySelector('[data-m-photo]');
       if (item.image) {
