@@ -104,16 +104,21 @@
   (5 skipped as non-Thai dishes, 14 flagged uncertain); applied with an only-if-empty
   guard, audited. Owner review sheet: THAI-NAMES.md — family is the language authority.
 
-### September 2 — Delivery-by-Grubhub fallback
+### September 2 — Delivery-by-Grubhub fallback (deployed & verified)
 - **Feature:** manager toggle "Pause Direct Delivery (Grubhub takes over)" (Hours tab). While
   paused with the store open: customer Delivery tab becomes an outbound "Delivery by Grubhub"
-  link, banner offers pickup or Grubhub, checkout delivery radio hidden, /api/orders refuses
-  delivery server-side. Migration 013 adds settings.delivery_paused.
+  link, a banner shows (trimmed at owner request to headline + Grubhub link), checkout
+  delivery radio hidden, /api/orders refuses delivery server-side. Migration 013 adds
+  settings.delivery_paused. First real use same evening: delivery paused at close, verified
+  live (delivery.paused=true, pickup still accepting). Owner resumes via portal or CLI.
 - **Incident + hardening:** code deployed before migration 013 had applied → /api/menu 500ed
-  (~15 min, staging only; owner's `!`-run migrations produced no visible output — cause TBD).
-  Fix: settings is a one-row table, all settings SELECTs are now `SELECT *`, so a new column's
-  code and migration can deploy in either order (missing column = feature off, strict `=== true`
-  checks). **Migration 013 may still be unapplied — verify by flipping the toggle in the portal.**
+  (~15 min, staging only; the owner's `!`-run migrations never actually executed). Fix:
+  settings is a one-row table, all settings SELECTs are now `SELECT *`, so a new column's
+  code and migration can deploy in either order (missing column = feature off, strict
+  `=== true` checks). Migration 013 applied 2026-09-02 evening.
+- **CLI runners (DEV.md "Routine operations"):** `db/migrate-with-env.mjs` (vercel env pull →
+  migrate → delete creds file) and `db/set-delivery-pause.mjs on|off`; both allowlisted in
+  the owner's Claude Code settings so future migrations/pauses are friction-free.
 
 ## 🔲 Remaining
 

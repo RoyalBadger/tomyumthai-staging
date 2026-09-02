@@ -16,6 +16,9 @@
    npm run seed
    ```
 
+   (Day-to-day, `node db\migrate-with-env.mjs` replaces the manual paste — see
+   "Routine operations" below.)
+
 3. Verify: open `https://tomyumthai-staging.vercel.app/api/health` → should return
    `{"ok":true,"db":true,"menu_items":<count>}` and `/api/menu` → the full menu JSON.
 
@@ -48,6 +51,28 @@ lib/          ← shared server code (db pool, later: auth, pricing)
 db/migrations ← numbered SQL migrations (append-only; never edit an applied one)
 db/seed.mjs   ← real menu seed, idempotent (safe to re-run after price edits)
 ```
+
+## Routine operations (CLI runners)
+
+Both runners pull `DATABASE_URL` from Vercel themselves (`npx vercel env pull`), do their
+job, and delete the pulled credentials file — no manual paste needed. Run from any cwd:
+
+```powershell
+node C:\Users\strip\tomyumthai-staging\db\migrate-with-env.mjs      # apply pending migrations
+node C:\Users\strip\tomyumthai-staging\db\set-delivery-pause.mjs on  # pause direct delivery
+node C:\Users\strip\tomyumthai-staging\db\set-delivery-pause.mjs off # resume direct delivery
+```
+
+- **Migrations before deploys:** run `migrate-with-env.mjs` BEFORE `git push` when a change
+  adds a column the new code reads. (Settings reads are `SELECT *` and tolerate a missing
+  column as feature-off, but don't rely on that for other tables.)
+- **Delivery pause** (= the manager portal's "Pause Direct Delivery" toggle): while paused
+  and the store is open, the customer site's Delivery tab becomes an outbound
+  "Delivery by Grubhub" link, a banner shows, the checkout delivery radio is hidden, and
+  `/api/orders` refuses delivery orders server-side. Pickup is unaffected. The public menu
+  API is edge-cached ~60s, so allow a minute for customers to see a flip.
+- These exact commands are allowlisted in the owner's Claude Code settings
+  (`~/.claude/settings.json`) so Claude can run them without permission friction.
 
 ## Menu price changes (until the manager portal ships in Phase 2)
 
