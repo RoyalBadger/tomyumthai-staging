@@ -127,6 +127,10 @@
       sliding sessions (separate from admin), privacy policy amended. /api/me is one
       consolidated function (deployment at the 12-function cap exactly). Owner still
       needs the first real OTP test on their own phone.
+- [x] Delivery-zone SERVER enforcement (2026-09-01): /api/orders geocodes the submitted
+      address and checks driving distance BEFORE creating the order/payment; out-of-zone
+      gets a friendly 409 pre-card-form. Closed the advisory-only gap (isAddressVerified
+      was never enforced) that the saved-address prefill would have widened.
 - [ ] SMS order-ready sender after toll-free approval (templates approved; must check `sms_opt_in`)
 - [ ] Delete dead free-delivery-over-$45 markup (or implement server-side if owner wants the promo)
 - [ ] Launch sequence: `order.mytomyumthai.com` CNAME via WordPress DNS API; live Stripe keys +
