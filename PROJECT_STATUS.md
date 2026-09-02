@@ -104,6 +104,17 @@
   (5 skipped as non-Thai dishes, 14 flagged uncertain); applied with an only-if-empty
   guard, audited. Owner review sheet: THAI-NAMES.md — family is the language authority.
 
+### September 2 — Delivery-by-Grubhub fallback
+- **Feature:** manager toggle "Pause Direct Delivery (Grubhub takes over)" (Hours tab). While
+  paused with the store open: customer Delivery tab becomes an outbound "Delivery by Grubhub"
+  link, banner offers pickup or Grubhub, checkout delivery radio hidden, /api/orders refuses
+  delivery server-side. Migration 013 adds settings.delivery_paused.
+- **Incident + hardening:** code deployed before migration 013 had applied → /api/menu 500ed
+  (~15 min, staging only; owner's `!`-run migrations produced no visible output — cause TBD).
+  Fix: settings is a one-row table, all settings SELECTs are now `SELECT *`, so a new column's
+  code and migration can deploy in either order (missing column = feature off, strict `=== true`
+  checks). **Migration 013 may still be unapplied — verify by flipping the toggle in the portal.**
+
 ## 🔲 Remaining
 
 ### Owner
