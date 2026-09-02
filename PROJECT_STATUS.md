@@ -62,7 +62,7 @@
 - **Standing instruction: no Stripe test charges until owner says the site is close to finished.**
 
 ### Gemini (design lane)
-- [ ] Food photography (shot list in GEMINI_TODO.md C3 — Khao Man Gai hero minimum) — site has ZERO images
+- [ ] Food photography (shot list in GEMINI_TODO.md C3) — 14 placeholder photos from our Uber Eats listing now live (See Photo buttons); real shots replace img/dishes/<id>.jpg files
 - [x] Favicon — DONE 2026-08-31 by Claude (mortar emblem from owner logo via Adobe crop + bg removal)
 - [ ] Marketing assets: DIRECT15 graphics, table tents, final bag insert (swap URL to order.mytomyumthai.com)
 - [ ] Optional: restyle Claude's #dishModal / "My Orders" shell (A6) — logic stays Claude's
