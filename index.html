@@ -2871,6 +2871,12 @@
         <span data-closed-message>Online ordering is currently closed. Please call (214) 703-0391.</span>
       </div>
 
+      <!-- Menu Search -->
+      <div class="search-box" style="margin:0 0 18px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="menuSearch" class="search-input" placeholder="Search dishes (e.g. Khao Man Gai, Pad Thai, Tom Yum, Curry, Tofu)...">
+      </div>
+
       <!-- Dynamic API Menu Root Container -->
       <div data-menu-root></div>
 
@@ -2954,33 +2960,6 @@
       </template>
 
       <!-- Search & Category Jump Navigation -->
-      <div class="menu-controls">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
-          <div class="search-box" style="flex:1;min-width:280px;margin-bottom:0;">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="menuSearch" class="search-input" placeholder="Search dishes (e.g. Khao Man Gai, Pad Thai, Tom Yum, Curry, Tofu)...">
-          </div>
-          
-        </div>
-
-        <!-- Fast Category Jump Navigation Chips -->
-        <div class="category-tabs" id="categoryTabs">
-          <button type="button" class="cat-btn active" data-category="all" onclick="jumpToCategory('all')">All Items</button>
-          <button type="button" class="cat-btn" data-category="signatures" onclick="jumpToCategory('signatures')">👑 Chef Signatures</button>
-          <button type="button" class="cat-btn" data-category="starters" onclick="jumpToCategory('starters')">🍲 Starters &amp; Soups</button>
-          <button type="button" class="cat-btn" data-category="noodles" onclick="jumpToCategory('noodles')">🍜 Noodles &amp; Fried Rice</button>
-          <button type="button" class="cat-btn" data-category="curries" onclick="jumpToCategory('curries')">🍛 Authentic Curries</button>
-          <button type="button" class="cat-btn" data-category="desserts" onclick="jumpToCategory('desserts')">🥭 Drinks &amp; Desserts</button>
-        </div>
-
-        <div class="dietary-chips">
-          <span style="font-size:11px;color:var(--text-dim);font-weight:700;align-self:center;">Filters:</span>
-          <button class="chip-btn" data-filter="all">Show All</button>
-          <button class="chip-btn" data-filter="popular">🔥 Most Popular</button>
-          <button class="chip-btn" data-filter="veg">🌱 Vegetarian / Vegan</button>
-          <button class="chip-btn" data-filter="gf">🌾 Gluten-Free</button>
-        </div>
-      </div>
 
     </div>
   </section>
@@ -3249,45 +3228,20 @@
       }
     }
 
+    // The quick category chips under the Browse Our Menu bar are the only category
+    // navigation (the old in-menu tab bar and dietary filter chips were removed —
+    // the per-dish Vegetarian checkbox covers that need). Each chip expands the
+    // menu and jumps to its section.
     function renderCategoryTabs() {
-      const tabs = $id('categoryTabs');
-      if (!tabs) return;
-      tabs.innerHTML = '<button class="cat-btn active" data-category="all">All Items</button>' +
-        MENU.categories.map(c => `<button class="cat-btn" data-category="${esc(c.id)}">${esc(c.name)}</button>`).join('');
-      tabs.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', () => {
-        tabs.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+      const quick = $id('quickCatLinks');
+      if (!quick) return;
+      quick.innerHTML = MENU.categories.map(c =>
+        `<button type="button" class="cat-btn" style="font-size:11px;padding:5px 10px;white-space:nowrap;" data-quick="${esc(c.id)}">${esc(c.name)}</button>`).join('');
+      quick.querySelectorAll('[data-quick]').forEach(b => b.addEventListener('click', () => {
         if (typeof isMenuExpanded !== 'undefined' && !isMenuExpanded) toggleMenuExpansion(true);
         filterDishes();
-        const cat = btn.dataset.category;
-        if (cat !== 'all') document.querySelector(`[data-menu-root] .menu-category-section[data-cat="${cat}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelector(`[data-menu-root] .menu-category-section[data-cat="${b.dataset.quick}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }));
-      // Vegetarian Menu filter — wired to the is_vegetarian flag the owner controls
-      // from the manager portal. (Popular/GF chips stay hidden: no data behind them yet.)
-      const chips = document.querySelector('.dietary-chips');
-      if (chips) {
-        chips.querySelectorAll('[data-filter="popular"], [data-filter="gf"]').forEach(b => b.remove());
-        chips.querySelector('[data-filter="veg"]').innerHTML = '🌱 Vegetarian Menu';
-        chips.querySelectorAll('.chip-btn').forEach(btn => btn.onclick = () => {
-          window.__vegOnly = btn.dataset.filter === 'veg' && !btn.classList.contains('active');
-          chips.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-          (window.__vegOnly ? btn : chips.querySelector('[data-filter="all"]')).classList.add('active');
-          if (typeof isMenuExpanded !== 'undefined' && !isMenuExpanded) toggleMenuExpansion(true);
-          filterDishes();
-        });
-        chips.querySelector('[data-filter="all"]').classList.add('active');
-      }
-
-      // Quick category links under the Browse Our Menu bar: expand + jump.
-      const quick = $id('quickCatLinks');
-      if (quick) {
-        quick.innerHTML = MENU.categories.map(c =>
-          `<button type="button" class="cat-btn" style="font-size:11px;padding:5px 10px;white-space:nowrap;" data-quick="${esc(c.id)}">${esc(c.name)}</button>`).join('');
-        quick.querySelectorAll('[data-quick]').forEach(b => b.addEventListener('click', () => {
-          const target = tabs.querySelector(`.cat-btn[data-category="${b.dataset.quick}"]`);
-          if (target) target.click();
-        }));
-      }
     }
 
     function pillRadio(cls, name, value, label, checked) {
