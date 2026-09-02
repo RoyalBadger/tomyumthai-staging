@@ -3337,7 +3337,7 @@
       if (item.orderable) {
         node.onclick = () => openDishModal(item);
         if (cta) {
-          cta.innerHTML = '⚙️ Customize &amp; Add to Order';
+          cta.innerHTML = 'Customize';
           cta.onclick = (e) => { e.stopPropagation(); openDishModal(item); };
         }
       } else {
