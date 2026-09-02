@@ -3345,22 +3345,6 @@
         if (cta) cta.style.display = 'none';
       }
 
-      // Optional dish photo: thumbnail on the Thai-name row (name left, photo right),
-      // click to open full-size.
-      if (item.image) {
-        const th = document.createElement('img');
-        th.src = item.image;
-        th.alt = item.name + ' photo';
-        th.loading = 'lazy';
-        th.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--border-subtle,#374151);cursor:zoom-in;flex:0 0 auto;';
-        th.onclick = (e) => { e.stopPropagation(); openPhotoLightbox(item); };
-        const thaiEl = node.querySelector('[data-thai]');
-        const row = document.createElement('div');
-        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;';
-        thaiEl.parentElement.insertBefore(row, thaiEl);
-        row.appendChild(thaiEl);
-        row.appendChild(th);
-      }
       return node;
     }
 
@@ -3432,6 +3416,7 @@
             <button type="button" class="modal-close-btn" data-m-close>&times;</button>
           </div>
           <div class="custom-modal-body">
+            <img data-m-photo alt="" loading="lazy" style="display:none;width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:12px;cursor:zoom-in;">
             <p class="modal-desc-box" data-m-desc></p>
             <div class="customizer-group" data-m-group="sizes"><label class="custom-label">Choose Size:</label><div class="size-pills" data-m-sizes></div></div>
             <div class="customizer-group" data-m-group="proteins"><label class="custom-label">Choice of Protein:</label><div class="protein-options" data-m-proteins></div></div>
@@ -3473,6 +3458,16 @@
       m.querySelector('[data-m-name]').innerText = item.name;
       m.querySelector('[data-m-thai]').innerText = item.thai || '';
       m.querySelector('[data-m-desc]').innerText = item.description || '';
+      const photo = m.querySelector('[data-m-photo]');
+      if (item.image) {
+        photo.src = item.image;
+        photo.alt = item.name + ' photo';
+        photo.style.display = 'block';
+        photo.onclick = () => openPhotoLightbox(item);
+      } else {
+        photo.style.display = 'none';
+        photo.removeAttribute('src');
+      }
       const show = (g, on) => { m.querySelector(`[data-m-group="${g}"]`).style.display = on ? '' : 'none'; };
       m.querySelector('[data-m-sizes]').innerHTML = item.sizes.map((s, i) =>
         pillRadio('size-pill', 'm-size', s.label, `${s.label} — ${money(s.price_cents)}`, i === 0)).join('');
