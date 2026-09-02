@@ -131,6 +131,17 @@
       address and checks driving distance BEFORE creating the order/payment; out-of-zone
       gets a friendly 409 pre-card-form. Closed the advisory-only gap (isAddressVerified
       was never enforced) that the saved-address prefill would have widened.
+- [x] OTP sign-in CONFIRMED working live (2026-09-01): production Verify send succeeded;
+      Verify uses Twilio's own sender pool, so the pending toll-free review does not
+      block it. Owner customer profile created (+1 214-317-1251, Stephen Triplett).
+- [x] Payment screen format fixes (2026-09-02, owner report): Stripe Payment Element
+      switched to accordion layout (cramped 4-tab row overflowed the drawer); removed
+      forced 300px centered frame (blank-box-then-clip effect); 'Direct 15% Discount
+      −$0.00' phantom row now hidden unless a promo applies; trust line added under
+      the form ('securely processed by Stripe — card details never touch our servers').
+      Owner may later opt to hide Cash App/Bank/Affirm for a pure card+wallet checkout.
+- Owner name correction: STEPHEN Triplett (an early 'Shawn' mis-inference was purged
+      from git config, test fixtures, and the customer profile on 2026-09-01).
 - [ ] SMS order-ready sender after toll-free approval (templates approved; must check `sms_opt_in`)
 - [ ] Delete dead free-delivery-over-$45 markup (or implement server-side if owner wants the promo)
 - [ ] Launch sequence: `order.mytomyumthai.com` CNAME via WordPress DNS API; live Stripe keys +
