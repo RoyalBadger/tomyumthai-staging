@@ -9,12 +9,8 @@ export default requireAdmin(async (req, res, admin) => {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'GET') {
-    const r = await query(
-      `SELECT store_open_override, closed_message, holiday_dates, business_hours,
-              last_order_buffer_minutes, delivery_radius_miles, delivery_fee_cents,
-              delivery_minimum_cents, delivery_paused, tax_rate_bps,
-              pickup_eta_minutes, delivery_eta_minutes
-       FROM settings`, []);
+    // one-row table; SELECT * tolerates a column whose migration hasn't run yet
+    const r = await query('SELECT * FROM settings', []);
     return res.status(200).json(r.rows[0]);
   }
 
