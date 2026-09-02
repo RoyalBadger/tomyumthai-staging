@@ -120,9 +120,28 @@
   migrate → delete creds file) and `db/set-delivery-pause.mjs on|off`; both allowlisted in
   the owner's Claude Code settings so future migrations/pauses are friction-free.
 
+### September 2 — Security & abuse hardening (full review + fixes deployed)
+- Deep-dive review (order spam, Google/Twilio spend abuse, customer PII). Verdict: prepaid-only
+  design already blocks kitchen spam; admin auth strong; /api/order-status returns no PII;
+  customer text escaped in the portal (no stored XSS). Fixes shipped for everything found:
+  1. **Google caps everywhere** — the order-time zone gate now checks the same daily/monthly
+     spend counters as /api/distance (was the one real gap; console quotas were the backstop).
+  2. **Global OTP cap** — `OTP_DAILY_CAP` (default 150 sends/day) on top of per-phone/per-IP
+     limits; caps worst-case Twilio spend. Owner still to flip Fraud Guard + US-only geo in
+     the Twilio console.
+  3. **Unspoofable rate-limit IPs** — clientIp prefers Vercel's x-real-ip.
+  4. **PII retention (migration 014)** — orders link customer_id at signed-in checkout; after
+     90 days completed/canceled orders keep items/totals but lose name/phone/email/address
+     (account history survives via customer_id). Chosen over phone-hashing, which would be
+     theater while active orders operationally need plaintext contact info.
+  5. **Housekeeping** (lib/maintenance.js, opportunistic ~4 runs/day): 24h abandoned-checkout
+     cancel, 30-day purge of never-paid canceled orders, 45-day rate-limit row cleanup.
+
 ## 🔲 Remaining
 
 ### Owner
+- [ ] Twilio console (from the 2026-09-02 security review): confirm Verify **Fraud Guard** is
+      enabled and set SMS **Geo Permissions** to US-only
 - [ ] Mobile walkthrough on a real phone (especially the new customization modal)
 - [x] Printer identified 2026-09-01: Star TSP143IIIW (photo) — decision: driver + browser print, no new code
 - [ ] Delete the old unused Google API key; rotate Twilio auth token at launch (both passed through chat)

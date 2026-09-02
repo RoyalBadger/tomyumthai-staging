@@ -34,6 +34,7 @@
 | `GOOGLE_MONTHLY_CAP` | 4 | optional; max Google distance calls per calendar month (default 9000 — below the free allowance, so the Google bill is $0 by construction). |
 | `GOOGLE_DAILY_CAP` | 4 | optional; max Google distance calls per day across all visitors (default 500) — past it, labeled estimates serve instead. |
 | `GOOGLE_MAPS_API_KEY` | 4 | driving-distance zone checks (/api/distance). Without it, distances are straight-line × 1.3 labeled "est.". Setup: console.cloud.google.com → new project → enable **Routes API** → billing → Credentials → API key → restrict to Routes API. |
+| `OTP_DAILY_CAP` | 5 | optional; max Twilio Verify OTP sends per day site-wide (default 150). Past it, sign-in says "try later"; guest checkout is unaffected. Caps worst-case SMS spend under distributed abuse. |
 
 Webhook: registered programmatically at `/api/stripe-webhook` for `payment_intent.succeeded`.
 No signing secret needed — the handler re-fetches the PaymentIntent from api.stripe.com by id
@@ -73,6 +74,23 @@ node C:\Users\strip\tomyumthai-staging\db\set-delivery-pause.mjs off # resume di
   API is edge-cached ~60s, so allow a minute for customers to see a flip.
 - These exact commands are allowlisted in the owner's Claude Code settings
   (`~/.claude/settings.json`) so Claude can run them without permission friction.
+
+## Abuse guards & data retention (2026-09-02 hardening pass)
+
+- **Google spend:** every path that can trigger a Routes API call (public /api/distance AND
+  the order-time zone gate) checks the shared daily/monthly counters in
+  `lib/auth.js googleSpendAllowed()`; past a cap, the labeled estimate serves. Console
+  quotas + $10 budget alert remain the backstop.
+- **Twilio spend:** per-phone 3/10min, per-IP 6/10min, plus the global `OTP_DAILY_CAP`.
+  Owner console settings (manual): Verify **Fraud Guard** on, **Geo Permissions** US-only.
+- **Client IP:** rate limits key on `x-real-ip` (set by Vercel, unspoofable) with
+  x-forwarded-for as fallback.
+- **Housekeeping (`lib/maintenance.js`,** fired after order creation, self-throttled ~4/day):
+  abandoned checkouts cancel after 24h; never-paid canceled orders delete after 30 days;
+  **PII retention scrub** — completed/canceled orders older than 90 days keep items/totals
+  but lose name/phone/email/address (`pii_scrubbed_at` marks them). `orders.customer_id`
+  is set for signed-in checkouts, so account order history survives the scrub (the history
+  query matches customer_id OR phone). Rate-limit rows older than 45 days are purged.
 
 ## Menu price changes (until the manager portal ships in Phase 2)
 

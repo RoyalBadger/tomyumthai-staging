@@ -30,6 +30,12 @@ export default async function handler(req, res) {
         const okPhone = await rateLimit(`otp:phone:${phone}`, 3, 600);
         const okIp = await rateLimit(`otp:ip:${ip}`, 6, 600);
         if (!okPhone || !okIp) return res.status(429).json({ error: 'Too many codes requested — please wait a few minutes.' });
+        // Global daily send cap: real customer volume sits far below this, so it
+        // only ever trips under distributed abuse — capping the worst-case Twilio
+        // bill at pocket change. Guest checkout is unaffected.
+        if (!(await rateLimit('otp:global:daily', Number(process.env.OTP_DAILY_CAP || 150), 86_400))) {
+          return res.status(429).json({ error: 'Text sign-in is busy right now — you can still order as a guest, or try again later.' });
+        }
         await verifyStart(phone);
         return res.status(200).json({ ok: true });
       }
@@ -62,12 +68,15 @@ export default async function handler(req, res) {
       if (!cust) return res.status(401).json({ error: 'not signed in' });
 
       if (req.query?.orders) {
+        // Match by account link OR phone: customer_id survives the PII retention
+        // scrub (lib/maintenance.js), so signed-in history outlives it; the phone
+        // match additionally pulls in recent guest orders placed with this number.
         const orders = (await query(
           `SELECT id, public_code, order_type, status, total_cents, created_at
            FROM orders
-           WHERE customer_phone = $1 AND status <> 'pending_payment'
+           WHERE (customer_id = $1 OR customer_phone = $2) AND status <> 'pending_payment'
            ORDER BY created_at DESC LIMIT 20`,
-          [cust.phone_e164])).rows;
+          [cust.id, cust.phone_e164])).rows;
         let items = [];
         if (orders.length) {
           items = (await query(

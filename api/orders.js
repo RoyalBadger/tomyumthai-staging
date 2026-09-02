@@ -7,7 +7,9 @@
 import { query, getPool } from '../lib/db.js';
 import { loadPricingContext, priceCart, CartError } from '../lib/pricing.js';
 import { orderingWindow, closedMessage } from '../lib/hours.js';
-import { rateLimit, clientIp, readJsonBody } from '../lib/auth.js';
+import { rateLimit, clientIp, readJsonBody, googleSpendAllowed } from '../lib/auth.js';
+import { getSessionCustomer } from '../lib/customer-auth.js';
+import { runMaintenance } from '../lib/maintenance.js';
 import { checkDeliveryZone } from '../lib/distance.js';
 import { stripeFetch, PUBLISHABLE_KEY, StripeError } from '../lib/stripe.js';
 import { normalizePhoneUS, cleanName, cleanLine, cleanEmail } from '../lib/validate.js';
@@ -61,7 +63,8 @@ export default async function handler(req, res) {
     // Authoritative zone gate — runs before the order or any payment exists, so an
     // out-of-zone address fails here and the customer never reaches the card form.
     const radius = Number(st.delivery_radius_miles) || 5;
-    const zone = await checkDeliveryZone(address, Number(body.delivery?.lat), Number(body.delivery?.lon), radius);
+    const zone = await checkDeliveryZone(address, Number(body.delivery?.lat), Number(body.delivery?.lon), radius,
+      { allowGoogle: await googleSpendAllowed() }); // past the caps: labeled estimate, never Google spend
     if (zone.blocked) {
       return res.status(409).json({
         error: `That address looks to be about ${zone.miles} driving miles away — outside our ${radius}-mile delivery zone. We'd love to have your order ready for pickup instead!`,
@@ -81,6 +84,10 @@ export default async function handler(req, res) {
   }
   if (priced.total_cents < 50) return res.status(400).json({ error: 'Order total is below the card minimum.' });
 
+  // Signed-in customer? Link the order so their history survives the PII scrub
+  // (guests who merely typed a matching phone are NOT linked — no session, no link).
+  const sessionCust = await getSessionCustomer(req).catch(() => null);
+
   // --- create order + items in a transaction ---
   const pool = getPool();
   const client = await pool.connect();
@@ -91,12 +98,12 @@ export default async function handler(req, res) {
     const seq = (await client.query("SELECT nextval('order_code_seq') AS n")).rows[0].n;
     const code = `TYT-${year}-${String(seq).padStart(4, '0')}`;
     order = (await client.query(
-      `INSERT INTO orders (public_code, order_type, status, customer_name, customer_phone,
+      `INSERT INTO orders (public_code, order_type, status, customer_id, customer_name, customer_phone,
          customer_email, sms_opt_in, delivery_address, delivery_notes, subtotal_cents, discount_cents,
          tax_cents, delivery_fee_cents, total_cents, promo_code)
-       VALUES ($1,$2,'pending_payment',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+       VALUES ($1,$2,'pending_payment',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
        RETURNING id, public_code`,
-      [code, body.order_type, name, phone, email, smsOptIn, address, deliveryNotes,
+      [code, body.order_type, sessionCust?.id ?? null, name, phone, email, smsOptIn, address, deliveryNotes,
        priced.subtotal_cents, priced.discount_cents, priced.tax_cents,
        priced.delivery_fee_cents, priced.total_cents, priced.promo_code])).rows[0];
     for (const l of priced.lines) {
@@ -135,9 +142,9 @@ export default async function handler(req, res) {
     return res.status(502).json({ error: 'Card processing is unavailable right now — please call us at (214) 703-0391.' });
   }
 
-  // opportunistic cleanup of stale unpaid orders
-  query(`UPDATE orders SET status = 'canceled', updated_at = now()
-         WHERE status = 'pending_payment' AND created_at < now() - interval '24 hours'`, []).catch(() => {});
+  // opportunistic housekeeping: stale-order cancel, canceled-order purge,
+  // PII retention scrub, rate-limit row cleanup (self-throttled to ~4 runs/day)
+  runMaintenance().catch(() => {});
 
   res.status(200).json({
     order_code: order.public_code,
