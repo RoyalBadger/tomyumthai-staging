@@ -1,15 +1,30 @@
-// POST /api/admin/login  {email, password, totp}
-// TOTP is mandatory; a one-time recovery code is accepted in place of the 6-digit code.
+// POST   /api/admin/login  {email, password, totp} — sign in
+// GET    /api/admin/login                          — session check ("me")
+// DELETE /api/admin/login                          — logout
+// One file so all three share a single Vercel function (Hobby plan caps
+// deployments at 12 functions). TOTP is mandatory for POST; a one-time
+// recovery code is accepted in place of the 6-digit code.
 import { query } from '../../lib/db.js';
 import {
   verifyPassword, createSession, setSessionCookie, rateLimit, clientIp, audit,
-  readJsonBody, sha256,
+  readJsonBody, sha256, getSessionAdmin, destroySession, clearSessionCookie,
 } from '../../lib/auth.js';
 import { verifyTotp } from '../../lib/totp.js';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'method not allowed' });
   res.setHeader('Cache-Control', 'no-store');
+
+  if (req.method === 'GET') {
+    const admin = await getSessionAdmin(req);
+    if (!admin) return res.status(401).json({ error: 'unauthorized' });
+    return res.status(200).json({ email: admin.email, role: admin.role });
+  }
+  if (req.method === 'DELETE') {
+    await destroySession(req);
+    clearSessionCookie(res);
+    return res.status(200).json({ ok: true });
+  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'method not allowed' });
 
   const { email, password, totp } = readJsonBody(req);
   const emailNorm = String(email || '').trim().toLowerCase();

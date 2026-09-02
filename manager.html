@@ -1060,7 +1060,7 @@
         await api('/api/admin/login', { method: 'POST', body: {
           email: $('loginEmail').value, password: $('loginPassword').value, totp: $('loginTotp').value,
         }});
-        const me = await api('/api/admin/me');
+        const me = await api('/api/admin/login');
         $('loginPassword').value = ''; $('loginTotp').value = '';
         await showDashboard(me);
       } catch (ex) {
@@ -1072,7 +1072,7 @@
     });
 
     async function handleLogout() {
-      try { await api('/api/admin/logout', { method: 'POST' }); } catch {}
+      try { await api('/api/admin/login', { method: 'DELETE' }); } catch {}
       showLogin();
     }
 
@@ -1203,7 +1203,7 @@
       try {
         toast('Processing photo…');
         const dataUrl = await downscaleImage(file, 900, 0.82);
-        const r = await api('/api/admin/menu-image', {
+        const r = await api('/api/admin/menu', {
           method: 'POST',
           body: { id, mime: 'image/jpeg', data_base64: dataUrl.split(',')[1] },
         });
@@ -1217,7 +1217,7 @@
       const it = menuItems.find(x => x.id === id);
       if (!confirm('Remove the photo for ' + (it ? it.name : id) + '? The Photo button disappears from the customer site.')) return;
       try {
-        await api('/api/admin/menu-image?id=' + encodeURIComponent(id), { method: 'DELETE' });
+        await api('/api/admin/menu?id=' + encodeURIComponent(id), { method: 'DELETE' });
         if (it) it.image_url = null;
         renderMenu();
         toast((it ? it.name : id) + ' photo removed.');
@@ -1549,7 +1549,7 @@
 
     // ---------- boot ----------
     (async () => {
-      try { await showDashboard(await api('/api/admin/me')); }
+      try { await showDashboard(await api('/api/admin/login')); }
       catch { showLogin(); }
     })();
   </script>
