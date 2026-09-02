@@ -2717,6 +2717,7 @@
 
       <div class="nav-actions">
         <a href="tel:2147030391" class="btn-phone">📞 (214) 703-0391</a>
+        <button class="btn-cart-nav" id="btnAccount" onclick="openAccount()">👤 Sign In</button>
         <button class="btn-cart-nav" onclick="openCart()">
           🛒 Cart <span class="cart-count-badge" id="navCartCount">0</span>
         </button>
@@ -3215,6 +3216,7 @@
       renderCategoryTabs();
       renderMenu();
       restoreCart();
+      loadCustomer();
       renderCart();
     }
 
@@ -3590,6 +3592,211 @@
       });
     }
 
+    /* ==================== CUSTOMER ACCOUNT (phone-OTP portal) ==================== */
+    let CUST = null; // {name, phone, email, address} when signed in
+
+    const cfetch = async (path, opts = {}) => {
+      const res = await fetch(path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...opts,
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Request failed — please try again.');
+      return data;
+    };
+
+    function showNote(msg) {
+      let n = $id('tytNote');
+      if (!n) {
+        n = document.createElement('div');
+        n.id = 'tytNote';
+        n.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#14532d;color:#86efac;border:1px solid #22c55e;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;z-index:12000;display:none;max-width:90vw;text-align:center;';
+        document.body.appendChild(n);
+      }
+      n.innerText = msg;
+      n.style.display = 'block';
+      clearTimeout(showNote._t);
+      showNote._t = setTimeout(() => { n.style.display = 'none'; }, 3500);
+    }
+
+    async function loadCustomer() {
+      try { CUST = (await cfetch('/api/me')).customer; } catch { CUST = null; }
+      renderAccountButton();
+    }
+
+    function renderAccountButton() {
+      const b = $id('btnAccount');
+      if (b) b.innerText = CUST ? ('👤 ' + (CUST.name ? CUST.name.split(' ')[0] : 'My Account')) : '👤 Sign In';
+    }
+
+    function ensureAccountModal() {
+      if ($id('accountModal')) return;
+      const el = document.createElement('div');
+      el.id = 'accountModal';
+      el.className = 'custom-modal-overlay';
+      el.innerHTML = `
+        <div class="custom-modal-card" style="max-width:520px;">
+          <div class="custom-modal-header">
+            <h3 class="modal-dish-title" data-a-title>Sign In</h3>
+            <button type="button" class="modal-close-btn" data-a-close>&times;</button>
+          </div>
+          <div class="custom-modal-body" data-a-body></div>
+        </div>`;
+      document.body.appendChild(el);
+      el.addEventListener('click', e => { if (e.target === el) closeAccountModal(); });
+      el.querySelector('[data-a-close]').onclick = closeAccountModal;
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAccountModal(); });
+    }
+
+    function closeAccountModal() {
+      const m = $id('accountModal');
+      if (m) m.style.display = 'none';
+    }
+
+    function openAccount() {
+      ensureAccountModal();
+      const m = $id('accountModal');
+      m.style.display = 'flex';
+      if (CUST) renderAccountView(); else renderPhoneStep();
+    }
+
+    const aBody = () => $id('accountModal').querySelector('[data-a-body]');
+    const aTitle = () => $id('accountModal').querySelector('[data-a-title]');
+    const aErr = msg => { const e = aBody().querySelector('[data-a-err]'); if (e) { e.innerText = msg; e.style.display = 'block'; } };
+
+    function renderPhoneStep() {
+      aTitle().innerText = 'Sign In / Sign Up';
+      aBody().innerHTML = `
+        <p style="color:var(--text-muted);font-size:13.5px;">Enter your mobile number and we'll text you a 6-digit code. No passwords, ever.</p>
+        <input type="tel" data-a-phone class="form-input" placeholder="Mobile number" style="width:100%;margin:10px 0;" autocomplete="tel">
+        <div data-a-err style="display:none;color:#f87171;font-weight:700;font-size:13px;margin-bottom:8px;"></div>
+        <button type="button" class="btn-modal-add" data-a-send style="width:100%;">Text Me a Code</button>`;
+      const send = aBody().querySelector('[data-a-send]');
+      send.onclick = async () => {
+        const phone = aBody().querySelector('[data-a-phone]').value.trim();
+        send.disabled = true; send.innerText = 'Sending…';
+        try {
+          await cfetch('/api/me', { method: 'POST', body: { action: 'start', phone } });
+          renderCodeStep(phone);
+        } catch (ex) { aErr(ex.message); send.disabled = false; send.innerText = 'Text Me a Code'; }
+      };
+    }
+
+    function renderCodeStep(phone) {
+      aTitle().innerText = 'Enter Your Code';
+      aBody().innerHTML = `
+        <p style="color:var(--text-muted);font-size:13.5px;">We texted a 6-digit code to <strong style="color:#fff;">${esc(phone)}</strong>.</p>
+        <input type="text" data-a-code class="form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" style="width:100%;margin:10px 0;letter-spacing:4px;font-size:18px;text-align:center;">
+        <div data-a-err style="display:none;color:#f87171;font-weight:700;font-size:13px;margin-bottom:8px;"></div>
+        <button type="button" class="btn-modal-add" data-a-verify style="width:100%;">Verify &amp; Sign In</button>
+        <button type="button" data-a-back style="width:100%;margin-top:8px;background:transparent;border:1px solid var(--border-subtle,#374151);color:var(--text-muted);border-radius:8px;padding:8px;cursor:pointer;font-size:12px;">Use a different number</button>`;
+      aBody().querySelector('[data-a-back]').onclick = renderPhoneStep;
+      const btn = aBody().querySelector('[data-a-verify]');
+      btn.onclick = async () => {
+        btn.disabled = true; btn.innerText = 'Checking…';
+        try {
+          const r = await cfetch('/api/me', { method: 'POST', body: { action: 'verify', phone, code: aBody().querySelector('[data-a-code]').value.trim() } });
+          CUST = r.customer;
+          renderAccountButton();
+          renderAccountView();
+          showNote('Signed in! Your info will prefill at checkout.');
+        } catch (ex) { aErr(ex.message); btn.disabled = false; btn.innerText = 'Verify & Sign In'; }
+      };
+      aBody().querySelector('[data-a-code]').focus();
+    }
+
+    function renderAccountView() {
+      aTitle().innerText = CUST.name ? ('Hi, ' + CUST.name.split(' ')[0] + '!') : 'My Account';
+      aBody().innerHTML = `
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Signed in as <strong style="color:#fff;">${esc(CUST.phone)}</strong></div>
+        <div class="customizer-group">
+          <label class="custom-label">Saved Info (prefilled at checkout):</label>
+          <input type="text" data-a-name class="form-input" placeholder="Name" value="${esc(CUST.name || '')}" style="width:100%;margin:6px 0;">
+          <input type="email" data-a-email class="form-input" placeholder="Email (for receipts)" value="${esc(CUST.email || '')}" style="width:100%;margin:6px 0;">
+          <input type="text" data-a-addr class="form-input" placeholder="Delivery address" value="${esc(CUST.address || '')}" style="width:100%;margin:6px 0;">
+          <button type="button" class="btn-modal-add" data-a-save style="width:100%;margin-top:6px;">Save Info</button>
+        </div>
+        <div class="customizer-group">
+          <label class="custom-label">My Recent Orders:</label>
+          <div data-a-orders style="font-size:13px;color:var(--text-muted);">Loading…</div>
+        </div>
+        <button type="button" data-a-logout style="width:100%;margin-top:10px;background:transparent;border:1px solid var(--border-subtle,#374151);color:var(--text-muted);border-radius:8px;padding:9px;cursor:pointer;font-size:12.5px;">Log Out</button>`;
+      aBody().querySelector('[data-a-save]').onclick = async () => {
+        try {
+          const r = await cfetch('/api/me', { method: 'PATCH', body: {
+            name: aBody().querySelector('[data-a-name]').value,
+            email: aBody().querySelector('[data-a-email]').value,
+            address: aBody().querySelector('[data-a-addr]').value,
+          } });
+          CUST = r.customer;
+          renderAccountButton();
+          showNote('Saved.');
+        } catch (ex) { showNote('Could not save: ' + ex.message); }
+      };
+      aBody().querySelector('[data-a-logout]').onclick = async () => {
+        try { await cfetch('/api/me', { method: 'DELETE' }); } catch {}
+        CUST = null;
+        renderAccountButton();
+        closeAccountModal();
+        showNote('Logged out.');
+      };
+      loadMyOrders();
+    }
+
+    async function loadMyOrders() {
+      const box = aBody().querySelector('[data-a-orders]');
+      try {
+        const r = await cfetch('/api/me?orders=1');
+        if (!r.orders.length) { box.innerText = 'No orders yet — your history will appear here.'; return; }
+        box.innerHTML = r.orders.map((o, i) => `
+          <div style="border:1px solid var(--border-subtle,#374151);border-radius:10px;padding:10px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;color:#e2e8f0;">
+              <strong>${esc(o.code)}</strong>
+              <span>${money(o.total_cents)}</span>
+            </div>
+            <div style="font-size:11.5px;margin:2px 0 6px;">${new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • ${esc(o.type)} • ${esc(o.status)}</div>
+            <div style="font-size:12px;color:#cbd5e1;">${o.items.map(it => it.qty + '× ' + esc(it.name)).join(', ')}</div>
+            <button type="button" class="btn-modal-add" data-a-reorder="${i}" style="width:100%;margin-top:8px;padding:8px;font-size:12.5px;">🔄 Reorder — current prices</button>
+          </div>`).join('');
+        box.querySelectorAll('[data-a-reorder]').forEach(b => b.onclick = () => {
+          const { added, skipped } = reorderOrder(r.orders[Number(b.dataset.reorder)]);
+          showNote(added + ' item' + (added === 1 ? '' : 's') + ' added to your cart' + (skipped ? ' (' + skipped + ' no longer available)' : '') + '.');
+        });
+      } catch (ex) { box.innerText = 'Could not load orders: ' + ex.message; }
+    }
+
+    // Rebuild cart lines from a past order at CURRENT prices; unavailable items skipped.
+    function reorderOrder(o) {
+      const all = MENU.categories.flatMap(c => c.items);
+      let added = 0, skipped = 0;
+      for (const l of o.items) {
+        const item = all.find(i => i.id === l.item_id);
+        if (!item || !item.orderable) { skipped++; continue; }
+        const size = item.sizes.length ? (item.sizes.find(s => s.label === l.size_label) || item.sizes[0]) : null;
+        let unit = size ? size.price_cents : (item.price_cents ?? 0);
+        const prot = (item.protein_choice && l.protein) ? MENU.options.protein_choice.find(p => p.label === l.protein) : null;
+        if (prot) unit += prot.delta_cents || 0;
+        const extraIds = [], extraLabels = [];
+        for (const exLabel of (l.extras || [])) {
+          const ex = MENU.options.extra_protein.find(x => x.label === exLabel);
+          if (ex) { extraIds.push(ex.id); extraLabels.push(ex.label); unit += ex.delta_cents || 0; }
+        }
+        cart.push({
+          id: item.id, name: item.name, size_label: size ? size.label : null,
+          protein: prot ? prot.id : null, extras: extraIds,
+          spice_level: l.spice_level || null, exclusions: l.exclusions || null,
+          notes: l.notes || null, qty: Math.min(20, l.qty || 1), unit_cents: unit,
+          display: { protein: prot ? prot.label : null, extras: extraLabels },
+        });
+        added++;
+      }
+      renderCart();
+      closeAccountModal();
+      if (added) openCart();
+      return { added, skipped };
+    }
+
     /* ==================== CART (reuses existing drawer UI) ==================== */
     const estTotals = () => {
       const subtotal = cart.reduce((s, l) => s + l.unit_cents * l.qty, 0);
@@ -3685,6 +3892,14 @@
            <span>${l.qty}× ${esc(l.name)}${l.size_label ? ' (' + esc(l.size_label) + ')' : ''}</span>
            <span>${money(l.unit_cents * l.qty)}</span></li>`).join('');
       $id('promo-code').value = promoCode || '';
+      // Signed-in customers: prefill contact info from their saved profile.
+      if (CUST) {
+        const fill = (id, val) => { const f = $id(id); if (f && !f.value.trim() && val) f.value = val; };
+        fill('checkout-name', CUST.name);
+        fill('checkout-phone', CUST.phone && CUST.phone.startsWith('+1') ? CUST.phone.slice(2) : CUST.phone);
+        fill('checkout-email', CUST.email);
+        fill('checkout-address', CUST.address);
+      }
       syncDrawerTotals(estTotals());
       setDrawerOrderType(orderMode);
       resetPaymentPhase();
@@ -3790,6 +4005,14 @@
 
     /* ==================== CONFIRMATION + LIVE STATUS ==================== */
     function showConfirmation(code, eta) {
+      // Signed-in customers: quietly remember the details they just used.
+      if (CUST) {
+        cfetch('/api/me', { method: 'PATCH', body: {
+          name: $id('checkout-name')?.value || CUST.name,
+          email: $id('checkout-email')?.value || CUST.email,
+          address: $id('checkout-address')?.value || CUST.address,
+        } }).then(r => { CUST = r.customer; renderAccountButton(); }).catch(() => {});
+      }
       $id('checkoutDrawer').classList.remove('open');
       const overlay = $id('orderConfirmationOverlay');
       overlay.querySelector('[data-order-code]').innerText = code;
