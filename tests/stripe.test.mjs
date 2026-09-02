@@ -34,7 +34,7 @@ check('rejects missing tld', cleanEmail('a@b') === null);
 check('rejects spaces inside', cleanEmail('a b@c.com') === null);
 
 // names / lines
-check('cleans name whitespace', cleanName('  Shawn   T  ') === 'Shawn T');
+check('cleans name whitespace', cleanName('  Stephen   T  ') === 'Stephen T');
 check('rejects empty name', cleanName('   ') === null);
 check('rejects 81-char name', cleanName('x'.repeat(81)) === null);
 check('flattens newlines in address', cleanLine('123 Main St\nApt 4') === '123 Main St, Apt 4');
