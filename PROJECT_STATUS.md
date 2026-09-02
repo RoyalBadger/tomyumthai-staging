@@ -51,6 +51,35 @@
 - ~96 unit tests green (hours, TOTP, auth, pricing, stripe encoding/validation, order lifecycle,
   distance). All vendor credentials in Vercel envs; `DEV.md` documents setup and operations.
 
+### September 1 additions (all deployed & verified)
+- **Branding:** owner's logo vectorized (Adobe Illustrator API) into the site header at
+  `/logo.svg`; favicon derived from the mortar emblem; top DIRECT15 banner removed.
+- **Cards:** entire dish card is clickable (opens the customization modal).
+- **Three-ticket printing:** one print job = customer receipt + CHEF 2 ticket + MAIN KITCHEN
+  ticket (auto-cut between pages; big order code on all three). Stations assigned per owner:
+  Noodles/Stir Fried/Fried Rice = Chef 1, everything else = Chef 2; per-dish toggle in portal.
+- **Vegetarian system (owner-spec'd):** meatless ≠ vegetarian — explicit "Make it Vegetarian"
+  checkbox in the modal (veg-capable dishes only); meat protein/add-on + vegetarian = blocked
+  with inline error; "No Protein" ($0) added to protein choices; request rides the exclusions
+  snapshot and prints *** VEGETARIAN *** on tickets; 🌱 Vegetarian Menu filter (50 dishes,
+  owner-tunable Veg toggle in portal).
+- **Modal modifiers:** removals derived per-dish from real ingredients (no "No Peanuts" on
+  dishes without peanuts); add-ons grouped into Proteins / Vegetables subsections.
+- **Test Mode:** 'open' override ignores business hours; toggle in portal Hours tab.
+  ⚠️ Currently ON for owner testing.
+- **Cart persistence:** localStorage (device-local, no cookies), 24h expiry, validated on
+  restore, auto-clears on order; disclosed in /privacy ("no tracking cookies").
+- **Dish photos:** 14 photos scraped from our own Uber Eats listing (See Photo button +
+  lightbox, hidden by default); manager portal Photo column uploads/replaces/deletes photos,
+  stored in Neon (menu_item_images bytea), client-side downscale, audited, edge-cached.
+- **Menu cross-check:** MENU-COMPARISON.md — our DB is a superset of all three platforms;
+  beef +$3 confirmed by owner.
+- **Platform constraint:** Vercel Hobby caps 12 serverless functions/deployment. Consolidated
+  to 11 (login=login/me/logout; photo routes inside admin/menu). Owner ruling: if stability,
+  performance, or security ever needs it, upgrading to Vercel Pro ($20/mo) is pre-approved —
+  do not compromise to save the fee.
+- Migrations 006–011; ~95 unit tests green throughout.
+
 ## 🔲 Remaining
 
 ### Owner
