@@ -3397,7 +3397,7 @@
     }
 
     /* ==================== DISH CUSTOMIZER POPUP MODAL ==================== */
-    let modalDish = null, modalQty = 1;
+    let modalDish = null, modalQty = 1, modalEditIdx = null;
     // Removable ingredients are derived from each dish's own name + description, so a
     // dish only offers "No X" for ingredients it actually contains. The last two
     // (vegan prep / gluten-free prep) are kitchen-wide requests and always shown.
@@ -3477,9 +3477,10 @@
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDishModal(); });
     }
 
-    function openDishModal(item) {
+    function openDishModal(item, editIdx) {
       ensureDishModal();
       modalDish = item; modalQty = 1;
+      modalEditIdx = typeof editIdx === 'number' ? editIdx : null;
       const m = $id('dishModal');
       m.querySelector('[data-m-name]').innerText = item.name;
       m.querySelector('[data-m-thai]').innerText = item.thai || '';
@@ -3514,6 +3515,26 @@
       m.querySelector('[data-m-exclusions]').innerHTML = removals.map(x =>
         `<label class="exclusion-check"><input type="checkbox"> <span>${x}</span></label>`).join('');
       m.querySelector('[data-m-notes]').value = '';
+
+      // Editing an existing cart line: prefill every control from that line.
+      const addBtn = m.querySelector('[data-m-add]');
+      addBtn.childNodes[0].nodeValue = modalEditIdx !== null ? 'Update Item · ' : 'Add to Order · ';
+      if (modalEditIdx !== null && cart[modalEditIdx]) {
+        const line = cart[modalEditIdx];
+        modalQty = line.qty;
+        const pick = (name, val) => { const r = m.querySelector(`input[name="${name}"][value="${val}"]`); if (r) r.checked = true; };
+        if (line.size_label) pick('m-size', line.size_label);
+        if (line.protein) pick('m-protein', line.protein);
+        if (line.spice_level) pick('m-spice', line.spice_level);
+        m.querySelectorAll('[data-m-addons] input').forEach(cb => { cb.checked = (line.extras || []).includes(cb.value); });
+        const vb = m.querySelector('[data-m-veg]');
+        if (vb) vb.checked = /vegetarian/i.test(line.exclusions || '');
+        const exSet = new Set((line.exclusions || '').split(', '));
+        m.querySelectorAll('[data-m-exclusions] label').forEach(lab => {
+          lab.querySelector('input').checked = exSet.has(lab.innerText.trim().replace(/^[^A-Za-z]+/, ''));
+        });
+        m.querySelector('[data-m-notes]').value = line.notes || '';
+      }
       refreshModalTotal();
       m.style.display = 'flex';
     }
@@ -3522,6 +3543,7 @@
       const m = $id('dishModal');
       if (m) m.style.display = 'none';
       modalDish = null;
+      modalEditIdx = null;
     }
 
     function modalUnitCents() {
@@ -3577,7 +3599,7 @@
         .map(cb => cb.parentElement.innerText.trim().replace(/^[^A-Za-z]+/, ''));
       if (vegChecked) exclusions.unshift('VEGETARIAN (no fish/oyster sauce)');
       const notes = m.querySelector('[data-m-notes]').value.trim() || null;
-      cart.push({
+      const newLine = {
         id: item.id, name: item.name, size_label: sizeLabel, protein: proteinId,
         extras, spice_level: spice, exclusions: exclusions.join(', ') || null, notes,
         qty: modalQty, unit_cents: modalUnitCents(),
@@ -3585,7 +3607,9 @@
           protein: MENU.options.protein_choice.find(p => p.id === proteinId)?.label || null,
           extras: extras.map(x => MENU.options.extra_protein.find(e => e.id === x)?.label || x),
         },
-      });
+      };
+      if (modalEditIdx !== null && cart[modalEditIdx]) cart[modalEditIdx] = newLine;
+      else cart.push(newLine);
       closeDishModal();
       renderCart();
       openCart();
@@ -3624,6 +3648,15 @@
       return { subtotal, discount, fee, tax, total: subtotal - discount + fee + tax };
     };
 
+    // Reopen the customization popup for an existing cart line, prefilled.
+    function editItem(idx) {
+      const line = cart[idx];
+      if (!line) return;
+      const item = MENU.categories.flatMap(c => c.items).find(i => i.id === line.id);
+      if (!item || !item.orderable) return;
+      openDishModal(item, idx);
+    }
+
     function renderCart() {
       saveCart();
       const container = $id('cartItemsContainer');
@@ -3661,6 +3694,7 @@
               <span style="font-size:13px;font-weight:bold;color:#fff;min-width:18px;text-align:center;">${l.qty}</span>
               <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
             </div>
+            <button class="btn-item-delete" style="color:#93c5fd;border-color:#1e40af;" onclick="editItem(${idx})">✏️ Edit</button>
             <button class="btn-item-delete" onclick="deleteItem(${idx})">🗑️ Remove</button>
           </div>
         </div>`;
