@@ -3351,7 +3351,7 @@
         th.src = item.image;
         th.alt = item.name + ' photo';
         th.loading = 'lazy';
-        th.style.cssText = 'float:right;width:64px;height:64px;object-fit:cover;border-radius:10px;margin:0 0 6px 10px;border:1px solid var(--border-subtle,#374151);cursor:zoom-in;';
+        th.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:10px;margin-bottom:8px;border:1px solid var(--border-subtle,#374151);cursor:zoom-in;';
         th.onclick = (e) => { e.stopPropagation(); openPhotoLightbox(item); };
         const body = node.querySelector('.dish-card-body') || node;
         body.insertBefore(th, body.firstChild);
