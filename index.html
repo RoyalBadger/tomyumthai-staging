@@ -3345,15 +3345,16 @@
         if (cta) cta.style.display = 'none';
       }
 
-      // Optional dish photo: hidden by default, small button opens a lightbox.
+      // Optional dish photo: small thumbnail in the card, click to open full-size.
       if (item.image) {
-        const pb = document.createElement('button');
-        pb.type = 'button';
-        pb.innerHTML = '📷 See Photo';
-        pb.style.cssText = 'margin:8px 0 2px;background:transparent;border:1px solid var(--border-subtle,#374151);color:var(--text-muted,#9ca3af);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;width:100%;';
-        pb.onclick = (e) => { e.stopPropagation(); openPhotoLightbox(item); };
-        if (cta && cta.parentElement) cta.parentElement.insertBefore(pb, cta);
-        else node.appendChild(pb);
+        const th = document.createElement('img');
+        th.src = item.image;
+        th.alt = item.name + ' photo';
+        th.loading = 'lazy';
+        th.style.cssText = 'float:right;width:64px;height:64px;object-fit:cover;border-radius:10px;margin:0 0 6px 10px;border:1px solid var(--border-subtle,#374151);cursor:zoom-in;';
+        th.onclick = (e) => { e.stopPropagation(); openPhotoLightbox(item); };
+        const body = node.querySelector('.dish-card-body') || node;
+        body.insertBefore(th, body.firstChild);
       }
       return node;
     }
