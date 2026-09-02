@@ -1759,14 +1759,9 @@
       border-radius: var(--radius-md);
       padding: 16px;
       border: 1px solid var(--border-subtle);
-      min-height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
 
     #payment-element {
-      min-height: 300px;
       width: 100%;
     }
 
@@ -3910,6 +3905,8 @@
       const d = $id('checkoutDrawer');
       d.querySelector('[data-subtotal]').innerText = money(t.subtotal);
       d.querySelector('[data-discount]').innerText = '-' + money(t.discount);
+      const dr = $id('drawerDiscountRow');
+      if (dr) dr.style.display = t.discount > 0 ? '' : 'none';
       d.querySelector('[data-delivery-fee]').innerText = money(t.fee);
       d.querySelector('[data-tax]').innerText = money(t.tax);
       d.querySelectorAll('[data-total]').forEach(el => { el.innerText = money(t.total); });
@@ -3984,7 +3981,9 @@
             appearance: { theme: 'night', variables: { colorPrimary: '#ec5a30' } },
           });
           $id('payment-element').innerHTML = '';
-          stripeElements.create('payment').mount('#payment-element');
+          stripeElements.create('payment', {
+            layout: { type: 'accordion', defaultCollapsed: false, radios: false, spacedAccordionItems: true },
+          }).mount('#payment-element');
           btn.disabled = false;
           btn.innerHTML = '🔒 Pay ' + money(data.totals.total_cents);
         } catch (e) {
@@ -4370,8 +4369,8 @@
           <span>Subtotal:</span>
           <span data-subtotal>$0.00</span>
         </div>
-        <div class="totals-row discount-row">
-          <span>Direct 15% Discount:</span>
+        <div class="totals-row discount-row" id="drawerDiscountRow" style="display:none;">
+          <span>Promo Discount:</span>
           <span data-discount>-$0.00</span>
         </div>
         <div class="totals-row">
