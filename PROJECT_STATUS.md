@@ -121,8 +121,13 @@
 - [ ] Optional: restyle Claude's #dishModal / "My Orders" shell (A6) — logic stays Claude's
 
 ### Claude (code lane)
-- [ ] Phase 5: phone-OTP login (Twilio Verify), `/api/me/orders`, one-tap reorder;
-      SMS sender after toll-free approval (templates approved; must check `sms_opt_in`)
+- [x] Phase 5 CUSTOMER PORTAL — DONE 2026-09-01: phone-OTP sign-in (Twilio Verify, no
+      passwords), saved info with checkout prefill + auto-save, order history (past guest
+      orders included via verified phone), one-tap reorder at current prices, 180-day
+      sliding sessions (separate from admin), privacy policy amended. /api/me is one
+      consolidated function (deployment at the 12-function cap exactly). Owner still
+      needs the first real OTP test on their own phone.
+- [ ] SMS order-ready sender after toll-free approval (templates approved; must check `sms_opt_in`)
 - [ ] Delete dead free-delivery-over-$45 markup (or implement server-side if owner wants the promo)
 - [ ] Launch sequence: `order.mytomyumthai.com` CNAME via WordPress DNS API; live Stripe keys +
       live-mode webhook + Apple Pay domain file; ONE small real-card test + refund (owner present);
