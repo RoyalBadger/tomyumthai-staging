@@ -3345,16 +3345,21 @@
         if (cta) cta.style.display = 'none';
       }
 
-      // Optional dish photo: small thumbnail in the card, click to open full-size.
+      // Optional dish photo: thumbnail on the Thai-name row (name left, photo right),
+      // click to open full-size.
       if (item.image) {
         const th = document.createElement('img');
         th.src = item.image;
         th.alt = item.name + ' photo';
         th.loading = 'lazy';
-        th.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:10px;margin-bottom:8px;border:1px solid var(--border-subtle,#374151);cursor:zoom-in;';
+        th.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--border-subtle,#374151);cursor:zoom-in;flex:0 0 auto;';
         th.onclick = (e) => { e.stopPropagation(); openPhotoLightbox(item); };
-        const body = node.querySelector('.dish-card-body') || node;
-        body.insertBefore(th, body.firstChild);
+        const thaiEl = node.querySelector('[data-thai]');
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;';
+        thaiEl.parentElement.insertBefore(row, thaiEl);
+        row.appendChild(thaiEl);
+        row.appendChild(th);
       }
       return node;
     }
