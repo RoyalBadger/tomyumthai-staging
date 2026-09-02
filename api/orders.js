@@ -27,7 +27,7 @@ export default async function handler(req, res) {
   const st = (await query(
     `SELECT store_open_override, closed_message, holiday_dates, business_hours,
             last_order_buffer_minutes, pickup_eta_minutes, delivery_eta_minutes,
-            delivery_radius_miles
+            delivery_radius_miles, delivery_paused
      FROM settings`, [])).rows[0];
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
   const holidayToday = (st.holiday_dates || []).some(d => new Date(d).toISOString().slice(0, 10) === today);
@@ -51,6 +51,11 @@ export default async function handler(req, res) {
   }
   let address = null, deliveryNotes = null;
   if (body.order_type === 'delivery') {
+    if (st.delivery_paused) {
+      return res.status(409).json({
+        error: 'Our own delivery is paused for this shift. We can have your order ready for pickup in 15–20 minutes, or you can get delivery through Grubhub.',
+      });
+    }
     address = cleanLine(body.delivery?.address);
     if (!address) return res.status(400).json({ error: 'Please enter a delivery address.' });
     deliveryNotes = cleanLine(body.delivery?.notes) || null;

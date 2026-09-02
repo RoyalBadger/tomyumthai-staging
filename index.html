@@ -2745,10 +2745,11 @@
         
         
 
-        <!-- Manager Emergency Paused Banner -->
+        <!-- Direct-delivery paused banner (manager toggle → /api/menu delivery.paused) -->
         <div id="deliveryPausedBanner" class="delivery-paused-banner">
-          <strong>⚠️ Direct Delivery is Temporarily Paused for this Shift</strong><br>
-          <span style="font-size:12px;">Our delivery drivers are currently off-duty. However, our kitchen is open and ready for <strong>🛍️ Fast Pickup (Ready in 15–20 mins)</strong>!</span>
+          <strong>🛵 Our Own Delivery is Off for this Shift — Grubhub Has You Covered</strong><br>
+          <span style="font-size:12px;">Our delivery drivers are currently off-duty, but the kitchen is open and ready for <strong>🛍️ Fast Pickup (Ready in 15–20 mins)</strong> — or get it delivered by Grubhub:</span><br>
+          <a href="https://www.grubhub.com/restaurant/223816?utm_source=grubhub_web&amp;utm_medium=content_owned&amp;utm_campaign=menushare&amp;utm_content=share-link" target="_blank" rel="noreferrer noopener" style="display:inline-block;margin-top:8px;font-weight:700;color:#fecaca;text-decoration:underline;">Order Delivery on Grubhub ↗</a>
         </div>
 
         <!-- Delivery Address Checker Form with Real-Time Autocomplete & 1-Tap Quick Chips -->
@@ -3196,6 +3197,11 @@
     const RESTAURANT_LAT = 32.94554;
     const RESTAURANT_LON = -96.67871;
 
+    // Grubhub listing — delivery fallback while our own drivers are off-duty
+    // (manager portal → Pause Direct Delivery → /api/menu delivery.paused).
+    const GRUBHUB_URL = 'https://www.grubhub.com/restaurant/223816?utm_source=grubhub_web&utm_medium=content_owned&utm_campaign=menushare&utm_content=share-link';
+    const deliveryPaused = () => !!(MENU && MENU.delivery && MENU.delivery.paused);
+
     /* ==================== MENU LOADING & RENDERING ==================== */
     async function loadMenu() {
       try {
@@ -3208,6 +3214,7 @@
         return;
       }
       renderClosedState();
+      renderDeliveryAvailability();
       renderCategoryTabs();
       renderMenu();
       restoreCart();
@@ -3223,6 +3230,20 @@
       } else {
         banner.style.display = 'none';
       }
+    }
+
+    // Direct delivery paused (drivers off-duty) while the store is open: the
+    // Delivery tab becomes an outbound Grubhub link, the paused banner shows,
+    // and in-house delivery is removed from checkout.
+    function renderDeliveryAvailability() {
+      const paused = deliveryPaused();
+      const tab = $id('tabDelivery');
+      const banner = $id('deliveryPausedBanner');
+      const radioLabel = $id('deliveryRadioLabel');
+      if (tab) tab.innerHTML = paused ? '🛵 Delivery by Grubhub ↗' : '🛵 Delivery (5-Mile Zone)';
+      if (banner) banner.style.display = paused && MENU.accepting_orders ? 'block' : 'none';
+      if (radioLabel) radioLabel.style.display = paused ? 'none' : '';
+      if (paused && orderMode === 'delivery') setOrderMode('pickup');
     }
 
     // The quick category chips under the Browse Our Menu bar are the only category
@@ -3913,6 +3934,7 @@
     }
 
     function setDrawerOrderType(mode) {
+      if (mode === 'delivery' && deliveryPaused()) mode = 'pickup'; // radio is hidden, but never trust the DOM
       orderMode = mode;
       $id('order-type-pickup').checked = mode === 'pickup';
       $id('order-type-delivery').checked = mode === 'delivery';
@@ -4265,6 +4287,10 @@
 
     
     function setOrderMode(mode) {
+      if (mode === 'delivery' && deliveryPaused()) {
+        window.open(GRUBHUB_URL, '_blank', 'noopener');
+        return; // stay on pickup — our own delivery is paused this shift
+      }
       orderMode = mode;
       const tabPickup = $id('tabPickup');
       const tabDelivery = $id('tabDelivery');
@@ -4338,7 +4364,7 @@
           <input type="radio" id="order-type-pickup" name="order-type" value="pickup" checked>
           <span>🛍️ Pickup</span>
         </label>
-        <label class="order-type-radio-label">
+        <label class="order-type-radio-label" id="deliveryRadioLabel">
           <input type="radio" id="order-type-delivery" name="order-type" value="delivery">
           <span>🛵 Delivery</span>
         </label>

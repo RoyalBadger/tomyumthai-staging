@@ -1,6 +1,7 @@
 // GET  /api/admin/settings — store controls
-// PATCH /api/admin/settings — {store_open_override?, closed_message?, holiday_dates?,
-//                              last_order_buffer_minutes?, pickup_eta_minutes?, delivery_eta_minutes?}
+// PATCH /api/admin/settings — {store_open_override?, delivery_paused?, closed_message?,
+//                              holiday_dates?, last_order_buffer_minutes?,
+//                              pickup_eta_minutes?, delivery_eta_minutes?}
 import { query } from '../../lib/db.js';
 import { requireAdmin, audit, readJsonBody } from '../../lib/auth.js';
 
@@ -11,7 +12,8 @@ export default requireAdmin(async (req, res, admin) => {
     const r = await query(
       `SELECT store_open_override, closed_message, holiday_dates, business_hours,
               last_order_buffer_minutes, delivery_radius_miles, delivery_fee_cents,
-              delivery_minimum_cents, tax_rate_bps, pickup_eta_minutes, delivery_eta_minutes
+              delivery_minimum_cents, delivery_paused, tax_rate_bps,
+              pickup_eta_minutes, delivery_eta_minutes
        FROM settings`, []);
     return res.status(200).json(r.rows[0]);
   }
@@ -28,6 +30,12 @@ export default requireAdmin(async (req, res, admin) => {
         return res.status(400).json({ error: "store_open_override must be 'auto', 'closed', or 'open'" });
       }
       push('store_open_override', body.store_open_override);
+    }
+    if (body.delivery_paused !== undefined) {
+      if (typeof body.delivery_paused !== 'boolean') {
+        return res.status(400).json({ error: 'delivery_paused must be true or false' });
+      }
+      push('delivery_paused', body.delivery_paused);
     }
     if (body.closed_message !== undefined) {
       push('closed_message', body.closed_message === null ? null : String(body.closed_message).slice(0, 300));
@@ -60,7 +68,7 @@ export default requireAdmin(async (req, res, admin) => {
 
     await query(`UPDATE settings SET ${sets.join(', ')}`, vals);
     await audit(admin.id, 'settings_update', null, changes);
-    const r = await query('SELECT store_open_override, closed_message, holiday_dates, last_order_buffer_minutes, pickup_eta_minutes, delivery_eta_minutes FROM settings', []);
+    const r = await query('SELECT store_open_override, closed_message, holiday_dates, last_order_buffer_minutes, pickup_eta_minutes, delivery_eta_minutes, delivery_paused FROM settings', []);
     return res.status(200).json({ ok: true, settings: r.rows[0] });
   }
 

@@ -16,6 +16,7 @@ export default async function handler(req, res) {
       query('SELECT id, label, delta_cents, option_group FROM extra_protein_options WHERE active ORDER BY sort', []),
       query(`SELECT store_open_override, closed_message, holiday_dates,
                     delivery_radius_miles, delivery_fee_cents, delivery_minimum_cents,
+                    delivery_paused,
                     pickup_eta_minutes, delivery_eta_minutes,
                     business_hours, last_order_buffer_minutes
              FROM settings`, []),
@@ -75,6 +76,7 @@ export default async function handler(req, res) {
         radius_miles: Number(st.delivery_radius_miles),
         fee_cents: st.delivery_fee_cents,
         minimum_cents: st.delivery_minimum_cents,
+        paused: st.delivery_paused, // drivers off-duty; site offers Grubhub for delivery
       },
       options: {
         protein_choice: proteins.rows,
