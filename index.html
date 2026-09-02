@@ -3362,7 +3362,38 @@
         node.style.cursor = 'default';
         if (cta) cta.style.display = 'none';
       }
+
+      // Optional dish photo: hidden by default, small button opens a lightbox.
+      if (item.image) {
+        const pb = document.createElement('button');
+        pb.type = 'button';
+        pb.innerHTML = '📷 See Photo';
+        pb.style.cssText = 'margin:8px 0 2px;background:transparent;border:1px solid var(--border-subtle,#374151);color:var(--text-muted,#9ca3af);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;width:100%;';
+        pb.onclick = (e) => { e.stopPropagation(); openPhotoLightbox(item); };
+        if (cta && cta.parentElement) cta.parentElement.insertBefore(pb, cta);
+        else node.appendChild(pb);
+      }
       return node;
+    }
+
+    function openPhotoLightbox(item) {
+      let lb = $id('photoLightbox');
+      if (!lb) {
+        lb = document.createElement('div');
+        lb.id = 'photoLightbox';
+        lb.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:11000;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:20px;cursor:pointer;';
+        lb.innerHTML = '<img data-lb-img style="max-width:min(92vw,640px);max-height:70vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.8);" alt="">'
+          + '<div data-lb-name style="color:#fff;font-weight:800;font-size:18px;text-align:center;"></div>'
+          + '<div style="color:#9ca3af;font-size:12px;">Tap anywhere to close</div>';
+        lb.onclick = () => { lb.style.display = 'none'; };
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.style.display = 'none'; });
+        document.body.appendChild(lb);
+      }
+      const img = lb.querySelector('[data-lb-img]');
+      img.src = item.image;
+      img.alt = item.name;
+      lb.querySelector('[data-lb-name]').innerText = item.name;
+      lb.style.display = 'flex';
     }
 
     /* ==================== DISH CUSTOMIZER POPUP MODAL ==================== */
