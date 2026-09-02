@@ -9,7 +9,7 @@ export default requireAdmin(async (req, res, admin) => {
   if (req.method === 'GET') {
     const r = await query(
       `SELECT i.id, i.category_id, c.name AS category, i.name, i.base_price_cents,
-              i.price_note, i.is_orderable, i.is_86ed, i.is_hidden, i.station, i.is_vegetarian, i.sort
+              i.price_note, i.is_orderable, i.is_86ed, i.is_hidden, i.station, i.is_vegetarian, i.image_url, i.sort
        FROM menu_items i JOIN menu_categories c ON c.id = i.category_id
        ORDER BY c.sort, i.sort`, []);
     return res.status(200).json({ items: r.rows });

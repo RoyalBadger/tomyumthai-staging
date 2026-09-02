@@ -877,13 +877,14 @@
         <table>
           <thead>
             <tr>
-              <th style="width:28%;">Dish</th>
-              <th style="width:14%;">Category</th>
-              <th style="width:12%;">Price ($)</th>
-              <th style="width:16%;">Stock</th>
-              <th style="width:12%;">Chef Station</th>
-              <th style="width:9%;">Veg</th>
-              <th style="width:9%;">On Menu</th>
+              <th style="width:25%;">Dish</th>
+              <th style="width:12%;">Category</th>
+              <th style="width:10%;">Price ($)</th>
+              <th style="width:14%;">Stock</th>
+              <th style="width:11%;">Chef Station</th>
+              <th style="width:7%;">Veg</th>
+              <th style="width:13%;">Photo</th>
+              <th style="width:8%;">On Menu</th>
             </tr>
           </thead>
           <tbody id="menuTableBody"></tbody>
@@ -1090,7 +1091,7 @@
       for (const it of menuItems) {
         if (it.category !== lastCat) {
           lastCat = it.category;
-          html += '<tr><td colspan="7" style="background:#141720;font-weight:800;color:var(--accent-gold);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(lastCat) + '</td></tr>';
+          html += '<tr><td colspan="8" style="background:#141720;font-weight:800;color:var(--accent-gold);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(lastCat) + '</td></tr>';
         }
         const priced = it.base_price_cents !== null;
         html += '<tr style="' + (it.is_hidden ? 'opacity:0.45;' : '') + '">'
@@ -1108,6 +1109,10 @@
           + '<td><div class="stock-switch" onclick="toggleVeg(\'' + it.id + '\')" title="Show this dish on the customer Vegetarian Menu?">'
           +   '<span class="stock-pill" style="' + (it.is_vegetarian ? 'background:#14532d;color:#86efac;border:1px solid #22c55e;' : 'background:#1f2937;color:#6b7280;border:1px solid #374151;') + '">' + (it.is_vegetarian ? '🌱 Veg' : '—') + '</span>'
           + '</div></td>'
+          + '<td style="white-space:nowrap;">'
+          +   '<button class="btn-action" onclick="pickPhoto(\'' + it.id + '\')" title="Upload or replace this dish\'s photo">' + (it.image_url ? '📷 Replace' : '⬆ Upload') + '</button>'
+          +   (it.image_url ? ' <button class="btn-action" style="color:#fca5a5;border-color:#7f1d1d;" onclick="deletePhoto(\'' + it.id + '\')" title="Delete this dish\'s photo">✕</button>' : '')
+          + '</td>'
           + '<td><button class="btn-action" onclick="toggleHidden(\'' + it.id + '\')">' + (it.is_hidden ? 'Show' : 'Hide') + '</button></td>'
           + '</tr>';
       }
@@ -1152,6 +1157,70 @@
         it.is_vegetarian = r.item.is_vegetarian;
         renderMenu();
         toast(it.name + (it.is_vegetarian ? ' added to the Vegetarian Menu.' : ' removed from the Vegetarian Menu.'));
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    // ---------- dish photos (stored in Neon; customer site follows automatically) ----------
+    let photoTargetId = null;
+
+    function pickPhoto(id) {
+      photoTargetId = id;
+      let inp = document.getElementById('photoFileInput');
+      if (!inp) {
+        inp = document.createElement('input');
+        inp.type = 'file';
+        inp.accept = 'image/*';
+        inp.id = 'photoFileInput';
+        inp.style.display = 'none';
+        document.body.appendChild(inp);
+        inp.onchange = () => { if (inp.files[0]) uploadPhoto(inp.files[0]); inp.value = ''; };
+      }
+      inp.click();
+    }
+
+    // Big phone photos are shrunk in the browser (max 900px, JPEG) before upload,
+    // so uploads stay ~100-200KB no matter the source file.
+    function downscaleImage(file, maxDim, quality) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(img.src);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => reject(new Error('could not read that image file'));
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    async function uploadPhoto(file) {
+      const id = photoTargetId;
+      const it = menuItems.find(x => x.id === id);
+      try {
+        toast('Processing photo…');
+        const dataUrl = await downscaleImage(file, 900, 0.82);
+        const r = await api('/api/admin/menu-image', {
+          method: 'POST',
+          body: { id, mime: 'image/jpeg', data_base64: dataUrl.split(',')[1] },
+        });
+        if (it) it.image_url = r.image_url;
+        renderMenu();
+        toast((it ? it.name : id) + ' photo saved — customers see it within a minute.');
+      } catch (ex) { toast('Photo upload failed: ' + ex.message, true); }
+    }
+
+    async function deletePhoto(id) {
+      const it = menuItems.find(x => x.id === id);
+      if (!confirm('Remove the photo for ' + (it ? it.name : id) + '? The Photo button disappears from the customer site.')) return;
+      try {
+        await api('/api/admin/menu-image?id=' + encodeURIComponent(id), { method: 'DELETE' });
+        if (it) it.image_url = null;
+        renderMenu();
+        toast((it ? it.name : id) + ' photo removed.');
       } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
