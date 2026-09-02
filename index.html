@@ -3957,6 +3957,13 @@
           };
           if (orderMode === 'delivery') {
             body.delivery = { address: $id('checkout-address').value, notes: $id('checkout-notes').value };
+            // If this exact address came from the verified autocomplete, pass its
+            // coordinates along as a geocoding fallback for the server's zone gate.
+            const knownCoords = SUGGESTION_COORDS[$id('checkout-address').value.trim()];
+            if (knownCoords && knownCoords[0] != null) {
+              body.delivery.lat = knownCoords[0];
+              body.delivery.lon = knownCoords[1];
+            }
           }
           const res = await fetch('/api/orders', {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),

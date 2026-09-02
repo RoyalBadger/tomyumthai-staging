@@ -8,6 +8,7 @@ import { query, getPool } from '../lib/db.js';
 import { loadPricingContext, priceCart, CartError } from '../lib/pricing.js';
 import { orderingWindow, closedMessage } from '../lib/hours.js';
 import { rateLimit, clientIp, readJsonBody } from '../lib/auth.js';
+import { checkDeliveryZone } from '../lib/distance.js';
 import { stripeFetch, PUBLISHABLE_KEY, StripeError } from '../lib/stripe.js';
 import { normalizePhoneUS, cleanName, cleanLine, cleanEmail } from '../lib/validate.js';
 
@@ -25,7 +26,8 @@ export default async function handler(req, res) {
   // --- store open? ---
   const st = (await query(
     `SELECT store_open_override, closed_message, holiday_dates, business_hours,
-            last_order_buffer_minutes, pickup_eta_minutes, delivery_eta_minutes
+            last_order_buffer_minutes, pickup_eta_minutes, delivery_eta_minutes,
+            delivery_radius_miles
      FROM settings`, [])).rows[0];
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
   const holidayToday = (st.holiday_dates || []).some(d => new Date(d).toISOString().slice(0, 10) === today);
@@ -52,6 +54,16 @@ export default async function handler(req, res) {
     address = cleanLine(body.delivery?.address);
     if (!address) return res.status(400).json({ error: 'Please enter a delivery address.' });
     deliveryNotes = cleanLine(body.delivery?.notes) || null;
+
+    // Authoritative zone gate — runs before the order or any payment exists, so an
+    // out-of-zone address fails here and the customer never reaches the card form.
+    const radius = Number(st.delivery_radius_miles) || 5;
+    const zone = await checkDeliveryZone(address, Number(body.delivery?.lat), Number(body.delivery?.lon), radius);
+    if (zone.blocked) {
+      return res.status(409).json({
+        error: `That address looks to be about ${zone.miles} driving miles away — outside our ${radius}-mile delivery zone. We'd love to have your order ready for pickup instead!`,
+      });
+    }
   }
 
   // --- price it (throws CartError with a customer-safe message) ---
