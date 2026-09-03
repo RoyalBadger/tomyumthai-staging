@@ -137,6 +137,11 @@
   5. **Housekeeping** (lib/maintenance.js, opportunistic ~4 runs/day): 24h abandoned-checkout
      cancel, 30-day purge of never-paid canceled orders, 45-day rate-limit row cleanup.
 
+### September 2 — Menu UX (friend feedback, owner-verified on phone + computer)
+- Collapsible category sections (tap header ▼ to fold/unfold; wired up Gemini's orphaned
+  collapse CSS) + floating "▲ Categories" button bottom-left while deep in the menu.
+  Search auto-expands all sections; category chips auto-expand their target.
+
 ## 🔲 Remaining
 
 ### Owner
