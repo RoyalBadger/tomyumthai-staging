@@ -1481,6 +1481,29 @@
       border: 2px solid #ffffff;
     }
 
+    .back-to-cats-btn {
+      position: fixed;
+      bottom: 85px; /* clears the mobile bottom bar, mirrors .floating-cart-btn */
+      left: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      color: var(--accent-gold);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      z-index: 900;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    }
+    .back-to-cats-btn:hover {
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+    }
+
     .mobile-bottom-bar {
       display: none;
       position: fixed;
@@ -2876,6 +2899,9 @@
       <!-- Dynamic API Menu Root Container -->
       <div data-menu-root></div>
 
+      <!-- Floating jump back to the category chips (visible while scrolled deep in the menu) -->
+      <button type="button" id="backToCatsBtn" class="back-to-cats-btn" onclick="scrollToCategories()">▲ Categories</button>
+
       <!-- Menu Item Card Template -->
             <!-- Menu Item Card Template -->
       <template id="menu-item-tpl">
@@ -3257,7 +3283,11 @@
       quick.querySelectorAll('[data-quick]').forEach(b => b.addEventListener('click', () => {
         if (typeof isMenuExpanded !== 'undefined' && !isMenuExpanded) toggleMenuExpansion(true);
         filterDishes();
-        document.querySelector(`[data-menu-root] .menu-category-section[data-cat="${b.dataset.quick}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const target = document.querySelector(`[data-menu-root] .menu-category-section[data-cat="${b.dataset.quick}"]`);
+        if (target) {
+          expandCategorySection(target); // jumping to a collapsed category reopens it
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }));
     }
 
@@ -3274,14 +3304,34 @@
         const section = document.createElement('div');
         section.className = 'menu-category-section';
         section.dataset.cat = cat.id;
-        section.innerHTML = `<h3 class="menu-category-title">${esc(cat.name)}</h3>`;
+        section.innerHTML = `
+          <div class="menu-category-header" onclick="toggleCategorySection(this)">
+            <div class="menu-category-title-wrap">
+              <span class="category-toggle-icon">▼</span>
+              <h3 class="menu-category-title" style="margin:0;">${esc(cat.name)}</h3>
+            </div>
+            <span style="font-size:11.5px;color:var(--text-muted);font-weight:700;white-space:nowrap;">${cat.items.length} dishes</span>
+          </div>`;
+        const content = document.createElement('div');
+        content.className = 'menu-category-content';
         const grid = document.createElement('div');
         grid.className = 'menu-grid';
         for (const item of cat.items) grid.appendChild(buildCard(tpl, item, cat.id));
-        section.appendChild(grid);
+        content.appendChild(grid);
+        section.appendChild(content);
         root.appendChild(section);
       }
       filterDishes();
+    }
+
+    function toggleCategorySection(header) {
+      header.classList.toggle('collapsed');
+      header.parentElement.querySelector('.menu-category-content')?.classList.toggle('collapsed');
+    }
+
+    function expandCategorySection(section) {
+      section.querySelector('.menu-category-header')?.classList.remove('collapsed');
+      section.querySelector('.menu-category-content')?.classList.remove('collapsed');
     }
 
     // "Thai Chicken Rice (Khao Man Gai)" -> title "Thai Chicken Rice", with the
@@ -3594,6 +3644,8 @@
       const activeCat = document.querySelector('#categoryTabs .cat-btn.active')?.dataset.category || 'all';
       const q = ($id('menuSearch')?.value || '').toLowerCase().trim();
       document.querySelectorAll('[data-menu-root] .menu-category-section').forEach(section => {
+        // A search must never hide matches behind a collapsed category.
+        if (q) expandCategorySection(section);
         let visible = 0;
         section.querySelectorAll('.dish-card').forEach(card => {
           const catMatch = activeCat === 'all' || card.dataset.category === activeCat;
@@ -4274,6 +4326,32 @@
         }
       });
     }
+
+    function scrollToCategories() {
+      $id('quickCatLinks')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Show the floating ▲ Categories button only while the category chip bar is
+    // scrolled off-screen and the menu itself is on-screen.
+    (function initBackToCategories() {
+      const btn = $id('backToCatsBtn');
+      if (!btn) return;
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          const bar = $id('quickCatLinks');
+          const root = document.querySelector('[data-menu-root]');
+          if (!bar || !root || !root.children.length) { btn.style.display = 'none'; return; }
+          const barGone = bar.getBoundingClientRect().bottom < 0;
+          const r = root.getBoundingClientRect();
+          const inMenu = r.top < window.innerHeight * 0.6 && r.bottom > 160;
+          btn.style.display = barGone && inMenu ? 'flex' : 'none';
+        });
+      }, { passive: true });
+    })();
 
     function jumpToCategory(catId) {
       toggleMenuExpansion(true);
