@@ -24,9 +24,8 @@ export default requireAdmin(async (req, res, admin) => {
       items = (await query(
         `SELECT oi.order_id, oi.name, oi.size_label, oi.protein, oi.extras, oi.spice_level,
                 oi.exclusions, oi.notes, oi.unit_price_cents, oi.qty,
-                COALESCE(oi.station, 'main') AS station,
-                COALESCE(mi.is_vegetarian, false) AS item_vegetarian
-         FROM order_items oi LEFT JOIN menu_items mi ON mi.id = oi.item_id
+                COALESCE(oi.station, 'main') AS station
+         FROM order_items oi
          WHERE oi.order_id = ANY($1::uuid[]) ORDER BY oi.id`,
         [orders.map(o => o.id)])).rows;
     }

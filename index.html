@@ -3256,9 +3256,8 @@
     }
 
     // The quick category chips under the Browse Our Menu bar are the only category
-    // navigation (the old in-menu tab bar and dietary filter chips were removed —
-    // the per-dish Vegetarian checkbox covers that need). Each chip expands the
-    // menu and jumps to its section.
+    // navigation (the old in-menu tab bar and dietary filter chips were removed).
+    // Each chip expands the menu and jumps to its section.
     function renderCategoryTabs() {
       const quick = $id('quickCatLinks');
       if (!quick) return;
@@ -3335,7 +3334,6 @@
       const node = tpl.content.firstElementChild.cloneNode(true);
       node.dataset.itemId = item.id;
       node.dataset.category = catId;
-      node.dataset.veg = item.vegetarian ? '1' : '0';
       const nm = splitDishName(item);
       node.querySelector('[data-name]').innerText = nm.title;
       node.querySelector('[data-thai]').innerText = nm.sub;
@@ -3602,8 +3600,7 @@
         section.querySelectorAll('.dish-card').forEach(card => {
           const catMatch = activeCat === 'all' || card.dataset.category === activeCat;
           const textMatch = !q || card.innerText.toLowerCase().includes(q);
-          const vegMatch = !window.__vegOnly || card.dataset.veg === '1';
-          const show = catMatch && textMatch && vegMatch;
+          const show = catMatch && textMatch;
           card.style.display = show ? '' : 'none';
           if (show) visible++;
         });

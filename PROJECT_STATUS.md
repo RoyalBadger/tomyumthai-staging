@@ -1,6 +1,6 @@
 # Tom Yum Thai — Project Status
 
-**As of:** September 1, 2026 · Staging: https://tomyumthai-staging.vercel.app · Production target: order.mytomyumthai.com
+**As of:** September 6, 2026 · Staging: https://tomyumthai-staging.vercel.app · Production target: order.mytomyumthai.com
 
 ---
 
@@ -58,7 +58,7 @@
 - **Three-ticket printing:** one print job = customer receipt + CHEF 2 ticket + MAIN KITCHEN
   ticket (auto-cut between pages; big order code on all three). Stations assigned per owner:
   Noodles/Stir Fried/Fried Rice = Chef 1, everything else = Chef 2; per-dish toggle in portal.
-- **Vegetarian system (owner-spec'd):** meatless ≠ vegetarian — explicit "Make it Vegetarian"
+- ~~**Vegetarian system**~~ (REMOVED 2026-09-06, see below): meatless ≠ vegetarian — explicit "Make it Vegetarian"
   checkbox in the modal (veg-capable dishes only); meat protein/add-on + vegetarian = blocked
   with inline error; "No Protein" ($0) added to protein choices; request rides the exclusions
   snapshot and prints *** VEGETARIAN *** on tickets; 🌱 Vegetarian Menu filter (50 dishes,
@@ -141,6 +141,21 @@
 - Collapsible category sections (tap header ▼ to fold/unfold; wired up Gemini's orphaned
   collapse CSS) + floating "▲ Categories" button bottom-left while deep in the menu.
   Search auto-expands all sections; category chips auto-expand their target.
+
+### September 3 — Branding + copy trims (deployed)
+- Header logo swapped to the owner's full wordmark PNG (flattened from the "TYT Logo No
+  Background" PSD, downscaled, transparency kept). Hero tagline span, About story copy and
+  the quote panel removed at owner request.
+
+### September 6 — Dietary options removed (owner request, deployed & verified)
+- Customer modal: "Make it Vegetarian" checkbox (+ its meatless-only validation and the
+  VEGETARIAN exclusions prefix) and the "Gluten-Free Prep" exclusion are gone. Exclusions now
+  list only per-dish "No X" ingredient removals.
+- Manager portal cleanup so nothing confusing remains: Veg column/toggle removed from the
+  Menu tab, 🌱 VEG tag removed from kitchen queue cards; `is_vegetarian` dropped from
+  /api/menu, /api/admin/menu (GET + PATCH) and the kitchen-queue item query.
+- The `menu_items.is_vegetarian` column itself is left in place (harmless, unused; migration
+  007 stays valid). Drop it in a future migration if desired.
 
 ## 🔲 Remaining
 

@@ -623,12 +623,6 @@
     }
     .btn-done:hover { background: #475569; color: #fff; }
 
-    .veg-tag {
-      color: #4ade80;
-      font-weight: 900;
-      font-size: 11px;
-    }
-
     /* ==================== 80MM THERMAL RECEIPT PRINT STYLES ==================== */
     @media print {
       body * {
@@ -881,9 +875,8 @@
               <th style="width:12%;">Category</th>
               <th style="width:10%;">Price ($)</th>
               <th style="width:14%;">Stock</th>
-              <th style="width:11%;">Chef Station</th>
-              <th style="width:7%;">Veg</th>
-              <th style="width:13%;">Photo</th>
+              <th style="width:14%;">Chef Station</th>
+              <th style="width:17%;">Photo</th>
               <th style="width:8%;">On Menu</th>
             </tr>
           </thead>
@@ -1099,7 +1092,7 @@
       for (const it of menuItems) {
         if (it.category !== lastCat) {
           lastCat = it.category;
-          html += '<tr><td colspan="8" style="background:#141720;font-weight:800;color:var(--accent-gold);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(lastCat) + '</td></tr>';
+          html += '<tr><td colspan="7" style="background:#141720;font-weight:800;color:var(--accent-gold);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">' + esc(lastCat) + '</td></tr>';
         }
         const priced = it.base_price_cents !== null;
         html += '<tr style="' + (it.is_hidden ? 'opacity:0.45;' : '') + '">'
@@ -1113,9 +1106,6 @@
           + '</div></td>'
           + '<td><div class="stock-switch" onclick="toggleStation(\'' + it.id + '\')" title="Click to switch which kitchen ticket this dish prints on">'
           +   '<span class="stock-pill" style="' + (it.station === 'second' ? 'background:#312e81;color:#c7d2fe;border:1px solid #6366f1;' : 'background:#1f2937;color:#d1d5db;border:1px solid #4b5563;') + '">' + (it.station === 'second' ? '👨‍🍳 Chef 2' : '👨‍🍳 Chef 1') + '</span>'
-          + '</div></td>'
-          + '<td><div class="stock-switch" onclick="toggleVeg(\'' + it.id + '\')" title="Show this dish on the customer Vegetarian Menu?">'
-          +   '<span class="stock-pill" style="' + (it.is_vegetarian ? 'background:#14532d;color:#86efac;border:1px solid #22c55e;' : 'background:#1f2937;color:#6b7280;border:1px solid #374151;') + '">' + (it.is_vegetarian ? '🌱 Veg' : '—') + '</span>'
           + '</div></td>'
           + '<td style="white-space:nowrap;">'
           +   '<button class="btn-action" onclick="pickPhoto(\'' + it.id + '\')" title="Upload or replace this dish\'s photo">' + (it.image_url ? '📷 Replace' : '⬆ Upload') + '</button>'
@@ -1155,16 +1145,6 @@
         it.station = r.item.station;
         renderMenu();
         toast(it.name + ' now prints on the ' + (it.station === 'second' ? 'CHEF 2' : 'MAIN KITCHEN') + ' ticket.');
-      } catch (ex) { toast('Error: ' + ex.message, true); }
-    }
-
-    async function toggleVeg(id) {
-      const it = menuItems.find(x => x.id === id);
-      try {
-        const r = await api('/api/admin/menu', { method: 'PATCH', body: { id, is_vegetarian: !it.is_vegetarian } });
-        it.is_vegetarian = r.item.is_vegetarian;
-        renderMenu();
-        toast(it.name + (it.is_vegetarian ? ' added to the Vegetarian Menu.' : ' removed from the Vegetarian Menu.'));
       } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
@@ -1454,7 +1434,7 @@
         } else { addrEl.style.display = 'none'; }
         node.querySelector('[data-items]').innerHTML = o.items.map(it => `
           <div class="queue-item-row">
-            <div class="queue-item-title">${it.qty}× ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}${isVegLine(it) ? ' <span class="veg-tag">🌱 VEG</span>' : ''}</div>
+            <div class="queue-item-title">${it.qty}× ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}</div>
             <div class="queue-item-meta">
               ${it.protein ? esc(it.protein) : ''}
               ${it.spice_level ? ' <span class="queue-item-spice">' + '🌶'.repeat(it.spice_level) + ' Lv' + it.spice_level + '</span>' : ''}
@@ -1487,13 +1467,6 @@
         toast('Order moved to ' + status + '.');
         await loadQueue();
       } catch (ex) { toast('Error: ' + ex.message, true); }
-    }
-
-    // A line is vegetarian ONLY when the customer checked the "Make it Vegetarian"
-    // box (owner rule: meatless is not vegetarian — sauces may contain fish/oyster).
-    // The request travels in the exclusions snapshot: "VEGETARIAN (NO FISH/OYSTER SAUCE)".
-    function isVegLine(it) {
-      return /vegetarian/i.test(it.exclusions || '');
     }
 
     function ticketItemsHtml(items) {
