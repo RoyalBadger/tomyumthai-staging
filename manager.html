@@ -1460,7 +1460,7 @@
       const isNew = !m.id;
       const key = isNew ? 'new' : m.id;
       return '<tr id="modrow-' + key + '" style="' + (m.active === false ? 'opacity:0.55;' : '') + '">'
-        + '<td><input class="form-input" style="width:56px;text-align:center;" maxlength="8" value="' + esc(m.emoji || '') + '" data-f="emoji" placeholder="🥜"></td>'
+        + '<td><input class="form-input" style="width:56px;text-align:center;" maxlength="8" value="' + esc(m.emoji || '') + '" data-f="emoji" placeholder=""></td>'
         + '<td><input class="form-input" style="width:100%;box-sizing:border-box;" maxlength="40" value="' + esc(m.label || '') + '" data-f="label" placeholder="Peanuts"></td>'
         + '<td>$<input class="price-input" type="number" step="0.01" min="0" value="' + dollars(m.extra_cents || 0) + '" data-f="extra"></td>'
         + '<td><input class="form-input" style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;" maxlength="120" value="' + esc(m.pattern || '') + '" data-f="pattern" placeholder="peanut"></td>'
