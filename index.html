@@ -3414,6 +3414,9 @@
       [/\bgarlic/i, '🧄 No Garlic'],
       [/\bginger(?!\s*rice)/i, 'No Ginger'],
     ];
+    // Removals the kitchen cannot honor for a specific dish (owner-confirmed).
+    // Khao Man Gai IS ginger rice + ginger sauce — there is no version without ginger.
+    const NON_REMOVABLE = { 'chicken-ginger-rice': ['No Ginger'] };
 
     function ensureDishModal() {
       if ($id('dishModal')) return;
@@ -3505,7 +3508,9 @@
         : '';
       show('addons', item.extra_protein);
       const ingredientText = (item.name || '') + ' ' + (item.description || '');
-      const removals = INGREDIENT_VOCAB.filter(([re]) => re.test(ingredientText)).map(([, label]) => label);
+      const blocked = NON_REMOVABLE[item.id] || [];
+      const removals = INGREDIENT_VOCAB.filter(([re]) => re.test(ingredientText)).map(([, label]) => label)
+        .filter(label => !blocked.includes(label));
       m.querySelector('[data-m-exclusions]').innerHTML = removals.map(x =>
         `<label class="exclusion-check"><input type="checkbox"> <span>${x}</span></label>`).join('');
       m.querySelector('[data-m-notes]').value = '';
