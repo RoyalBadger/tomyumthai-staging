@@ -3386,8 +3386,8 @@
 
     /* ==================== DISH CUSTOMIZER POPUP MODAL ==================== */
     let modalDish = null, modalQty = 1, modalEditIdx = null;
-    // "No X" removal checkboxes come from the API (auto-derived from the dish text,
-    // then adjusted per dish in the manager portal — see lib/removals.js).
+    // "No X" / "Extra X" ingredient modifiers come from the API per dish (manager
+    // portal catalog — see lib/modifiers.js). Extras carry an upcharge.
 
     function ensureDishModal() {
       if ($id('dishModal')) return;
@@ -3411,6 +3411,7 @@
             <div class="customizer-group" data-m-group="proteins"><label class="custom-label">Choice of Protein:</label><div class="protein-options" data-m-proteins></div></div>
             <div class="customizer-group" data-m-group="spice"><label class="custom-label">Spice Level (1 Mild – 5 Extremely Spicy):</label><div class="spice-levels" data-m-spice></div></div>
             <div class="customizer-group" data-m-group="addons"><label class="custom-label">Optional Add-ons:</label><div class="addons-grid" data-m-addons></div></div>
+            <div class="customizer-group" data-m-group="extras"><label class="custom-label">Add Extra:</label><div class="addons-grid" data-m-extras></div></div>
             <div class="customizer-group"><label class="custom-label">Dietary Exclusions &amp; Kitchen Notes:</label>
               <div class="exclusions-grid" data-m-exclusions></div>
               <input type="text" class="custom-notes-input" data-m-notes placeholder="Special kitchen instructions (e.g. sauce on side)...">
@@ -3478,9 +3479,14 @@
           + addonGroup('Vegetables', MENU.options.extra_protein.filter(x => x.option_group === 'vegetable'))
         : '';
       show('addons', item.extra_protein);
-      const removals = item.removals || [];
-      m.querySelector('[data-m-exclusions]').innerHTML = removals.map(x =>
-        `<label class="exclusion-check"><input type="checkbox"> <span>${x}</span></label>`).join('');
+      const mods = item.modifiers || [];
+      const modLabel = x => (x.emoji ? x.emoji + ' ' : '') + 'No ' + x.label;
+      m.querySelector('[data-m-exclusions]').innerHTML = mods.filter(x => x.can_remove).map(x =>
+        `<label class="exclusion-check"><input type="checkbox" value="${x.id}"> <span>${esc(modLabel(x))}</span></label>`).join('');
+      const extrasHtml = mods.filter(x => x.can_extra).map(x =>
+        `<label class="addon-check"><input type="checkbox" value="${x.id}" data-delta="${x.extra_cents || 0}"> <span>Extra ${esc(x.label)}${x.extra_cents ? ' (+' + money(x.extra_cents) + ')' : ''}</span></label>`).join('');
+      m.querySelector('[data-m-extras]').innerHTML = extrasHtml;
+      show('extras', extrasHtml.length > 0);
       m.querySelector('[data-m-notes]').value = '';
 
       // Editing an existing cart line: prefill every control from that line.
@@ -3495,10 +3501,9 @@
         if (line.protein) pick('m-protein', line.protein);
         if (line.spice_level) pick('m-spice', line.spice_level);
         m.querySelectorAll('[data-m-addons] input').forEach(cb => { cb.checked = (line.extras || []).includes(cb.value); });
-        const exSet = new Set((line.exclusions || '').split(', '));
-        m.querySelectorAll('[data-m-exclusions] label').forEach(lab => {
-          lab.querySelector('input').checked = exSet.has(lab.innerText.trim().replace(/^[^A-Za-z]+/, ''));
-        });
+        const lineMods = line.modifiers || [];
+        m.querySelectorAll('[data-m-exclusions] input').forEach(cb => { cb.checked = lineMods.some(x => x.kind === 'remove' && String(x.id) === cb.value); });
+        m.querySelectorAll('[data-m-extras] input').forEach(cb => { cb.checked = lineMods.some(x => x.kind === 'extra' && String(x.id) === cb.value); });
         m.querySelector('[data-m-notes]').value = line.notes || '';
       }
       refreshModalTotal();
@@ -3526,7 +3531,7 @@
         const pid = m.querySelector('input[name="m-protein"]:checked')?.value;
         base += MENU.options.protein_choice.find(p => p.id === pid)?.delta_cents ?? 0;
       }
-      m.querySelectorAll('[data-m-addons] input:checked').forEach(cb => { base += Number(cb.dataset.delta) || 0; });
+      m.querySelectorAll('[data-m-addons] input:checked, [data-m-extras] input:checked').forEach(cb => { base += Number(cb.dataset.delta) || 0; });
       return base;
     }
 
@@ -3548,16 +3553,20 @@
       const extras = [...m.querySelectorAll('[data-m-addons] input:checked')].map(cb => cb.value);
       const spice = item.spice_selectable ? Number(m.querySelector('input[name="m-spice"]:checked')?.value) || null : null;
 
-      const exclusions = [...m.querySelectorAll('[data-m-exclusions] input:checked')]
-        .map(cb => cb.parentElement.innerText.trim().replace(/^[^A-Za-z]+/, ''));
+      const byId = id => (item.modifiers || []).find(x => String(x.id) === String(id));
+      const removeMods = [...m.querySelectorAll('[data-m-exclusions] input:checked')].map(cb => ({ id: Number(cb.value), kind: 'remove' }));
+      const extraMods = [...m.querySelectorAll('[data-m-extras] input:checked')].map(cb => ({ id: Number(cb.value), kind: 'extra' }));
+      const exclusions = removeMods.map(x => 'No ' + (byId(x.id)?.label || ''));
       const notes = m.querySelector('[data-m-notes]').value.trim() || null;
       const newLine = {
         id: item.id, name: item.name, size_label: sizeLabel, variant, protein: proteinId,
-        extras, spice_level: spice, exclusions: exclusions.join(', ') || null, notes,
+        extras, modifiers: removeMods.concat(extraMods),
+        spice_level: spice, exclusions: exclusions.join(', ') || null, notes,
         qty: modalQty, unit_cents: modalUnitCents(),
         display: {
           protein: MENU.options.protein_choice.find(p => p.id === proteinId)?.label || null,
-          extras: extras.map(x => MENU.options.extra_protein.find(e => e.id === x)?.label || x),
+          extras: extras.map(x => MENU.options.extra_protein.find(e => e.id === x)?.label || x)
+            .concat(extraMods.map(x => 'Extra ' + (byId(x.id)?.label || ''))),
         },
       };
       if (modalEditIdx !== null && cart[modalEditIdx]) cart[modalEditIdx] = newLine;
@@ -3780,16 +3789,24 @@
         if (variant) unit += variant.delta_cents || 0;
         const prot = (item.protein_choice && l.protein) ? MENU.options.protein_choice.find(p => p.label === l.protein) : null;
         if (prot) unit += prot.delta_cents || 0;
-        const extraIds = [], extraLabels = [];
+        const extraIds = [], extraLabels = [], lineMods = [];
+        const itemMods = item.modifiers || [];
         for (const exLabel of (l.extras || [])) {
           const ex = MENU.options.extra_protein.find(x => x.label === exLabel);
-          if (ex) { extraIds.push(ex.id); extraLabels.push(ex.label); unit += ex.delta_cents || 0; }
+          if (ex) { extraIds.push(ex.id); extraLabels.push(ex.label); unit += ex.delta_cents || 0; continue; }
+          const mod = itemMods.find(x => x.can_extra && 'Extra ' + x.label === exLabel);
+          if (mod) { lineMods.push({ id: mod.id, kind: 'extra' }); extraLabels.push(exLabel); unit += mod.extra_cents || 0; }
+        }
+        const removedLabels = [];
+        for (const part of String(l.exclusions || '').split(', ')) {
+          const mod = itemMods.find(x => x.can_remove && part.toUpperCase().endsWith('NO ' + x.label.toUpperCase()));
+          if (mod) { lineMods.push({ id: mod.id, kind: 'remove' }); removedLabels.push('No ' + mod.label); }
         }
         cart.push({
           id: item.id, name: item.name, size_label: size ? size.label : null,
           variant: variant ? variant.label : null,
-          protein: prot ? prot.id : null, extras: extraIds,
-          spice_level: l.spice_level || null, exclusions: l.exclusions || null,
+          protein: prot ? prot.id : null, extras: extraIds, modifiers: lineMods,
+          spice_level: l.spice_level || null, exclusions: removedLabels.join(', ') || null,
           notes: l.notes || null, qty: Math.min(20, l.qty || 1), unit_cents: unit,
           display: { protein: prot ? prot.label : null, extras: extraLabels },
         });
@@ -3960,7 +3977,7 @@
             customer: { name: $id('checkout-name').value, phone: $id('checkout-phone').value, email: $id('checkout-email').value.trim() || null, sms_opt_in: $id('checkout-sms-optin').checked },
             items: cart.map(l => ({
               id: l.id, size_label: l.size_label, variant: l.variant || null, protein: l.protein, extras: l.extras,
-              spice_level: l.spice_level, exclusions: l.exclusions, notes: l.notes, qty: l.qty,
+              modifiers: l.modifiers || [], spice_level: l.spice_level, notes: l.notes, qty: l.qty,
             })),
           };
           if (orderMode === 'delivery') {

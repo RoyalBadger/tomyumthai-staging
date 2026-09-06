@@ -174,6 +174,20 @@ const VARIANTS = {
   'summer-rolls':         [['Shrimp', 0], ['Chicken', 0], ['Tofu', 0]],
 };
 
+// Ingredient modifier catalog (mirrors migration 020). [label, emoji, autoDetectPattern]
+// Dishes get can_remove=true for every catalog entry whose pattern matches their text.
+const MODIFIERS = [
+  ['Peanuts', '🥜', '\\bpeanut'], ['Egg', '🥚', '\\begg(?!\\s*roll)'], ['Onions', '🧅', '\\bonion'],
+  ['Bean Sprouts', null, '\\bbean sprout'], ['Scallions', null, '\\bscallion'], ['Tomatoes', '🍅', '\\btomato'],
+  ['Bell Peppers', null, '\\bbell pepper'], ['Jalapeños', '🌶️', '\\bjalapeno'], ['Basil', '🌿', '\\bbasil'],
+  ['Broccoli', '🥦', '\\bbroccoli'], ['Carrots', '🥕', '\\bcarrot'], ['Mushrooms', '🍄', '\\bmushroom'],
+  ['Cilantro', null, '\\bcilantro'], ['Cucumber', '🥒', '\\bcucumber'], ['Cashews', null, '\\bcashew'],
+  ['Raisins', null, '\\braisin'], ['Pineapple', '🍍', '\\bpineapple'], ['Potatoes', '🥔', '\\bpotato'],
+  ['Bamboo Shoots', null, '\\bbamboo'], ['Zucchini', null, '\\bzucchini'], ['Cabbage', null, '\\bcabbage'],
+  ['Celery', null, '\\bcelery'], ['Garlic', '🧄', '\\bgarlic'], ['Ginger', null, '\\bginger(?!\\s*rice)'],
+];
+const NON_REMOVABLE = { 'chicken-ginger-rice': ['Ginger'] };
+
 const PROTEINS = [ // included choices at 0; premium upcharges
   ['chicken', 'Chicken', 0], ['pork', 'Pork', 0], ['tofu', 'Tofu', 0],
   ['vegetable', 'Vegetable', 0], ['beef', 'Beef', 300], ['shrimp', 'Shrimp', 300],
@@ -225,6 +239,22 @@ try {
         `INSERT INTO item_variants (item_id, label, delta_cents, sort) VALUES ($1,$2,$3,$4)
          ON CONFLICT (item_id, label) DO UPDATE SET delta_cents=$3, sort=$4`,
         [itemId, label, delta, v++]);
+    }
+  }
+  for (const [i, [label, emoji, pattern]] of MODIFIERS.entries()) {
+    await client.query(
+      `INSERT INTO modifiers (label, emoji, pattern, sort) VALUES ($1,$2,$3,$4)
+       ON CONFLICT (label) DO UPDATE SET emoji=$2, pattern=$3, sort=$4`, [label, emoji, pattern, i]);
+  }
+  const catalog = (await client.query('SELECT id, label, pattern FROM modifiers')).rows;
+  for (const it of ITEMS) {
+    const txt = it.name + ' ' + (it.description || '');
+    for (const m of catalog) {
+      if (!m.pattern || !new RegExp(m.pattern, 'i').test(txt)) continue;
+      if ((NON_REMOVABLE[it.id] || []).includes(m.label)) continue;
+      await client.query(
+        `INSERT INTO item_modifiers (item_id, modifier_id, can_remove, can_extra, sort) VALUES ($1,$2,true,false,0)
+         ON CONFLICT (item_id, modifier_id) DO NOTHING`, [it.id, m.id]);
     }
   }
   let p = 0;

@@ -200,6 +200,19 @@
 - Family access model recorded in the status doc: portal login only; no repo/Vercel/Neon/
   Stripe credentials; a Claude connector is optional later and would expose only these APIs.
 
+### September 6 — Modifier catalog with paid extras (owner request, deployed)
+- Replaced per-dish typed removals with one shared **modifier catalog** (🧩 Modifiers tab:
+  emoji, ingredient, default Extra price, auto-detect word, active). In the dish editor you tick
+  ingredients and choose **No X** (free) and/or **Extra X** (charged; per-dish price override).
+  "✨ Add ingredients found in the description" pre-fills new dishes.
+- Customer popup: removals as before plus a new **Add Extra** row with prices; the pricing
+  engine validates every modifier against the dish and adds the upcharge; removals print on the
+  ticket exclusions line, extras with the add-ons — kitchen screens/tickets unchanged.
+- Migration 020 seeded the catalog (24 ingredients) and every dish's assignments exactly as the
+  old auto-derivation produced them (Khao Man Gai ginger stays off). All Extra prices default
+  to /usr/bin/bash and no dish offers Extra yet — **owner sets prices in the Modifiers tab, then enables
+  Extra per dish.** 7 new pricing tests. Old removals_* columns left unused.
+
 ## 🔲 Remaining
 
 ### Owner

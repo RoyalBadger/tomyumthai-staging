@@ -1,19 +1,20 @@
 // GET /api/menu — public menu with 86/closed state. Cached at the edge for 60s.
 import { query } from '../lib/db.js';
-import { finalRemovals } from '../lib/removals.js';
+import { ITEM_MODIFIER_SQL, publicModifier } from '../lib/modifiers.js';
 import { orderingWindow, closedMessage } from '../lib/hours.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'method not allowed' });
   try {
-    const [cats, items, sizes, variants, proteins, extras, settings] = await Promise.all([
+    const [cats, items, sizes, variants, modifiers, proteins, extras, settings] = await Promise.all([
       query('SELECT id, name FROM menu_categories ORDER BY sort', []),
       query(`SELECT id, category_id, name, thai_name, description, base_price_cents,
                     price_note, protein_choice, extra_protein, spice_selectable,
-                    is_orderable, is_86ed, image_url, removals_hidden, removals_custom
+                    is_orderable, is_86ed, image_url
              FROM menu_items WHERE NOT is_hidden ORDER BY sort`, []),
       query('SELECT item_id, label, price_cents FROM item_sizes ORDER BY sort', []),
       query('SELECT item_id, label, delta_cents FROM item_variants ORDER BY sort', []),
+      query(ITEM_MODIFIER_SQL, []),
       query('SELECT id, label, delta_cents FROM protein_options WHERE active ORDER BY sort', []),
       query('SELECT id, label, delta_cents, option_group FROM extra_protein_options WHERE active ORDER BY sort', []),
       // settings is a one-row table; SELECT * so a freshly added column can
@@ -25,6 +26,10 @@ export default async function handler(req, res) {
     for (const s of sizes.rows) (sizesByItem[s.item_id] ??= []).push({ label: s.label, price_cents: s.price_cents });
     const variantsByItem = {};
     for (const v of variants.rows) (variantsByItem[v.item_id] ??= []).push({ label: v.label, delta_cents: v.delta_cents });
+    const modifiersByItem = {};
+    for (const m of modifiers.rows) {
+      if (m.can_remove || m.can_extra) (modifiersByItem[m.item_id] ??= []).push(publicModifier(m));
+    }
 
     const itemsByCat = {};
     for (const it of items.rows) {
@@ -37,7 +42,7 @@ export default async function handler(req, res) {
         price_note: it.price_note,
         sizes: sizesByItem[it.id] || [],
         variants: variantsByItem[it.id] || [],
-        removals: finalRemovals(it),
+        modifiers: modifiersByItem[it.id] || [],
         protein_choice: it.protein_choice,
         extra_protein: it.extra_protein,
         spice_selectable: it.spice_selectable,

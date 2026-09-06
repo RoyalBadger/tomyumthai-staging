@@ -1,15 +1,16 @@
-// GET    /api/admin/menu — full menu (incl. hidden) with sizes, variants, removal settings,
-//                          categories, and the removal vocabulary for editor previews
+// GET    /api/admin/menu — full menu (incl. hidden) with sizes, variants, per-dish modifier
+//                          assignments, categories, and the modifier catalog
 // PATCH  /api/admin/menu — quick toggles: {id, is_86ed?, base_price_cents?, is_hidden?, station?}
 // PUT    /api/admin/menu — full dish editor save (create when id is omitted), or
-//                          {kind:'category', id?, name} to create/rename a category
+//                          {kind:'category', id?, name} to create/rename a category, or
+//                          {kind:'modifier', id?, label, emoji?, pattern?, extra_cents, active} for the catalog
 // POST   /api/admin/menu — {id, mime, data_base64}: upload/replace the dish PHOTO (stored in Neon)
 // DELETE /api/admin/menu?id=<id>            — remove the dish PHOTO
 // DELETE /api/admin/menu?id=<id>&what=item  — delete the dish itself (order history keeps its snapshot)
+// DELETE /api/admin/menu?id=<n>&what=modifier — delete a catalog modifier (unassigns it everywhere)
 // (Everything lives here so we stay under Vercel Hobby's 12-function cap.)
 import { getPool, query } from '../../lib/db.js';
 import { requireAdmin, audit, readJsonBody } from '../../lib/auth.js';
-import { REMOVAL_VOCAB, autoRemovals, finalRemovals } from '../../lib/removals.js';
 
 const MAX_IMG_BYTES = 900_000; // ~900KB decoded — plenty for a 900px JPEG
 const IMG_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -23,7 +24,7 @@ function magicOk(buf, mime) {
 
 const ITEM_COLS = `id, category_id, name, thai_name, description, base_price_cents, price_note,
   protein_choice, extra_protein, spice_selectable, is_orderable, is_86ed, is_hidden, station,
-  image_url, sort, removals_hidden, removals_custom`;
+  image_url, sort`;
 
 const slugify = s => String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
 const text = (v, max) => (v === undefined || v === null) ? null : (String(v).trim().slice(0, max) || null);
@@ -71,7 +72,21 @@ function parseItem(body) {
 
   const station = body.station === 'second' ? 'second' : 'main';
   const sort = Number.isInteger(Number(body.sort)) ? Math.max(0, Math.min(999, Number(body.sort))) : 0;
-  const listOf = (arr, max) => (Array.isArray(arr) ? arr : []).map(x => text(x, 40)).filter(Boolean).slice(0, max);
+  const modsIn = Array.isArray(body.modifiers) ? body.modifiers : [];
+  const modifiers = [];
+  for (const m of modsIn.slice(0, 40)) {
+    const modifier_id = Number(m?.modifier_id);
+    if (!Number.isInteger(modifier_id)) return { error: 'Bad modifier reference.' };
+    if (modifiers.some(x => x.modifier_id === modifier_id)) continue;
+    const can_remove = bool(m.can_remove), can_extra = bool(m.can_extra);
+    if (!can_remove && !can_extra) continue;   // nothing the customer could do with it
+    let extra_cents = null;
+    if (m.extra_cents !== null && m.extra_cents !== undefined && m.extra_cents !== '') {
+      extra_cents = cents(m.extra_cents, 5_000);
+      if (Number.isNaN(extra_cents)) return { error: 'Extra upcharge must be between $0 and $50.' };
+    }
+    modifiers.push({ modifier_id, can_remove, can_extra, extra_cents });
+  }
 
   return {
     item: {
@@ -85,10 +100,8 @@ function parseItem(body) {
       // orderable unless it is a note-only (market price) dish with no price and no sizes
       is_orderable: body.is_orderable === undefined ? (base_price_cents !== null || sizes.length > 0) : bool(body.is_orderable),
       station, sort,
-      removals_hidden: listOf(body.removals_hidden, 20),
-      removals_custom: listOf(body.removals_custom, 20),
     },
-    sizes, variants,
+    sizes, variants, modifiers,
   };
 }
 
@@ -97,8 +110,9 @@ async function loadItem(id) {
   if (!it) return null;
   it.sizes = (await query('SELECT label, price_cents FROM item_sizes WHERE item_id = $1 ORDER BY sort', [id])).rows;
   it.variants = (await query('SELECT label, delta_cents FROM item_variants WHERE item_id = $1 ORDER BY sort', [id])).rows;
-  it.removals_auto = autoRemovals(it);
-  it.removals = finalRemovals(it);
+  it.modifiers = (await query(
+    `SELECT im.modifier_id, im.can_remove, im.can_extra, im.extra_cents, m.label
+     FROM item_modifiers im JOIN modifiers m ON m.id = im.modifier_id WHERE im.item_id = $1 ORDER BY im.sort`, [id])).rows;
   return it;
 }
 
@@ -135,6 +149,14 @@ export default requireAdmin(async (req, res, admin) => {
     const item = (await query('SELECT id, name FROM menu_items WHERE id = $1', [id])).rows[0];
     if (!item) return res.status(404).json({ error: 'unknown item' });
 
+    if (String(req.query?.what || '') === 'modifier') {
+      const mid = Number(req.query.id);
+      const m = (await query('DELETE FROM modifiers WHERE id = $1 RETURNING label', [mid])).rows[0];
+      if (!m) return res.status(404).json({ error: 'unknown modifier' });
+      await audit(admin.id, 'modifier_delete', String(mid), { label: m.label });
+      return res.status(200).json({ ok: true });
+    }
+
     if (String(req.query?.what || 'photo') === 'item') {
       // order_items keeps its own name/price snapshot (item_id is reference-only),
       // so deleting a dish never touches order history or kitchen tickets.
@@ -144,6 +166,7 @@ export default requireAdmin(async (req, res, admin) => {
         await client.query('DELETE FROM menu_item_images WHERE item_id = $1', [id]);
         await client.query('DELETE FROM item_sizes WHERE item_id = $1', [id]);
         await client.query('DELETE FROM item_variants WHERE item_id = $1', [id]);
+        await client.query('DELETE FROM item_modifiers WHERE item_id = $1', [id]);
         await client.query('DELETE FROM menu_items WHERE id = $1', [id]);
         await client.query('COMMIT');
       } catch (e) { await client.query('ROLLBACK'); throw e; } finally { client.release(); }
@@ -158,27 +181,29 @@ export default requireAdmin(async (req, res, admin) => {
   }
 
   if (req.method === 'GET') {
-    const [items, cats, sizes, variants] = await Promise.all([
+    const [items, cats, sizes, variants, itemMods, catalog] = await Promise.all([
       query(`SELECT i.id, i.category_id, c.name AS category, i.name, i.thai_name, i.description,
                     i.base_price_cents, i.price_note, i.protein_choice, i.extra_protein, i.spice_selectable,
-                    i.is_orderable, i.is_86ed, i.is_hidden, i.station, i.image_url, i.sort,
-                    i.removals_hidden, i.removals_custom
+                    i.is_orderable, i.is_86ed, i.is_hidden, i.station, i.image_url, i.sort
              FROM menu_items i JOIN menu_categories c ON c.id = i.category_id
              ORDER BY c.sort, i.sort, i.name`, []),
       query('SELECT id, name, sort FROM menu_categories ORDER BY sort', []),
       query('SELECT item_id, label, price_cents FROM item_sizes ORDER BY sort', []),
       query('SELECT item_id, label, delta_cents FROM item_variants ORDER BY sort', []),
+      query(`SELECT im.item_id, im.modifier_id, im.can_remove, im.can_extra, im.extra_cents, im.sort
+             FROM item_modifiers im ORDER BY im.sort`, []),
+      query('SELECT id, label, emoji, pattern, extra_cents, active, sort FROM modifiers ORDER BY sort, label', []),
     ]);
-    const sizesBy = {}, variantsBy = {};
+    const sizesBy = {}, variantsBy = {}, modsBy = {};
+    for (const m of itemMods.rows) (modsBy[m.item_id] ??= []).push({ modifier_id: m.modifier_id, can_remove: m.can_remove, can_extra: m.can_extra, extra_cents: m.extra_cents });
     for (const s of sizes.rows) (sizesBy[s.item_id] ??= []).push({ label: s.label, price_cents: s.price_cents });
     for (const v of variants.rows) (variantsBy[v.item_id] ??= []).push({ label: v.label, delta_cents: v.delta_cents });
     for (const it of items.rows) {
       it.sizes = sizesBy[it.id] || [];
       it.variants = variantsBy[it.id] || [];
-      it.removals_auto = autoRemovals(it);
-      it.removals = finalRemovals(it);
+      it.modifiers = modsBy[it.id] || [];
     }
-    return res.status(200).json({ items: items.rows, categories: cats.rows, removal_vocab: REMOVAL_VOCAB });
+    return res.status(200).json({ items: items.rows, categories: cats.rows, modifiers: catalog.rows });
   }
 
   if (req.method === 'PUT') {
@@ -201,9 +226,36 @@ export default requireAdmin(async (req, res, admin) => {
       return res.status(200).json({ ok: true, category: r.rows[0] });
     }
 
+    if (body.kind === 'modifier') {
+      const label = text(body.label, 40);
+      if (!label) return res.status(400).json({ error: 'Modifier name is required.' });
+      const emoji = text(body.emoji, 8);
+      const pattern = text(body.pattern, 120);
+      if (pattern) { try { new RegExp(pattern, 'i'); } catch { return res.status(400).json({ error: 'Auto-detect pattern is not a valid expression.' }); } }
+      const extra = cents(body.extra_cents ?? 0, 5_000);
+      if (Number.isNaN(extra)) return res.status(400).json({ error: 'Extra upcharge must be between $0 and $50.' });
+      const active = body.active === undefined ? true : bool(body.active);
+      const dup = (await query('SELECT id FROM modifiers WHERE lower(label) = lower($1) AND id <> $2', [label, Number(body.id) || 0])).rows[0];
+      if (dup) return res.status(400).json({ error: `"${label}" already exists.` });
+      let row;
+      if (body.id) {
+        row = (await query(
+          'UPDATE modifiers SET label=$2, emoji=$3, pattern=$4, extra_cents=$5, active=$6 WHERE id=$1 RETURNING id, label, emoji, pattern, extra_cents, active, sort',
+          [Number(body.id), label, emoji, pattern, extra, active])).rows[0];
+        if (!row) return res.status(404).json({ error: 'unknown modifier' });
+      } else {
+        const sort = (await query('SELECT COALESCE(MAX(sort), -1) + 1 AS s FROM modifiers', [])).rows[0].s;
+        row = (await query(
+          'INSERT INTO modifiers (label, emoji, pattern, extra_cents, active, sort) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, label, emoji, pattern, extra_cents, active, sort',
+          [label, emoji, pattern, extra, active, sort])).rows[0];
+      }
+      await audit(admin.id, body.id ? 'modifier_update' : 'modifier_create', String(row.id), { label, extra_cents: extra, active });
+      return res.status(200).json({ ok: true, modifier: row });
+    }
+
     const parsed = parseItem(body);
     if (parsed.error) return res.status(400).json({ error: parsed.error });
-    const { item, sizes, variants } = parsed;
+    const { item, sizes, variants, modifiers } = parsed;
     if (!(await query('SELECT 1 FROM menu_categories WHERE id = $1', [item.category_id])).rows.length) {
       return res.status(400).json({ error: 'unknown category' });
     }
@@ -227,14 +279,13 @@ export default requireAdmin(async (req, res, admin) => {
       await client.query('BEGIN');
       await client.query(
         `INSERT INTO menu_items (id, category_id, name, thai_name, description, base_price_cents, price_note,
-           protein_choice, extra_protein, spice_selectable, is_orderable, station, sort, removals_hidden, removals_custom)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+           protein_choice, extra_protein, spice_selectable, is_orderable, station, sort)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
          ON CONFLICT (id) DO UPDATE SET category_id=$2, name=$3, thai_name=$4, description=$5, base_price_cents=$6,
            price_note=$7, protein_choice=$8, extra_protein=$9, spice_selectable=$10, is_orderable=$11, station=$12,
-           sort=$13, removals_hidden=$14, removals_custom=$15`,
+           sort=$13`,
         [id, item.category_id, item.name, item.thai_name, item.description, item.base_price_cents, item.price_note,
-         item.protein_choice, item.extra_protein, item.spice_selectable, item.is_orderable, item.station, item.sort,
-         item.removals_hidden, item.removals_custom]);
+         item.protein_choice, item.extra_protein, item.spice_selectable, item.is_orderable, item.station, item.sort]);
       await client.query('DELETE FROM item_sizes WHERE item_id = $1', [id]);
       for (const [i, s] of sizes.entries()) {
         await client.query('INSERT INTO item_sizes (item_id, label, price_cents, sort) VALUES ($1,$2,$3,$4)', [id, s.label, s.price_cents, i]);
@@ -243,11 +294,18 @@ export default requireAdmin(async (req, res, admin) => {
       for (const [i, v] of variants.entries()) {
         await client.query('INSERT INTO item_variants (item_id, label, delta_cents, sort) VALUES ($1,$2,$3,$4)', [id, v.label, v.delta_cents, i]);
       }
+      await client.query('DELETE FROM item_modifiers WHERE item_id = $1', [id]);
+      for (const [i, m] of modifiers.entries()) {
+        await client.query(
+          `INSERT INTO item_modifiers (item_id, modifier_id, can_remove, can_extra, extra_cents, sort)
+           SELECT $1, $2, $3, $4, $5, $6 WHERE EXISTS (SELECT 1 FROM modifiers WHERE id = $2)`,
+          [id, m.modifier_id, m.can_remove, m.can_extra, m.extra_cents, i]);
+      }
       await client.query('COMMIT');
     } catch (e) { await client.query('ROLLBACK'); throw e; } finally { client.release(); }
 
     const after = await loadItem(id);
-    const strip = o => o && { ...o, image_url: undefined, removals_auto: undefined, removals: undefined };
+    const strip = o => o && { ...o, image_url: undefined };
     await audit(admin.id, before ? 'item_update' : 'item_create', id, { before: strip(before), after: strip(after) });
     return res.status(200).json({ ok: true, item: after });
   }

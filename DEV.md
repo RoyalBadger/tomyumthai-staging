@@ -98,8 +98,10 @@ node C:\Users\strip\tomyumthai-staging\db\set-delivery-pause.mjs off # resume di
 Everything a customer sees for a dish is edited in the portal's Menu tab (✏️ Edit / ➕ Add
 Dish / ➕ Category): name, Thai name, description, price or sizes, price note (market price =
 display-only), chef station, position, protein choice / add-ons / spice toggles, "Your Choice"
-options with optional upcharges, and the "No X" removal checkboxes (auto-found from the
-description via `lib/removals.js`; untick to hide, or add custom ones). Deleting a dish never
+options with optional upcharges, and ingredient **modifiers** picked from the shared catalog
+(🧩 Modifiers tab: label, emoji, default "Extra" price, auto-detect pattern). Per dish each
+modifier can be removable (free → "No X" on the ticket exclusions line) and/or extra (charged →
+"Extra X" with the add-ons); `lib/modifiers.js`, tables `modifiers` + `item_modifiers`. Deleting a dish never
 touches order history (order_items keeps its own snapshot). Every save is audited with
 before/after JSON. `db/seed.mjs` remains the fresh-database baseline only — it does NOT
 overwrite portal edits unless you deliberately re-run it.

@@ -12,6 +12,13 @@ const ctx = {
     'crispy-rolls': { id: 'crispy-rolls', name: 'Thai Crispy Rolls', base_price_cents: 599, protein_choice: false, extra_protein: false, spice_selectable: false, is_orderable: true, is_86ed: false, is_hidden: false },
     'glass-noodle-salad': { id: 'glass-noodle-salad', name: 'Glass Noodle Salad', base_price_cents: 1399, protein_choice: false, extra_protein: false, spice_selectable: true, is_orderable: true, is_86ed: false, is_hidden: false },
   },
+  modifiersByItem: {
+    'pad-thai': [
+      { item_id: 'pad-thai', modifier_id: 1, label: 'Peanuts', emoji: '🥜', can_remove: true, can_extra: true, extra_cents: 100, extra_cents_override: null },
+      { item_id: 'pad-thai', modifier_id: 2, label: 'Egg', emoji: '🥚', can_remove: true, can_extra: true, extra_cents: 100, extra_cents_override: 150 },
+      { item_id: 'pad-thai', modifier_id: 3, label: 'Onions', emoji: null, can_remove: true, can_extra: false, extra_cents: 0, extra_cents_override: null },
+    ],
+  },
   variantsByItem: {
     'crispy-rolls': [{ item_id: 'crispy-rolls', label: 'Chicken', delta_cents: 0 }, { item_id: 'crispy-rolls', label: 'Pork', delta_cents: 0 }, { item_id: 'crispy-rolls', label: 'Vegetable', delta_cents: 0 }],
     'glass-noodle-salad': [{ item_id: 'glass-noodle-salad', label: 'Chicken', delta_cents: 0 }, { item_id: 'glass-noodle-salad', label: 'Shrimp', delta_cents: 300 }],
@@ -104,6 +111,19 @@ throws('rejects delivery under minimum', { order_type: 'delivery', items: [{ id:
   }, ctx);
   check('client price fields ignored', r.total_cents === Math.round(599 * 1.0825));
 }
+
+// Ingredient modifiers (remove = free → exclusions; extra = upcharge → extras)
+{
+  const r = priceCart({ order_type: 'pickup', items: [{ id: 'pad-thai', protein: 'chicken', qty: 1,
+    modifiers: [{ id: 1, kind: 'remove' }, { id: 2, kind: 'extra' }, { id: 1, kind: 'extra' }] }] }, ctx);
+  check('extra upcharges applied (1399 + 150 override + 100 default)', r.lines[0].unit_price_cents === 1649);
+  check('removal lands in exclusions', r.lines[0].exclusions === '🥜 NO PEANUTS');
+  check('extras snapshot labels', r.lines[0].extras.join('|') === 'Extra Egg|Extra Peanuts');
+}
+throws('rejects extra when not allowed', { order_type: 'pickup', items: [{ id: 'pad-thai', protein: 'chicken', qty: 1, modifiers: [{ id: 3, kind: 'extra' }] }] }, "isn't available");
+throws('rejects unknown modifier', { order_type: 'pickup', items: [{ id: 'pad-thai', protein: 'chicken', qty: 1, modifiers: [{ id: 99, kind: 'remove' }] }] }, "isn't available");
+throws('rejects modifier on dish without any', { order_type: 'pickup', items: [{ id: 'crab-rangoon', qty: 1, modifiers: [{ id: 1, kind: 'remove' }] }] }, "isn't available");
+throws('rejects duplicate modifier', { order_type: 'pickup', items: [{ id: 'pad-thai', protein: 'chicken', qty: 1, modifiers: [{ id: 1, kind: 'remove' }, { id: 1, kind: 'remove' }] }] }, 'Duplicate');
 
 if (fail) { console.error(`${fail} failing`); process.exit(1); }
 console.log('all pricing tests pass');
