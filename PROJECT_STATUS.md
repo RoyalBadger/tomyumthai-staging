@@ -211,8 +211,9 @@
 - Migration 020 seeded the catalog (24 ingredients) and every dish's assignments exactly as the
   old auto-derivation produced them (Khao Man Gai ginger stays off). Extra prices started at
   $0; **migration 021 set every (non-meat) ingredient to $1.00 and made $1.00 the default for
-  new ones** (owner ruling). No dish offers Extra yet — owner switches Extra on per dish in the
-  editor. 7 new pricing tests. Old removals_* columns left unused.
+  new ones** (owner ruling). **Migration 022 switched Extra on for every dish modifier** (owner
+  request), so all 45 dishes with ingredients now offer "Extra X (+$1.00)"; per-dish overrides
+  in the editor. 7 new pricing tests. Old removals_* columns left unused.
 
 ## 🔲 Remaining
 
