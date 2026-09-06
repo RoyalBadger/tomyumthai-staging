@@ -209,9 +209,10 @@
   engine validates every modifier against the dish and adds the upcharge; removals print on the
   ticket exclusions line, extras with the add-ons — kitchen screens/tickets unchanged.
 - Migration 020 seeded the catalog (24 ingredients) and every dish's assignments exactly as the
-  old auto-derivation produced them (Khao Man Gai ginger stays off). All Extra prices default
-  to /usr/bin/bash and no dish offers Extra yet — **owner sets prices in the Modifiers tab, then enables
-  Extra per dish.** 7 new pricing tests. Old removals_* columns left unused.
+  old auto-derivation produced them (Khao Man Gai ginger stays off). Extra prices started at
+  $0; **migration 021 set every (non-meat) ingredient to $1.00 and made $1.00 the default for
+  new ones** (owner ruling). No dish offers Extra yet — owner switches Extra on per dish in the
+  editor. 7 new pricing tests. Old removals_* columns left unused.
 
 ## 🔲 Remaining
 

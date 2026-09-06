@@ -243,7 +243,7 @@ try {
   }
   for (const [i, [label, emoji, pattern]] of MODIFIERS.entries()) {
     await client.query(
-      `INSERT INTO modifiers (label, emoji, pattern, sort) VALUES ($1,$2,$3,$4)
+      `INSERT INTO modifiers (label, emoji, pattern, extra_cents, sort) VALUES ($1,$2,$3,100,$4)
        ON CONFLICT (label) DO UPDATE SET emoji=$2, pattern=$3, sort=$4`, [label, emoji, pattern, i]);
   }
   const catalog = (await client.query('SELECT id, label, pattern FROM modifiers')).rows;
