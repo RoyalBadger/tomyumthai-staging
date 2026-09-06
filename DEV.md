@@ -34,6 +34,7 @@
 | `GOOGLE_MONTHLY_CAP` | 4 | optional; max Google distance calls per calendar month (default 9000 — below the free allowance, so the Google bill is $0 by construction). |
 | `GOOGLE_DAILY_CAP` | 4 | optional; max Google distance calls per day across all visitors (default 500) — past it, labeled estimates serve instead. |
 | `GOOGLE_MAPS_API_KEY` | 4 | driving-distance zone checks (/api/distance). Without it, distances are straight-line × 1.3 labeled "est.". Setup: console.cloud.google.com → new project → enable **Routes API** → billing → Credentials → API key → restrict to Routes API. |
+| `CHANGE_REQUEST_WEBHOOK` | 6 | optional; URL that receives a JSON POST ({id, subject, details, by}) each time the family files a Change Request in the portal. Point it at a Power Automate / Zapier "HTTP request received" flow that emails the web admin. Unset = requests are only visible in the portal's Change Requests tab. |
 | `OTP_DAILY_CAP` | 5 | optional; max Twilio Verify OTP sends per day site-wide (default 150). Past it, sign-in says "try later"; guest checkout is unaffected. Caps worst-case SMS spend under distributed abuse. |
 
 Webhook: registered programmatically at `/api/stripe-webhook` for `payment_intent.succeeded`.
@@ -92,9 +93,20 @@ node C:\Users\strip\tomyumthai-staging\db\set-delivery-pause.mjs off # resume di
   is set for signed-in checkouts, so account order history survives the scrub (the history
   query matches customer_id OR phone). Rate-limit rows older than 45 days are purged.
 
-## Menu price changes (until the manager portal ships in Phase 2)
+## Menu changes (manager portal — 2026-09-06)
 
-Edit `db/seed.mjs`, re-run `npm run seed` (upserts in place), commit.
+Everything a customer sees for a dish is edited in the portal's Menu tab (✏️ Edit / ➕ Add
+Dish / ➕ Category): name, Thai name, description, price or sizes, price note (market price =
+display-only), chef station, position, protein choice / add-ons / spice toggles, "Your Choice"
+options with optional upcharges, and the "No X" removal checkboxes (auto-found from the
+description via `lib/removals.js`; untick to hide, or add custom ones). Deleting a dish never
+touches order history (order_items keeps its own snapshot). Every save is audited with
+before/after JSON. `db/seed.mjs` remains the fresh-database baseline only — it does NOT
+overwrite portal edits unless you deliberately re-run it.
+
+The portal's Change Requests tab is the family's channel for anything beyond the menu (site
+design, wording, features): requests are stored in `change_requests`, optionally forwarded
+via `CHANGE_REQUEST_WEBHOOK`, and marked done/declined by the web admin.
 
 ## Data notes / open questions for the owner
 

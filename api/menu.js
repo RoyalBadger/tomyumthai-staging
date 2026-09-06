@@ -1,5 +1,6 @@
 // GET /api/menu — public menu with 86/closed state. Cached at the edge for 60s.
 import { query } from '../lib/db.js';
+import { finalRemovals } from '../lib/removals.js';
 import { orderingWindow, closedMessage } from '../lib/hours.js';
 
 export default async function handler(req, res) {
@@ -9,7 +10,7 @@ export default async function handler(req, res) {
       query('SELECT id, name FROM menu_categories ORDER BY sort', []),
       query(`SELECT id, category_id, name, thai_name, description, base_price_cents,
                     price_note, protein_choice, extra_protein, spice_selectable,
-                    is_orderable, is_86ed, image_url
+                    is_orderable, is_86ed, image_url, removals_hidden, removals_custom
              FROM menu_items WHERE NOT is_hidden ORDER BY sort`, []),
       query('SELECT item_id, label, price_cents FROM item_sizes ORDER BY sort', []),
       query('SELECT item_id, label, delta_cents FROM item_variants ORDER BY sort', []),
@@ -36,6 +37,7 @@ export default async function handler(req, res) {
         price_note: it.price_note,
         sizes: sizesByItem[it.id] || [],
         variants: variantsByItem[it.id] || [],
+        removals: finalRemovals(it),
         protein_choice: it.protein_choice,
         extra_protein: it.extra_protein,
         spice_selectable: it.spice_selectable,

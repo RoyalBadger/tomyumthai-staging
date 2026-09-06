@@ -1,4 +1,6 @@
-// GET  /api/admin/settings — store controls
+// GET  /api/admin/settings — store controls; ?requests=1 lists change requests
+// POST /api/admin/settings — {subject, details}: file a site/design change request for the web admin
+// PATCH /api/admin/settings — {request_id, status:'done'|'declined'|'open'} resolves a request, or:
 // PATCH /api/admin/settings — {store_open_override?, delivery_paused?, closed_message?,
 //                              holiday_dates?, last_order_buffer_minutes?,
 //                              pickup_eta_minutes?, delivery_eta_minutes?}
@@ -8,6 +10,37 @@ import { requireAdmin, audit, readJsonBody } from '../../lib/auth.js';
 export default requireAdmin(async (req, res, admin) => {
   res.setHeader('Cache-Control', 'no-store');
 
+  if (req.method === 'GET' && req.query?.requests) {
+    const r = await query(
+      `SELECT r.id, r.subject, r.details, r.status, r.created_at, r.resolved_at, a.email AS by_email
+       FROM change_requests r LEFT JOIN admin_users a ON a.id = r.admin_id
+       ORDER BY (r.status = 'open') DESC, r.created_at DESC LIMIT 200`, []);
+    return res.status(200).json({ requests: r.rows });
+  }
+
+  if (req.method === 'POST') {
+    const body = readJsonBody(req);
+    const subject = String(body.subject || '').trim().slice(0, 120);
+    const details = String(body.details || '').trim().slice(0, 2000) || null;
+    if (!subject) return res.status(400).json({ error: 'Give the request a short title.' });
+    const r = await query(
+      'INSERT INTO change_requests (admin_id, subject, details) VALUES ($1,$2,$3) RETURNING id, subject, details, status, created_at',
+      [admin.id, subject, details]);
+    await audit(admin.id, 'change_request', String(r.rows[0].id), { subject });
+    // Optional outbound notification (e.g. a Power Automate / Zapier "HTTP request received"
+    // flow that emails the web admin). Silent if unset or unreachable.
+    if (process.env.CHANGE_REQUEST_WEBHOOK) {
+      try {
+        await fetch(process.env.CHANGE_REQUEST_WEBHOOK, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: r.rows[0].id, subject, details, by: admin.email, site: 'Tom Yum Thai ordering' }),
+          signal: AbortSignal.timeout(4000),
+        });
+      } catch { /* notification is best-effort */ }
+    }
+    return res.status(200).json({ ok: true, request: r.rows[0] });
+  }
+
   if (req.method === 'GET') {
     // one-row table; SELECT * tolerates a column whose migration hasn't run yet
     const r = await query('SELECT * FROM settings', []);
@@ -16,6 +49,16 @@ export default requireAdmin(async (req, res, admin) => {
 
   if (req.method === 'PATCH') {
     const body = readJsonBody(req);
+    if (body.request_id !== undefined) {
+      const status = String(body.status || '');
+      if (!['open', 'done', 'declined'].includes(status)) return res.status(400).json({ error: 'status must be open, done, or declined' });
+      const r = await query(
+        `UPDATE change_requests SET status = $2, resolved_at = CASE WHEN $2 = 'open' THEN NULL ELSE now() END
+         WHERE id = $1 RETURNING id, subject, status, resolved_at`, [Number(body.request_id), status]);
+      if (!r.rows[0]) return res.status(404).json({ error: 'unknown request' });
+      await audit(admin.id, 'change_request_status', String(r.rows[0].id), { status });
+      return res.status(200).json({ ok: true, request: r.rows[0] });
+    }
     const sets = [];
     const vals = [];
     const changes = {};

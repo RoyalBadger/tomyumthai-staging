@@ -623,6 +623,51 @@
     }
     .btn-done:hover { background: #475569; color: #fff; }
 
+    /* ==================== DISH EDITOR + CHANGE REQUESTS ==================== */
+    .ed-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.72); z-index: 900;
+      display: flex; align-items: flex-start; justify-content: center; padding: 30px 12px; overflow-y: auto;
+    }
+    .ed-card {
+      background: var(--bg-panel); border: 1px solid var(--border-subtle); border-radius: 12px;
+      width: 100%; max-width: 860px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .ed-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
+    .ed-title { font-size: 18px; font-weight: 900; color: #fff; }
+    .ed-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .ed-close { background: none; border: none; color: var(--text-muted); font-size: 26px; cursor: pointer; line-height: 1; }
+    .ed-close:hover { color: #fff; }
+    .ed-body { padding: 18px 22px; }
+    .ed-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .ed-span2 { grid-column: 1 / -1; }
+    .ed-field label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+    .ed-field .form-input { width: 100%; box-sizing: border-box; }
+    .ed-field small { display: block; color: var(--text-muted); font-size: 11px; margin-top: 4px; }
+    .ed-section { margin-top: 20px; padding-top: 14px; border-top: 1px dashed var(--border-subtle); }
+    .ed-section-title { font-size: 13px; font-weight: 800; color: var(--accent-gold); margin-bottom: 10px; }
+    .ed-section-title small { color: var(--text-muted); font-weight: 600; }
+    .ed-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .ed-checks label { font-size: 13px; color: #e2e8f0; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .ed-checks label small { color: var(--text-muted); }
+    .ed-checks input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent-orange); }
+    .ed-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .ed-row { display: flex; gap: 8px; align-items: center; }
+    .ed-row .form-input { flex: 1; min-width: 0; }
+    .ed-row .form-input.ed-money { flex: 0 0 110px; }
+    .ed-row .ed-x { background: none; border: 1px solid var(--border-subtle); color: #fca5a5; border-radius: 4px; padding: 6px 9px; cursor: pointer; font-weight: 800; }
+    .ed-preview { margin-top: 20px; background: #151821; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 14px; font-size: 12.5px; color: #cbd5e1; line-height: 1.6; }
+    .ed-preview strong { color: var(--accent-orange); }
+    .ed-error { margin-top: 12px; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; border-radius: 6px; padding: 10px 12px; font-size: 13px; font-weight: 700; }
+    .ed-foot { display: flex; gap: 10px; align-items: center; padding: 14px 22px; border-top: 1px solid var(--border-subtle); }
+    .ed-danger { color: #fca5a5; border-color: #7f1d1d; }
+    .req-form { display: grid; grid-template-columns: 1fr; gap: 10px; background: #151821; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+    .req-form .form-input { width: 100%; box-sizing: border-box; }
+    .req-status { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 10px; }
+    .req-open { background: rgba(251,191,36,0.15); color: #fcd34d; border: 1px solid rgba(251,191,36,0.4); }
+    .req-done { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.4); }
+    .req-declined { background: rgba(148,163,184,0.15); color: #cbd5e1; border: 1px solid rgba(148,163,184,0.4); }
+    @media (max-width: 640px) { .ed-grid { grid-template-columns: 1fr; } .ed-overlay { padding: 10px 6px; } }
+
     /* ==================== 80MM THERMAL RECEIPT PRINT STYLES ==================== */
     @media print {
       body * {
@@ -780,6 +825,7 @@
       <button class="tab-btn" onclick="showTab('tabHours', this)">🕒 Hours &amp; Ordering</button>
       <button class="tab-btn" onclick="showTab('tabHolidays', this)">🗓️ Holiday Closures</button>
       <button class="tab-btn" onclick="showTab('tabSettings', this)">⚙️ Store Settings</button>
+      <button class="tab-btn" onclick="showTab('tabRequests', this); loadRequests()">📨 Change Requests</button>
     </div>
 
     <!-- Tab 0: Kitchen Live Orders Queue -->
@@ -863,7 +909,11 @@
       <div class="panel-header">
         <div>
           <div class="panel-title">Menu Items (<span id="menuCount">–</span>)</div>
-          <div class="panel-desc">86 a sold-out dish or change a price — the customer site updates within a minute. Every change is logged.</div>
+          <div class="panel-desc">86 a sold-out dish, change a price, or open ✏️ Edit to change anything a customer sees — name, description, sizes, choices, add-ons, removals. The customer site updates within a minute. Every change is logged.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-action" onclick="openCategoryModal()">➕ Category</button>
+          <button class="btn-primary" onclick="openEditor(null)">➕ Add Dish</button>
         </div>
       </div>
 
@@ -876,16 +926,38 @@
               <th style="width:10%;">Price ($)</th>
               <th style="width:14%;">Stock</th>
               <th style="width:14%;">Chef Station</th>
-              <th style="width:17%;">Photo</th>
-              <th style="width:8%;">On Menu</th>
+              <th style="width:13%;">Photo</th>
+              <th style="width:12%;">Actions</th>
             </tr>
           </thead>
           <tbody id="menuTableBody"></tbody>
         </table>
       </div>
-      <p style="font-size:11.5px;color:var(--text-muted);margin-top:12px;">
-        Adding brand-new dishes or changing descriptions is done with the menu seed script for now — ask your web admin.
-      </p>
+    </div>
+
+    <!-- Tab: Change Requests -->
+    <div id="tabRequests" class="tab-panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">📨 Change Requests</div>
+          <div class="panel-desc">Anything beyond the menu — site design, wording, photos, new features, hours on the website — send it here. The web admin reviews every request before anything changes.</div>
+        </div>
+      </div>
+
+      <div class="req-form">
+        <div class="ed-field"><label>What would you like changed? *</label><input id="reqSubject" class="form-input" maxlength="120" placeholder="e.g. Add a photo of the new patio to the home page"></div>
+        <div class="ed-field"><label>Details (optional)</label><textarea id="reqDetails" class="form-input" rows="3" maxlength="2000" placeholder="Describe what you want and why. Include wording if you have it."></textarea></div>
+        <div><button type="button" class="btn-primary" id="reqSendBtn" onclick="sendRequest()">📨 Send request</button></div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th style="width:14%;">Date</th><th>Request</th><th style="width:18%;">By</th><th style="width:10%;">Status</th><th style="width:14%;text-align:right;">Actions</th></tr>
+          </thead>
+          <tbody id="requestsTableBody"><tr><td colspan="5" style="color:var(--text-muted);">Loading…</td></tr></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Tab 2: Hours & Ordering -->
@@ -1015,6 +1087,81 @@
 
   </div>
 
+  <!-- ==================== DISH EDITOR ==================== -->
+  <div id="editorOverlay" class="ed-overlay" style="display:none;">
+    <div class="ed-card">
+      <div class="ed-head">
+        <div>
+          <div class="ed-title" id="edTitle">Edit Dish</div>
+          <div class="ed-sub" id="edSub">Changes go live on the customer site within a minute of saving.</div>
+        </div>
+        <button type="button" class="ed-close" onclick="closeEditor()" title="Close">&times;</button>
+      </div>
+      <div class="ed-body">
+        <div class="ed-grid">
+          <div class="ed-field ed-span2"><label>Dish name *</label><input id="edName" class="form-input" maxlength="80" placeholder="e.g. Pad Thai"></div>
+          <div class="ed-field"><label>Category *</label><select id="edCategory" class="form-input"></select></div>
+          <div class="ed-field"><label>Thai name (optional, shown under the dish name)</label><input id="edThai" class="form-input" maxlength="120" placeholder="Pad Thai • ผัดไทย"></div>
+          <div class="ed-field ed-span2"><label>Description (customers see this; ingredients here drive the "No X" list below)</label><textarea id="edDesc" class="form-input" rows="2" maxlength="400"></textarea></div>
+          <div class="ed-field"><label>Price ($)</label><input id="edPrice" type="number" step="0.01" min="0" max="500" class="form-input" placeholder="13.99"><small>Leave blank when priced by size, or for a market-price dish.</small></div>
+          <div class="ed-field"><label>Price note (instead of a price)</label><input id="edPriceNote" class="form-input" maxlength="60" placeholder="Market Price — call us"><small>With a note and no price, the dish is display-only (can't be ordered online).</small></div>
+          <div class="ed-field"><label>Chef station (which kitchen ticket it prints on)</label>
+            <select id="edStation" class="form-input"><option value="main">👨‍🍳 Chef 1 — main kitchen</option><option value="second">👨‍🍳 Chef 2</option></select></div>
+          <div class="ed-field"><label>Position within its category</label><input id="edSort" type="number" min="0" max="999" class="form-input"><small>Lower numbers show first.</small></div>
+        </div>
+
+        <div class="ed-section">
+          <div class="ed-section-title">What the customer can pick</div>
+          <div class="ed-checks">
+            <label><input type="checkbox" id="edProtein"> Protein choice <small>— Chicken / Pork / Tofu / Vegetable / No Protein, Beef +$3, Shrimp +$3, Seafood +$4</small></label>
+            <label><input type="checkbox" id="edExtra"> Add-ons <small>— Extra Chicken / Pork / Tofu / Mixed Veggies +$2, Extra Beef / Shrimp +$3, Extra Seafood +$4</small></label>
+            <label><input type="checkbox" id="edSpice"> Spice level <small>— 1 Mild to 5 Extremely Spicy</small></label>
+          </div>
+        </div>
+
+        <div class="ed-section">
+          <div class="ed-section-title">Sizes <small>— each with its own price. Leave empty for a single price.</small></div>
+          <div id="edSizes" class="ed-rows"></div>
+          <button type="button" class="btn-action" onclick="addSizeRow()">+ Add size</button>
+        </div>
+
+        <div class="ed-section">
+          <div class="ed-section-title">"Your Choice" options <small>— e.g. Chicken / Pork / Vegetable, Red / Green Curry, Fried / Steamed. The customer must pick one. Upcharge is optional.</small></div>
+          <div id="edVariants" class="ed-rows"></div>
+          <button type="button" class="btn-action" onclick="addVariantRow()">+ Add option</button>
+        </div>
+
+        <div class="ed-section">
+          <div class="ed-section-title">"No X" removals the customer can tick <small>— found automatically from the description. Untick anything the kitchen can't do.</small></div>
+          <div id="edAutoRemovals" class="ed-checks"></div>
+          <div id="edCustomRemovals" class="ed-rows"></div>
+          <button type="button" class="btn-action" onclick="addCustomRemovalRow()">+ Add a custom removal (e.g. "No Sauce")</button>
+        </div>
+
+        <div class="ed-preview" id="edPreview"></div>
+        <div id="edError" class="ed-error" style="display:none;"></div>
+      </div>
+      <div class="ed-foot">
+        <button type="button" id="edDeleteBtn" class="btn-action ed-danger" onclick="deleteFromEditor()">🗑 Delete dish</button>
+        <div style="flex:1;"></div>
+        <button type="button" class="btn-action" onclick="closeEditor()">Cancel</button>
+        <button type="button" class="btn-primary" id="edSaveBtn" onclick="saveEditor()">💾 Save dish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== NEW CATEGORY ==================== -->
+  <div id="catOverlay" class="ed-overlay" style="display:none;">
+    <div class="ed-card" style="max-width:420px;">
+      <div class="ed-head"><div class="ed-title">New Category</div><button type="button" class="ed-close" onclick="closeCategoryModal()">&times;</button></div>
+      <div class="ed-body">
+        <div class="ed-field"><label>Category name</label><input id="catName" class="form-input" maxlength="60" placeholder="e.g. Lunch Specials"></div>
+        <div id="catError" class="ed-error" style="display:none;"></div>
+      </div>
+      <div class="ed-foot"><div style="flex:1;"></div><button type="button" class="btn-action" onclick="closeCategoryModal()">Cancel</button><button type="button" class="btn-primary" onclick="saveCategory()">Add category</button></div>
+    </div>
+  </div>
+
   <div id="toastAlert" class="toast-alert"></div>
 
   <script>
@@ -1081,6 +1228,7 @@
     async function loadAll() {
       const [menu, st] = await Promise.all([api('/api/admin/menu'), api('/api/admin/settings')]);
       menuItems = menu.items; settings = st;
+      menuCategories = menu.categories || []; removalVocab = menu.removal_vocab || [];
       renderMenu(); renderHours(); renderHolidays(); renderSettings(); renderPause();
     }
 
@@ -1111,7 +1259,8 @@
           +   '<button class="btn-action" onclick="pickPhoto(\'' + it.id + '\')" title="Upload or replace this dish\'s photo">' + (it.image_url ? '📷 Replace' : '⬆ Upload') + '</button>'
           +   (it.image_url ? ' <button class="btn-action" style="color:#fca5a5;border-color:#7f1d1d;" onclick="deletePhoto(\'' + it.id + '\')" title="Delete this dish\'s photo">✕</button>' : '')
           + '</td>'
-          + '<td><button class="btn-action" onclick="toggleHidden(\'' + it.id + '\')">' + (it.is_hidden ? 'Show' : 'Hide') + '</button></td>'
+          + '<td style="white-space:nowrap;"><button class="btn-action" onclick="openEditor(\'' + it.id + '\')" title="Edit everything about this dish">✏️ Edit</button> '
+          +   '<button class="btn-action" onclick="toggleHidden(\'' + it.id + '\')" title="' + (it.is_hidden ? 'Put it back on the customer menu' : 'Take it off the customer menu without deleting it') + '">' + (it.is_hidden ? 'Show' : 'Hide') + '</button></td>'
           + '</tr>';
       }
       $('menuTableBody').innerHTML = html;
@@ -1146,6 +1295,213 @@
         renderMenu();
         toast(it.name + ' now prints on the ' + (it.station === 'second' ? 'CHEF 2' : 'MAIN KITCHEN') + ' ticket.');
       } catch (ex) { toast('Error: ' + ex.message, true); }
+    }
+
+    // ==================== DISH EDITOR ====================
+    // Full add / edit / delete for a dish, including everything a customer can pick:
+    // sizes, "Your Choice" options, protein / add-on / spice toggles and the "No X"
+    // removal checkboxes (auto-found from the description, adjustable per dish).
+    let menuCategories = [];
+    let removalVocab = [];          // [[regexSource, label]] from the server, for live previews
+    let ed = null;                  // editor working state
+
+    const money = c => '$' + (Number(c) / 100).toFixed(2);
+    const toCents = v => { const s = String(v ?? '').trim(); if (s === '') return null; const n = Math.round(Number(s) * 100); return Number.isFinite(n) ? n : NaN; };
+
+    function autoRemovalsFor(name, desc) {
+      const text = (name || '') + ' ' + (desc || '');
+      return removalVocab.filter(([src]) => { try { return new RegExp(src, 'i').test(text); } catch { return false; } }).map(([, label]) => label);
+    }
+
+    function openEditor(id) {
+      const it = id ? menuItems.find(x => x.id === id) : null;
+      ed = {
+        id: it ? it.id : null,
+        sizes: it ? it.sizes.map(s => ({ ...s })) : [],
+        variants: it ? it.variants.map(v => ({ ...v })) : [],
+        custom: it ? [...(it.removals_custom || [])] : [],
+        hidden: new Set(it ? (it.removals_hidden || []) : []),
+      };
+      $('edTitle').innerText = it ? 'Edit Dish' : 'Add a New Dish';
+      $('edSub').innerText = it ? it.name + ' — changes go live on the customer site within a minute of saving.' : 'The dish appears on the customer site within a minute of saving.';
+      $('edCategory').innerHTML = menuCategories.map(c => '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>').join('');
+      $('edName').value = it ? it.name : '';
+      $('edCategory').value = it ? it.category_id : (menuCategories[0]?.id || '');
+      $('edThai').value = it?.thai_name || '';
+      $('edDesc').value = it?.description || '';
+      $('edPrice').value = it && it.base_price_cents !== null ? dollars(it.base_price_cents) : '';
+      $('edPriceNote').value = it?.price_note || '';
+      $('edStation').value = it?.station || 'main';
+      $('edSort').value = it ? it.sort : '';
+      $('edProtein').checked = !!it?.protein_choice;
+      $('edExtra').checked = !!it?.extra_protein;
+      $('edSpice').checked = !!it?.spice_selectable;
+      $('edDeleteBtn').style.display = it ? '' : 'none';
+      $('edDeleteBtn').innerText = '🗑 Delete dish';
+      $('edError').style.display = 'none';
+      renderSizeRows(); renderVariantRows(); renderRemovals(); renderPreview();
+      $('editorOverlay').style.display = 'flex';
+      $('edName').focus();
+    }
+
+    function closeEditor() { $('editorOverlay').style.display = 'none'; ed = null; }
+
+    // ----- sizes -----
+    function renderSizeRows() {
+      $('edSizes').innerHTML = ed.sizes.map((s, i) =>
+        '<div class="ed-row">'
+        + '<input class="form-input" placeholder="Size label (Small, 16 oz…)" maxlength="30" value="' + esc(s.label) + '" oninput="ed.sizes[' + i + '].label=this.value;renderPreview()">'
+        + '<input class="form-input ed-money" type="number" step="0.01" min="0" placeholder="Price $" value="' + (s.price_cents == null ? '' : dollars(s.price_cents)) + '" oninput="ed.sizes[' + i + '].price_cents=toCents(this.value);renderPreview()">'
+        + '<button type="button" class="ed-x" title="Remove size" onclick="ed.sizes.splice(' + i + ',1);renderSizeRows();renderPreview()">✕</button>'
+        + '</div>').join('');
+    }
+    function addSizeRow() { if (ed.sizes.length >= 6) return; ed.sizes.push({ label: '', price_cents: null }); renderSizeRows(); }
+
+    // ----- "Your Choice" variants -----
+    function renderVariantRows() {
+      $('edVariants').innerHTML = ed.variants.map((v, i) =>
+        '<div class="ed-row">'
+        + '<input class="form-input" placeholder="Option (Chicken, Red Curry…)" maxlength="40" value="' + esc(v.label) + '" oninput="ed.variants[' + i + '].label=this.value;renderPreview()">'
+        + '<input class="form-input ed-money" type="number" step="0.01" min="0" placeholder="Upcharge $ (0)" value="' + (v.delta_cents ? dollars(v.delta_cents) : '') + '" oninput="ed.variants[' + i + '].delta_cents=toCents(this.value)||0;renderPreview()">'
+        + '<button type="button" class="ed-x" title="Remove option" onclick="ed.variants.splice(' + i + ',1);renderVariantRows();renderPreview()">✕</button>'
+        + '</div>').join('');
+    }
+    function addVariantRow() { if (ed.variants.length >= 12) return; ed.variants.push({ label: '', delta_cents: 0 }); renderVariantRows(); }
+
+    // ----- removals -----
+    function renderRemovals() {
+      const auto = autoRemovalsFor($('edName').value, $('edDesc').value);
+      $('edAutoRemovals').innerHTML = auto.length
+        ? auto.map(label => '<label><input type="checkbox" ' + (ed.hidden.has(label) ? '' : 'checked') + ' onchange="toggleHiddenRemoval(this)" data-label="' + esc(label) + '"> ' + esc(label) + (ed.hidden.has(label) ? ' <small>(hidden from customers)</small>' : '') + '</label>').join('')
+        : '<span style="font-size:12px;color:var(--text-muted);">No removable ingredients found in the description.</span>';
+      $('edCustomRemovals').innerHTML = ed.custom.map((c, i) =>
+        '<div class="ed-row"><input class="form-input" placeholder="No Sauce" maxlength="40" value="' + esc(c) + '" oninput="ed.custom[' + i + ']=this.value;renderPreview()">'
+        + '<button type="button" class="ed-x" title="Remove" onclick="ed.custom.splice(' + i + ',1);renderRemovals();renderPreview()">✕</button></div>').join('');
+    }
+    function toggleHiddenRemoval(cb) {
+      const label = cb.dataset.label;
+      if (cb.checked) ed.hidden.delete(label); else ed.hidden.add(label);
+      renderRemovals(); renderPreview();
+    }
+    function addCustomRemovalRow() { if (ed.custom.length >= 20) return; ed.custom.push(''); renderRemovals(); }
+
+    // ----- what the customer will see -----
+    function renderPreview() {
+      if (!ed) return;
+      const parts = [];
+      const sizes = ed.sizes.filter(s => s.label);
+      const variants = ed.variants.filter(v => v.label);
+      if (sizes.length) parts.push('<strong>Size:</strong> ' + sizes.map(s => esc(s.label) + (s.price_cents != null && !Number.isNaN(s.price_cents) ? ' ' + money(s.price_cents) : '')).join(' / '));
+      if (variants.length) parts.push('<strong>Your Choice:</strong> ' + variants.map(v => esc(v.label) + (v.delta_cents ? ' (+' + money(v.delta_cents) + ')' : '')).join(' / '));
+      if ($('edProtein').checked) parts.push('<strong>Protein:</strong> Chicken / Pork / Tofu / Vegetable / No Protein / Beef +$3 / Shrimp +$3 / Seafood +$4');
+      if ($('edExtra').checked) parts.push('<strong>Add-ons:</strong> extra proteins & veggies');
+      if ($('edSpice').checked) parts.push('<strong>Spice:</strong> 1–5');
+      const removals = autoRemovalsFor($('edName').value, $('edDesc').value).filter(l => !ed.hidden.has(l)).concat(ed.custom.filter(Boolean));
+      if (removals.length) parts.push('<strong>Removals:</strong> ' + removals.map(esc).join(', '));
+      const price = sizes.length ? 'priced by size' : ($('edPrice').value ? money(toCents($('edPrice').value)) : ($('edPriceNote').value ? esc($('edPriceNote').value) + ' (display only)' : '<span style="color:#fca5a5;">no price yet</span>'));
+      $('edPreview').innerHTML = '<div style="font-weight:800;color:#fff;margin-bottom:4px;">Customer sees: ' + esc($('edName').value || '(unnamed dish)') + ' — ' + price + '</div>'
+        + (parts.length ? parts.join('<br>') : '<span style="color:var(--text-muted);">Nothing to pick — the dish adds straight to the cart (kitchen notes are always available).</span>');
+    }
+    for (const id of ['edName', 'edDesc']) $(id).addEventListener('input', () => { renderRemovals(); renderPreview(); });
+    for (const id of ['edPrice', 'edPriceNote']) $(id).addEventListener('input', renderPreview);
+    for (const id of ['edProtein', 'edExtra', 'edSpice']) $(id).addEventListener('change', renderPreview);
+
+    function collectEditor() {
+      const price = toCents($('edPrice').value);
+      if (Number.isNaN(price)) throw new Error('Price must be a number.');
+      return {
+        id: ed.id || undefined,
+        name: $('edName').value, category_id: $('edCategory').value,
+        thai_name: $('edThai').value || null, description: $('edDesc').value || null,
+        base_price_cents: price, price_note: $('edPriceNote').value || null,
+        station: $('edStation').value, sort: $('edSort').value === '' ? undefined : Number($('edSort').value),
+        protein_choice: $('edProtein').checked, extra_protein: $('edExtra').checked, spice_selectable: $('edSpice').checked,
+        sizes: ed.sizes.filter(s => s.label.trim()), variants: ed.variants.filter(v => v.label.trim()),
+        removals_hidden: [...ed.hidden], removals_custom: ed.custom.map(c => c.trim()).filter(Boolean),
+      };
+    }
+
+    async function saveEditor() {
+      const btn = $('edSaveBtn'); const errBox = $('edError');
+      errBox.style.display = 'none';
+      try {
+        const body = collectEditor();
+        btn.disabled = true; btn.innerText = 'Saving…';
+        const r = await api('/api/admin/menu', { method: 'PUT', body });
+        await loadAll();
+        closeEditor();
+        toast((body.id ? 'Saved ' : 'Added ') + r.item.name + '.');
+      } catch (ex) {
+        errBox.innerText = '⚠️ ' + ex.message; errBox.style.display = 'block';
+        errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally { btn.disabled = false; btn.innerText = '💾 Save dish'; }
+    }
+
+    // Two-step delete (no browser confirm dialogs): first click arms, second within 5 s deletes.
+    let deleteArmTimer = null;
+    async function deleteFromEditor() {
+      const btn = $('edDeleteBtn');
+      if (!btn.dataset.armed) {
+        btn.dataset.armed = '1'; btn.innerText = '⚠️ Click again to delete permanently';
+        deleteArmTimer = setTimeout(() => { delete btn.dataset.armed; btn.innerText = '🗑 Delete dish'; }, 5000);
+        return;
+      }
+      clearTimeout(deleteArmTimer); delete btn.dataset.armed;
+      const id = ed.id; const name = $('edName').value;
+      try {
+        await api('/api/admin/menu?id=' + encodeURIComponent(id) + '&what=item', { method: 'DELETE' });
+        await loadAll();
+        closeEditor();
+        toast('Deleted ' + name + '. Past orders keep their own copy of it.');
+      } catch (ex) { $('edError').innerText = '⚠️ ' + ex.message; $('edError').style.display = 'block'; btn.innerText = '🗑 Delete dish'; }
+    }
+
+    // ----- categories -----
+    function openCategoryModal() { $('catName').value = ''; $('catError').style.display = 'none'; $('catOverlay').style.display = 'flex'; $('catName').focus(); }
+    function closeCategoryModal() { $('catOverlay').style.display = 'none'; }
+    async function saveCategory() {
+      try {
+        const r = await api('/api/admin/menu', { method: 'PUT', body: { kind: 'category', name: $('catName').value } });
+        await loadAll();
+        closeCategoryModal();
+        toast('Category "' + r.category.name + '" added — it shows on the customer site once it has a dish.');
+      } catch (ex) { $('catError').innerText = '⚠️ ' + ex.message; $('catError').style.display = 'block'; }
+    }
+
+    // ==================== CHANGE REQUESTS ====================
+    let requests = [];
+    async function loadRequests() {
+      try { requests = (await api('/api/admin/settings?requests=1')).requests; renderRequests(); }
+      catch (ex) { $('requestsTableBody').innerHTML = '<tr><td colspan="5" style="color:#fca5a5;">' + esc(ex.message) + '</td></tr>'; }
+    }
+    function renderRequests() {
+      if (!requests.length) { $('requestsTableBody').innerHTML = '<tr><td colspan="5" style="color:var(--text-muted);">No requests yet.</td></tr>'; return; }
+      $('requestsTableBody').innerHTML = requests.map(r =>
+        '<tr>'
+        + '<td style="white-space:nowrap;font-size:12px;color:var(--text-muted);">' + new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + '</td>'
+        + '<td><strong>' + esc(r.subject) + '</strong>' + (r.details ? '<br><small style="color:var(--text-muted);white-space:pre-wrap;">' + esc(r.details) + '</small>' : '') + '</td>'
+        + '<td style="font-size:12px;color:var(--text-muted);">' + esc(r.by_email || '') + '</td>'
+        + '<td><span class="req-status req-' + esc(r.status) + '">' + esc(r.status) + '</span></td>'
+        + '<td style="text-align:right;white-space:nowrap;">'
+        +   (r.status === 'open'
+              ? '<button class="btn-action" onclick="setRequestStatus(' + r.id + ",'done')\">✓ Done</button> <button class=\"btn-action\" onclick=\"setRequestStatus(" + r.id + ",'declined')\">Decline</button>"
+              : '<button class="btn-action" onclick="setRequestStatus(' + r.id + ",'open')\">Reopen</button>")
+        + '</td></tr>').join('');
+    }
+    async function sendRequest() {
+      const btn = $('reqSendBtn');
+      try {
+        btn.disabled = true; btn.innerText = 'Sending…';
+        await api('/api/admin/settings', { method: 'POST', body: { subject: $('reqSubject').value, details: $('reqDetails').value } });
+        $('reqSubject').value = ''; $('reqDetails').value = '';
+        toast('Request sent to the web admin.');
+        await loadRequests();
+      } catch (ex) { toast('Error: ' + ex.message, true); }
+      finally { btn.disabled = false; btn.innerText = '📨 Send request'; }
+    }
+    async function setRequestStatus(id, status) {
+      try { await api('/api/admin/settings', { method: 'PATCH', body: { request_id: id, status } }); await loadRequests(); }
+      catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
     // ---------- dish photos (stored in Neon; customer site follows automatically) ----------

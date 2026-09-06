@@ -3386,37 +3386,8 @@
 
     /* ==================== DISH CUSTOMIZER POPUP MODAL ==================== */
     let modalDish = null, modalQty = 1, modalEditIdx = null;
-    // Removable ingredients are derived from each dish's own name + description, so a
-    // dish only offers "No X" for ingredients it actually contains.
-    const INGREDIENT_VOCAB = [
-      [/\bpeanut/i, '🥜 No Peanuts (Allergy)'],
-      [/\begg(?!\s*roll)/i, '🥚 No Egg'],
-      [/\bonion/i, '🧅 No Onions'],
-      [/\bbean sprout/i, 'No Bean Sprouts'],
-      [/\bscallion/i, 'No Scallions'],
-      [/\btomato/i, '🍅 No Tomatoes'],
-      [/\bbell pepper/i, 'No Bell Peppers'],
-      [/\bjalapeno/i, '🌶️ No Jalapeños'],
-      [/\bbasil/i, '🌿 No Basil'],
-      [/\bbroccoli/i, '🥦 No Broccoli'],
-      [/\bcarrot/i, '🥕 No Carrots'],
-      [/\bmushroom/i, '🍄 No Mushrooms'],
-      [/\bcilantro/i, 'No Cilantro'],
-      [/\bcucumber/i, '🥒 No Cucumber'],
-      [/\bcashew/i, 'No Cashews'],
-      [/\braisin/i, 'No Raisins'],
-      [/\bpineapple/i, '🍍 No Pineapple'],
-      [/\bpotato/i, '🥔 No Potatoes'],
-      [/\bbamboo/i, 'No Bamboo Shoots'],
-      [/\bzucchini/i, 'No Zucchini'],
-      [/\bcabbage/i, 'No Cabbage'],
-      [/\bcelery/i, 'No Celery'],
-      [/\bgarlic/i, '🧄 No Garlic'],
-      [/\bginger(?!\s*rice)/i, 'No Ginger'],
-    ];
-    // Removals the kitchen cannot honor for a specific dish (owner-confirmed).
-    // Khao Man Gai IS ginger rice + ginger sauce — there is no version without ginger.
-    const NON_REMOVABLE = { 'chicken-ginger-rice': ['No Ginger'] };
+    // "No X" removal checkboxes come from the API (auto-derived from the dish text,
+    // then adjusted per dish in the manager portal — see lib/removals.js).
 
     function ensureDishModal() {
       if ($id('dishModal')) return;
@@ -3507,10 +3478,7 @@
           + addonGroup('Vegetables', MENU.options.extra_protein.filter(x => x.option_group === 'vegetable'))
         : '';
       show('addons', item.extra_protein);
-      const ingredientText = (item.name || '') + ' ' + (item.description || '');
-      const blocked = NON_REMOVABLE[item.id] || [];
-      const removals = INGREDIENT_VOCAB.filter(([re]) => re.test(ingredientText)).map(([, label]) => label)
-        .filter(label => !blocked.includes(label));
+      const removals = item.removals || [];
       m.querySelector('[data-m-exclusions]').innerHTML = removals.map(x =>
         `<label class="exclusion-check"><input type="checkbox"> <span>${x}</span></label>`).join('');
       m.querySelector('[data-m-notes]').value = '';

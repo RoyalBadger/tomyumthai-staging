@@ -177,7 +177,28 @@
   Shrimp/Chicken/Tofu (migration 017).
 - Verified: 6 new pricing tests; live API rejection checked; browser check on staging
   (pills render, choice lands in cart, upcharge changes the modal total). No test charge.
-- Manager portal has no editor for these choices yet — add/edit via migration for now.
+- Manager portal editor shipped later the same day (below).
+
+### September 6 — Robust manager portal: full dish editor + Change Requests (deployed)
+- **Why:** owner plans to hand the family a portal that covers every routine change (add /
+  remove / edit dishes, ordering off, delivery off) so they never need repo, Vercel, Neon or
+  Stripe access; design changes route to the owner for approval.
+- **Dish editor** (Menu tab → ✏️ Edit / ➕ Add Dish / ➕ Category): name, Thai name,
+  description, single price or per-size prices, price note (display-only market price), chef
+  station, position, protein-choice / add-ons / spice toggles, "Your Choice" options with
+  optional upcharge, and the "No X" removal checkboxes — auto-found from the description
+  (`lib/removals.js`, moved out of index.html) with per-dish hide + custom additions
+  (migration 019: `removals_hidden`, `removals_custom`; the Khao Man Gai ginger block became
+  data). Live "Customer sees:" preview in the editor. Two-step delete (no browser dialogs);
+  order history keeps its snapshot. Every save audited with before/after JSON.
+- **API:** /api/admin/menu gained PUT (dish upsert + category create/rename) and
+  DELETE ?what=item; GET now returns sizes, variants, removal settings, categories and the
+  removal vocabulary. /api/menu returns `removals` per item. Still 12 functions.
+- **Change Requests tab:** family files a request (subject + details) → stored in
+  `change_requests`, audited, optionally POSTed to `CHANGE_REQUEST_WEBHOOK` (owner can wire a
+  free Power Automate flow from M365 to email himself); web admin marks done/declined.
+- Family access model recorded in the status doc: portal login only; no repo/Vercel/Neon/
+  Stripe credentials; a Claude connector is optional later and would expose only these APIs.
 
 ## 🔲 Remaining
 
@@ -221,7 +242,11 @@
       from git config, test fixtures, and the customer profile on 2026-09-01).
 - [ ] SMS order-ready sender after toll-free approval (templates approved; must check `sms_opt_in`)
 - [ ] Delete dead free-delivery-over-$45 markup (or implement server-side if owner wants the promo)
-- [ ] Optional: manager-portal editor for per-dish "Your Choice" options (currently migration-only)
+- [x] Manager-portal dish editor incl. "Your Choice" options — DONE 2026-09-06
+- [ ] Owner: set `CHANGE_REQUEST_WEBHOOK` (Power Automate "HTTP request received" → email) so
+      family change requests reach your inbox; until then check the portal tab
+- [ ] Owner: log in to the staging portal and try Add Dish / Edit / Delete on a throwaway dish
+      (Claude cannot sign in — TOTP)
 - [ ] Launch sequence: `order.mytomyumthai.com` CNAME via WordPress DNS API; live Stripe keys +
       live-mode webhook + Apple Pay domain file; ONE small real-card test + refund (owner present);
       update Twilio campaign URLs to production domain; runbook; family continuity sheet
