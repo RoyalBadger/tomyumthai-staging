@@ -17,7 +17,7 @@ less-certain judgment calls.
 | Crispy Garlic Whole Fish | Pla Tod Kratiem • ปลาทอดกระเทียม |  |
 | Crispy Sweet & Sour Whole Fish | Pla Sam Rot • ปลาสามรส | ⚠ review |
 | Thai Crispy Rolls (Chicken, Pork, or Vegetable) | Por Pia Tod • ปอเปี๊ยะทอด |  |
-| Shrimp Summer Rolls w/ Spicy Peanut Sauce | Por Pia Sod • ปอเปี๊ยะสด |  |
+| Summer Rolls w/ Spicy Peanut Sauce | Por Pia Sod • ปอเปี๊ยะสด |  |
 | Corn Patties | Tod Mun Khao Pod • ทอดมันข้าวโพด |  |
 | Fried Tofu | Tao Hoo Tod • เต้าหู้ทอด |  |
 | Chicken & Vegetable Potstickers | Kiao Sa • เกี๊ยวซ่า | ⚠ review |

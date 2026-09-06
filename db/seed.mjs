@@ -53,7 +53,7 @@ const ITEMS = [
   // --- Appetizers ---
   I('appetizers', 'crab-rangoon', 'Crab Rangoon', 5.99, '', { description: 'Crab cream cheese seasoned in a wonton wrap.' }),
   I('appetizers', 'crispy-rolls', 'Thai Crispy Rolls (Chicken, Pork, or Vegetable)', 5.99, '', { description: 'Crispy Thai egg rolls served with sweet & sour sauce.' }),
-  I('appetizers', 'summer-rolls', 'Shrimp Summer Rolls w/ Spicy Peanut Sauce', 5.99, '', { description: 'An assortment of vegetables wrapped in rice paper.' }),
+  I('appetizers', 'summer-rolls', 'Summer Rolls w/ Spicy Peanut Sauce', 5.99, '', { description: 'An assortment of vegetables wrapped in rice paper.' }),
   I('appetizers', 'corn-patties', 'Corn Patties', 5.99, '', { description: 'Deep fried corn kernels battered with Thai seasonings.' }),
   I('appetizers', 'fried-tofu', 'Fried Tofu', 5.99, '', { description: 'Deep fried tofu served with sweet & sour peanut sauce.' }),
   I('appetizers', 'potstickers', 'Chicken & Vegetable Potstickers', 5.99, '', { description: 'Your choice of fried or steamed, served with sweet & sour sauce.' }),
@@ -171,6 +171,7 @@ const VARIANTS = {
   'thai-iced-tea-no-ice': [['Thai Iced Tea', 0], ['Thai Iced Coffee', 0]],
   'hot-iced-tea':         [['Hot Tea', 0], ['Iced Tea', 0]],
   'peanut-sauce':         [['Peanut Sauce', 0], ['Peanut Dressing', 0]],
+  'summer-rolls':         [['Shrimp', 0], ['Chicken', 0], ['Tofu', 0]],
 };
 
 const PROTEINS = [ // included choices at 0; premium upcharges

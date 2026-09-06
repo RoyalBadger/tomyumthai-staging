@@ -157,6 +157,28 @@
 - The `menu_items.is_vegetarian` column itself is left in place (harmless, unused; migration
   007 stays valid). Drop it in a future migration if desired.
 
+### September 6 — Per-dish "choose one" selections (owner report, deployed & verified)
+- **Bug:** Thai Crispy Rolls (Chicken, Pork, or Vegetable) had no way to pick the filling —
+  the only selector was the global protein list (beef/shrimp upcharges, tofu/vegetable),
+  which these dishes don't use. Menu review found 16 dishes with the same gap.
+- **Fix:** new `item_variants` table (label + optional upcharge) and `order_items.variant`
+  snapshot (migration 015). Pricing engine requires the choice when a dish defines any and
+  applies the upcharge; /api/orders rejects a missing or bogus choice before any Stripe
+  call. Customer modal shows a "Your Choice" pill row (between size and protein); cart,
+  checkout summary, confirmation, edit popup and reorder carry it; kitchen queue cards and
+  all three printed tickets print it ahead of the protein. Seed mirrors every migration.
+- **Dishes:** Crispy Rolls (Chicken/Pork/Vegetable) · Satay (Chicken/Pork) · Potstickers
+  (Fried/Steamed) · Grilled Salad (Pork/Beef) · Glass Noodle Salad (Chicken/Beef/Pork,
+  Shrimp +$3, Seafood +$4 — from its own description) · Larb (Chicken/Beef/Pork) · Curry
+  Salmon, Curry Duck, Curry Noodles (Red/Green) · Sticky/Brown Rice · Sweet Sticky Rice
+  (Coconut Ice Cream/Fresh Mango) · Ice Cream (Vanilla/Coconut/Green Tea) · Thai Iced Tea
+  or Coffee ×2 · Hot/Iced Tea · Peanut Sauce/Peanut Dressing (migration 016, owner: two
+  different sauces) · **Summer Rolls** renamed from "Shrimp Summer Rolls" with
+  Shrimp/Chicken/Tofu (migration 017).
+- Verified: 6 new pricing tests; live API rejection checked; browser check on staging
+  (pills render, choice lands in cart, upcharge changes the modal total). No test charge.
+- Manager portal has no editor for these choices yet — add/edit via migration for now.
+
 ## 🔲 Remaining
 
 ### Owner
@@ -199,6 +221,7 @@
       from git config, test fixtures, and the customer profile on 2026-09-01).
 - [ ] SMS order-ready sender after toll-free approval (templates approved; must check `sms_opt_in`)
 - [ ] Delete dead free-delivery-over-$45 markup (or implement server-side if owner wants the promo)
+- [ ] Optional: manager-portal editor for per-dish "Your Choice" options (currently migration-only)
 - [ ] Launch sequence: `order.mytomyumthai.com` CNAME via WordPress DNS API; live Stripe keys +
       live-mode webhook + Apple Pay domain file; ONE small real-card test + refund (owner present);
       update Twilio campaign URLs to production domain; runbook; family continuity sheet
