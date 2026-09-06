@@ -170,6 +170,7 @@ const VARIANTS = {
   'thai-iced-tea':        [['Thai Iced Tea', 0], ['Thai Iced Coffee', 0]],
   'thai-iced-tea-no-ice': [['Thai Iced Tea', 0], ['Thai Iced Coffee', 0]],
   'hot-iced-tea':         [['Hot Tea', 0], ['Iced Tea', 0]],
+  'peanut-sauce':         [['Peanut Sauce', 0], ['Peanut Dressing', 0]],
 };
 
 const PROTEINS = [ // included choices at 0; premium upcharges
