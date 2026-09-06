@@ -91,7 +91,8 @@ export default async function handler(req, res) {
           { level: 5, label: 'Extremely Spicy' },
         ],
       },
-      categories: cats.rows.map(c => ({ id: c.id, name: c.name, items: itemsByCat[c.id] || [] })),
+      // A category with no visible dishes (e.g. freshly created in the portal) is left out.
+      categories: cats.rows.map(c => ({ id: c.id, name: c.name, items: itemsByCat[c.id] || [] })).filter(c => c.items.length),
       allergy_note: 'Menu items may contain egg, peanuts, tree nuts, wheat and seafood. Please note any food allergies on your order.',
     });
   } catch (e) {
