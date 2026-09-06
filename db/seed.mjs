@@ -32,7 +32,7 @@ const I = (cat, id, name, price, flags = '', opts = {}) => ({
 
 const ITEMS = [
   // --- Signatures & Chef's Specials ---
-  I('signatures', 'chicken-ginger-rice', 'Thai Chicken Rice (Khao Man Gai)', 14.99, 'X', {
+  I('signatures', 'chicken-ginger-rice', 'Chicken Ginger Rice', 14.99, '', {
     thai: 'Khao Man Gai • ข้าวมันไก่',
     description: 'Boiled chicken over special ginger rice, served with spicy ginger sauce.' }),
   I('signatures', 'curry-salmon', 'Red or Green Curry Salmon', 16.99, 'S', {
