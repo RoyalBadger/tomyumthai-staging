@@ -153,6 +153,25 @@ const SIZES = {
   'thai-iced-tea-no-ice': [['16 oz', 400], ['32 oz', 800]],
 };
 
+// Per-dish "choose one" variants (mirrors migration 015). [label, delta_cents]
+const VARIANTS = {
+  'crispy-rolls':         [['Chicken', 0], ['Pork', 0], ['Vegetable', 0]],
+  'thai-satay':           [['Chicken', 0], ['Pork', 0]],
+  'potstickers':          [['Fried', 0], ['Steamed', 0]],
+  'grilled-meat-salad':   [['Pork', 0], ['Beef', 0]],
+  'glass-noodle-salad':   [['Chicken', 0], ['Beef', 0], ['Pork', 0], ['Shrimp', 300], ['Seafood', 400]],
+  'larb':                 [['Chicken', 0], ['Beef', 0], ['Pork', 0]],
+  'curry-salmon':         [['Red Curry', 0], ['Green Curry', 0]],
+  'curry-duck':           [['Red Curry', 0], ['Green Curry', 0]],
+  'curry-noodles':        [['Red Curry', 0], ['Green Curry', 0]],
+  'sticky-brown-rice':    [['Sticky Rice', 0], ['Brown Rice', 0]],
+  'sweet-sticky-rice':    [['Coconut Ice Cream', 0], ['Fresh Mango', 0]],
+  'ice-cream':            [['Vanilla', 0], ['Coconut', 0], ['Green Tea', 0]],
+  'thai-iced-tea':        [['Thai Iced Tea', 0], ['Thai Iced Coffee', 0]],
+  'thai-iced-tea-no-ice': [['Thai Iced Tea', 0], ['Thai Iced Coffee', 0]],
+  'hot-iced-tea':         [['Hot Tea', 0], ['Iced Tea', 0]],
+};
+
 const PROTEINS = [ // included choices at 0; premium upcharges
   ['chicken', 'Chicken', 0], ['pork', 'Pork', 0], ['tofu', 'Tofu', 0],
   ['vegetable', 'Vegetable', 0], ['beef', 'Beef', 300], ['shrimp', 'Shrimp', 300],
@@ -195,6 +214,15 @@ try {
         `INSERT INTO item_sizes (item_id, label, price_cents, sort) VALUES ($1,$2,$3,$4)
          ON CONFLICT (item_id, label) DO UPDATE SET price_cents=$3, sort=$4`,
         [itemId, label, cents, s++]);
+    }
+  }
+  for (const [itemId, variants] of Object.entries(VARIANTS)) {
+    let v = 0;
+    for (const [label, delta] of variants) {
+      await client.query(
+        `INSERT INTO item_variants (item_id, label, delta_cents, sort) VALUES ($1,$2,$3,$4)
+         ON CONFLICT (item_id, label) DO UPDATE SET delta_cents=$3, sort=$4`,
+        [itemId, label, delta, v++]);
     }
   }
   let p = 0;

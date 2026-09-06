@@ -1436,7 +1436,7 @@
           <div class="queue-item-row">
             <div class="queue-item-title">${it.qty}× ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}</div>
             <div class="queue-item-meta">
-              ${it.protein ? esc(it.protein) : ''}
+              ${it.variant ? '<strong>' + esc(it.variant) + '</strong>' : ''}${it.variant && it.protein ? ' • ' : ''}${it.protein ? esc(it.protein) : ''}
               ${it.spice_level ? ' <span class="queue-item-spice">' + '🌶'.repeat(it.spice_level) + ' Lv' + it.spice_level + '</span>' : ''}
               ${it.extras && it.extras.length ? ' • +' + esc(it.extras.join(', +')) : ''}
               ${it.notes ? '<br>📝 ' + esc(it.notes) : ''}
@@ -1473,7 +1473,7 @@
       return items.map(it => `
         <div class="receipt-item-row">
           <div class="receipt-item-main">${it.qty} x ${esc(it.name)}${it.size_label ? ' (' + esc(it.size_label) + ')' : ''}</div>
-          <div>${it.protein ? esc(it.protein) : ''}${it.spice_level ? ' - SPICE LV ' + it.spice_level : ''}${it.extras && it.extras.length ? ' - +' + esc(it.extras.join(', +')) : ''}</div>
+          <div>${it.variant ? esc(it.variant) : ''}${it.variant && it.protein ? ' - ' : ''}${it.protein ? esc(it.protein) : ''}${it.spice_level ? ' - SPICE LV ' + it.spice_level : ''}${it.extras && it.extras.length ? ' - +' + esc(it.extras.join(', +')) : ''}</div>
           ${it.exclusions ? '<div class="receipt-exclusion">*** ' + esc(it.exclusions) + ' ***</div>' : ''}
           ${it.notes ? '<div>NOTE: ' + esc(it.notes) + '</div>' : ''}
         </div>`).join('');

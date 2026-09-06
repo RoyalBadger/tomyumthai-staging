@@ -22,7 +22,7 @@ export default requireAdmin(async (req, res, admin) => {
     let items = [];
     if (orders.length) {
       items = (await query(
-        `SELECT oi.order_id, oi.name, oi.size_label, oi.protein, oi.extras, oi.spice_level,
+        `SELECT oi.order_id, oi.name, oi.size_label, oi.variant, oi.protein, oi.extras, oi.spice_level,
                 oi.exclusions, oi.notes, oi.unit_price_cents, oi.qty,
                 COALESCE(oi.station, 'main') AS station
          FROM order_items oi

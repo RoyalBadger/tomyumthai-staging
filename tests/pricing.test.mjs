@@ -9,6 +9,12 @@ const ctx = {
     'crab-rangoon': { id: 'crab-rangoon', name: 'Crab Rangoon', base_price_cents: 599, protein_choice: false, extra_protein: false, spice_selectable: false, is_orderable: true, is_86ed: false, is_hidden: false },
     'whole-fish': { id: 'whole-fish', name: 'Whole Fish', base_price_cents: null, protein_choice: false, extra_protein: false, spice_selectable: false, is_orderable: false, is_86ed: false, is_hidden: false },
     'sold-out':  { id: 'sold-out', name: 'Sold Out Dish', base_price_cents: 1399, protein_choice: false, extra_protein: false, spice_selectable: false, is_orderable: true, is_86ed: true, is_hidden: false },
+    'crispy-rolls': { id: 'crispy-rolls', name: 'Thai Crispy Rolls', base_price_cents: 599, protein_choice: false, extra_protein: false, spice_selectable: false, is_orderable: true, is_86ed: false, is_hidden: false },
+    'glass-noodle-salad': { id: 'glass-noodle-salad', name: 'Glass Noodle Salad', base_price_cents: 1399, protein_choice: false, extra_protein: false, spice_selectable: true, is_orderable: true, is_86ed: false, is_hidden: false },
+  },
+  variantsByItem: {
+    'crispy-rolls': [{ item_id: 'crispy-rolls', label: 'Chicken', delta_cents: 0 }, { item_id: 'crispy-rolls', label: 'Pork', delta_cents: 0 }, { item_id: 'crispy-rolls', label: 'Vegetable', delta_cents: 0 }],
+    'glass-noodle-salad': [{ item_id: 'glass-noodle-salad', label: 'Chicken', delta_cents: 0 }, { item_id: 'glass-noodle-salad', label: 'Shrimp', delta_cents: 300 }],
   },
   sizesByItem: { 'tom-yum': [{ item_id: 'tom-yum', label: 'Small', price_cents: 699 }, { item_id: 'tom-yum', label: 'Large', price_cents: 1099 }] },
   proteinById: { chicken: { id: 'chicken', label: 'Chicken', delta_cents: 0 }, shrimp: { id: 'shrimp', label: 'Shrimp', delta_cents: 300 } },
@@ -58,6 +64,20 @@ throws('rejects market-price item', { order_type: 'pickup', items: [{ id: 'whole
 throws('requires size when sized', { order_type: 'pickup', items: [{ id: 'tom-yum', protein: 'chicken', qty: 1 }] }, 'size');
 throws('rejects bogus size', { order_type: 'pickup', items: [{ id: 'tom-yum', size_label: 'Mega', protein: 'chicken', qty: 1 }] }, 'size');
 throws('requires protein when choosable', { order_type: 'pickup', items: [{ id: 'pad-thai', qty: 1 }] }, 'protein');
+
+// Per-dish variants ("choose one")
+throws('requires variant when dish defines them', { order_type: 'pickup', items: [{ id: 'crispy-rolls', qty: 1 }] }, 'selection');
+throws('rejects bogus variant', { order_type: 'pickup', items: [{ id: 'crispy-rolls', variant: 'Beef', qty: 1 }] }, 'selection');
+throws('rejects variant on dish without any', { order_type: 'pickup', items: [{ id: 'crab-rangoon', variant: 'Pork', qty: 1 }] }, 'selection');
+{
+  const r = priceCart({ order_type: 'pickup', items: [{ id: 'crispy-rolls', variant: 'Pork', qty: 2 }] }, ctx);
+  check('variant snapshot label', r.lines[0].variant === 'Pork');
+  check('zero-delta variant keeps base price', r.subtotal_cents === 1198);
+}
+{
+  const r = priceCart({ order_type: 'pickup', items: [{ id: 'glass-noodle-salad', variant: 'Shrimp', spice_level: 3, qty: 1 }] }, ctx);
+  check('variant upcharge applied (1399+300)', r.lines[0].unit_price_cents === 1699 && r.lines[0].variant === 'Shrimp');
+}
 throws('rejects protein on plain item', { order_type: 'pickup', items: [{ id: 'crab-rangoon', protein: 'shrimp', qty: 1 }] }, 'protein');
 throws('rejects add-on on plain item', { order_type: 'pickup', items: [{ id: 'crab-rangoon', extras: ['extra-beef'], qty: 1 }] }, 'add-on');
 throws('rejects duplicate add-on', { order_type: 'pickup', items: [{ id: 'pad-thai', protein: 'chicken', extras: ['extra-beef', 'extra-beef'], qty: 1 }] }, 'Duplicate');

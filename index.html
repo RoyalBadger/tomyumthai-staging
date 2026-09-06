@@ -3172,7 +3172,7 @@
     const money = c => '$' + (c / 100).toFixed(2);
 
     let MENU = null;            // /api/menu payload
-    let cart = [];              // [{id,name,size_label,protein,extras,spice_level,exclusions,notes,qty,unit_cents,display}]
+    let cart = [];              // [{id,name,size_label,variant,protein,extras,spice_level,exclusions,notes,qty,unit_cents,display}]
 
     // Cart survives page refreshes via localStorage (device-local only — nothing is
     // sent anywhere). Saved on every render, restored after the menu loads (lines are
@@ -3433,6 +3433,7 @@
             <img data-m-photo alt="" loading="lazy" style="display:none;width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:12px;cursor:zoom-in;">
             <p class="modal-desc-box" data-m-desc></p>
             <div class="customizer-group" data-m-group="sizes"><label class="custom-label">Choose Size:</label><div class="size-pills" data-m-sizes></div></div>
+            <div class="customizer-group" data-m-group="variants"><label class="custom-label">Your Choice:</label><div class="protein-options" data-m-variants></div></div>
             <div class="customizer-group" data-m-group="proteins"><label class="custom-label">Choice of Protein:</label><div class="protein-options" data-m-proteins></div></div>
             <div class="customizer-group" data-m-group="spice"><label class="custom-label">Spice Level (1 Mild – 5 Extremely Spicy):</label><div class="spice-levels" data-m-spice></div></div>
             <div class="customizer-group" data-m-group="addons"><label class="custom-label">Optional Add-ons:</label><div class="addons-grid" data-m-addons></div></div>
@@ -3483,6 +3484,10 @@
       m.querySelector('[data-m-sizes]').innerHTML = item.sizes.map((s, i) =>
         pillRadio('size-pill', 'm-size', s.label, `${s.label} — ${money(s.price_cents)}`, i === 0)).join('');
       show('sizes', item.sizes.length > 0);
+      const variants = item.variants || [];
+      m.querySelector('[data-m-variants]').innerHTML = variants.map((v, i) => pillRadio('protein-radio', 'm-variant', v.label,
+        v.delta_cents ? `${v.label} (+${money(v.delta_cents)})` : v.label, i === 0)).join('');
+      show('variants', variants.length > 0);
       m.querySelector('[data-m-proteins]').innerHTML = item.protein_choice
         ? MENU.options.protein_choice.map((p, i) => pillRadio('protein-radio', 'm-protein', p.id,
             p.delta_cents ? `${p.label} (+${money(p.delta_cents)})` : p.label, i === 0)).join('') : '';
@@ -3513,6 +3518,7 @@
         modalQty = line.qty;
         const pick = (name, val) => { const r = m.querySelector(`input[name="${name}"][value="${val}"]`); if (r) r.checked = true; };
         if (line.size_label) pick('m-size', line.size_label);
+        if (line.variant) pick('m-variant', line.variant);
         if (line.protein) pick('m-protein', line.protein);
         if (line.spice_level) pick('m-spice', line.spice_level);
         m.querySelectorAll('[data-m-addons] input').forEach(cb => { cb.checked = (line.extras || []).includes(cb.value); });
@@ -3539,6 +3545,10 @@
       let base = modalDish.sizes.length
         ? (modalDish.sizes.find(s => s.label === m.querySelector('input[name="m-size"]:checked')?.value)?.price_cents ?? modalDish.sizes[0].price_cents)
         : (modalDish.price_cents ?? 0);
+      if (modalDish.variants?.length) {
+        const vl = m.querySelector('input[name="m-variant"]:checked')?.value;
+        base += modalDish.variants.find(v => v.label === vl)?.delta_cents ?? 0;
+      }
       if (modalDish.protein_choice) {
         const pid = m.querySelector('input[name="m-protein"]:checked')?.value;
         base += MENU.options.protein_choice.find(p => p.id === pid)?.delta_cents ?? 0;
@@ -3560,6 +3570,7 @@
       const m = $id('dishModal');
       const item = modalDish;
       const sizeLabel = item.sizes.length ? m.querySelector('input[name="m-size"]:checked')?.value : null;
+      const variant = (item.variants || []).length ? m.querySelector('input[name="m-variant"]:checked')?.value || null : null;
       const proteinId = item.protein_choice ? m.querySelector('input[name="m-protein"]:checked')?.value : null;
       const extras = [...m.querySelectorAll('[data-m-addons] input:checked')].map(cb => cb.value);
       const spice = item.spice_selectable ? Number(m.querySelector('input[name="m-spice"]:checked')?.value) || null : null;
@@ -3568,7 +3579,7 @@
         .map(cb => cb.parentElement.innerText.trim().replace(/^[^A-Za-z]+/, ''));
       const notes = m.querySelector('[data-m-notes]').value.trim() || null;
       const newLine = {
-        id: item.id, name: item.name, size_label: sizeLabel, protein: proteinId,
+        id: item.id, name: item.name, size_label: sizeLabel, variant, protein: proteinId,
         extras, spice_level: spice, exclusions: exclusions.join(', ') || null, notes,
         qty: modalQty, unit_cents: modalUnitCents(),
         display: {
@@ -3791,6 +3802,9 @@
         if (!item || !item.orderable) { skipped++; continue; }
         const size = item.sizes.length ? (item.sizes.find(s => s.label === l.size_label) || item.sizes[0]) : null;
         let unit = size ? size.price_cents : (item.price_cents ?? 0);
+        const variants = item.variants || [];
+        const variant = variants.length ? (variants.find(v => v.label === l.variant) || variants[0]) : null;
+        if (variant) unit += variant.delta_cents || 0;
         const prot = (item.protein_choice && l.protein) ? MENU.options.protein_choice.find(p => p.label === l.protein) : null;
         if (prot) unit += prot.delta_cents || 0;
         const extraIds = [], extraLabels = [];
@@ -3800,6 +3814,7 @@
         }
         cart.push({
           id: item.id, name: item.name, size_label: size ? size.label : null,
+          variant: variant ? variant.label : null,
           protein: prot ? prot.id : null, extras: extraIds,
           spice_level: l.spice_level || null, exclusions: l.exclusions || null,
           notes: l.notes || null, qty: Math.min(20, l.qty || 1), unit_cents: unit,
@@ -3851,6 +3866,7 @@
       container.innerHTML = cart.map((l, idx) => {
         const mods = [];
         if (l.size_label) mods.push('📏 ' + esc(l.size_label));
+        if (l.variant) mods.push('✔️ <strong>' + esc(l.variant) + '</strong>');
         if (l.display.protein) mods.push('🥩 <strong>' + esc(l.display.protein) + '</strong>');
         if (l.spice_level) mods.push('🌶️ Spice ' + l.spice_level);
         if (l.display.extras.length) mods.push('➕ ' + esc(l.display.extras.join(', ')));
@@ -3905,7 +3921,7 @@
       // copy cart summary + totals into the drawer
       $id('checkoutSummaryList').innerHTML = cart.map(l =>
         `<li style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;">
-           <span>${l.qty}× ${esc(l.name)}${l.size_label ? ' (' + esc(l.size_label) + ')' : ''}</span>
+           <span>${l.qty}× ${esc(l.name)}${l.size_label ? ' (' + esc(l.size_label) + ')' : ''}${l.variant ? ' — ' + esc(l.variant) : ''}</span>
            <span>${money(l.unit_cents * l.qty)}</span></li>`).join('');
       $id('promo-code').value = promoCode || '';
       // Signed-in customers: prefill contact info from their saved profile.
@@ -3970,7 +3986,7 @@
             promo_code: ($id('promo-code').value.trim() || null),
             customer: { name: $id('checkout-name').value, phone: $id('checkout-phone').value, email: $id('checkout-email').value.trim() || null, sms_opt_in: $id('checkout-sms-optin').checked },
             items: cart.map(l => ({
-              id: l.id, size_label: l.size_label, protein: l.protein, extras: l.extras,
+              id: l.id, size_label: l.size_label, variant: l.variant || null, protein: l.protein, extras: l.extras,
               spice_level: l.spice_level, exclusions: l.exclusions, notes: l.notes, qty: l.qty,
             })),
           };
@@ -4051,7 +4067,7 @@
             <strong>${l.qty}× ${esc(l.name)}${l.size_label ? ' (' + esc(l.size_label) + ')' : ''}</strong>
             <span>${money(l.unit_cents * l.qty)}</span>
           </div>
-          ${l.display.protein ? `<div style="color:var(--text-muted);font-size:12px;">${esc(l.display.protein)}${l.spice_level ? ' • Spice ' + l.spice_level : ''}</div>` : ''}
+          ${(l.variant || l.display.protein) ? `<div style="color:var(--text-muted);font-size:12px;">${[l.variant, l.display.protein].filter(Boolean).map(esc).join(' • ')}${l.spice_level ? ' • Spice ' + l.spice_level : ''}</div>` : ''}
           ${l.exclusions ? `<span class="receipt-exclusion-tag">${esc(l.exclusions)}</span>` : ''}
         </li>`).join('') || '<li style="color:var(--text-muted);font-size:13px;">Your order is confirmed.</li>';
       overlay.style.display = 'flex';

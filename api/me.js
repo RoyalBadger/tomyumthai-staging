@@ -80,7 +80,7 @@ export default async function handler(req, res) {
         let items = [];
         if (orders.length) {
           items = (await query(
-            `SELECT order_id, item_id, name, size_label, protein, extras, spice_level,
+            `SELECT order_id, item_id, name, size_label, variant, protein, extras, spice_level,
                     exclusions, notes, qty
              FROM order_items WHERE order_id = ANY($1::uuid[]) ORDER BY id`,
             [orders.map(o => o.id)])).rows;
