@@ -1,7 +1,7 @@
 // GET /api/menu — public menu with 86/closed state. Cached at the edge for 60s.
 import { query } from '../lib/db.js';
 import { ITEM_MODIFIER_SQL, publicModifier } from '../lib/modifiers.js';
-import { orderingWindow, closedMessage } from '../lib/hours.js';
+import { orderingWindow, closedMessage, nextOpening } from '../lib/hours.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'method not allowed' });
@@ -60,6 +60,7 @@ export default async function handler(req, res) {
 
     let accepting = true;
     let message = null;
+    let nextOpen = null;   // when closed by hours/holiday: the next time checkout opens
     if (st.store_open_override === 'open') {
       // Force-open override (testing): ignore hours and holidays entirely.
     } else if (st.store_open_override === 'closed') {
@@ -68,15 +69,18 @@ export default async function handler(req, res) {
     } else if (holidayToday) {
       accepting = false;
       message = st.closed_message || 'We are closed today for a holiday. See you soon!';
+      nextOpen = nextOpening(st.business_hours, st.holiday_dates);
     } else if (!win.open) {
       accepting = false;
       message = closedMessage(win.reason);
+      nextOpen = nextOpening(st.business_hours, st.holiday_dates);
     }
 
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
     res.status(200).json({
       accepting_orders: accepting,
       closed_message: message,
+      next_open: nextOpen,
       hours: st.business_hours, // 0=Sunday..6=Saturday, America/Chicago — single source of truth
       etas: { pickup: st.pickup_eta_minutes, delivery: st.delivery_eta_minutes },
       delivery: {

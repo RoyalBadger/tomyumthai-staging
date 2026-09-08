@@ -3118,6 +3118,7 @@
       </div>
 
       <div class="cart-drawer-footer" id="cartFooter" style="display:none;">
+        <div id="cartClosedNotice" style="display:none;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.45);color:#fde68a;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;line-height:1.45;margin-bottom:12px;"></div>
         <div class="promo-input-row">
           <input type="text" class="promo-input" id="promoCodeInput" value="" placeholder="Promo code">
           <button class="btn-apply-promo" onclick="applyPromo()">Apply</button>
@@ -3146,7 +3147,7 @@
           </tr>
         </table>
 
-        <button class="btn-checkout" onclick="proceedToCheckout()">
+        <button class="btn-checkout" id="checkoutBtn" onclick="proceedToCheckout()">
           🔒 Proceed to Secure Checkout
         </button>
         <p style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:8px;">
@@ -3235,7 +3236,8 @@
       const banner = $id('store-closed-banner');
       if (!MENU.accepting_orders) {
         banner.style.display = 'flex';
-        banner.querySelector('[data-closed-message]').innerText = MENU.closed_message || 'Online ordering is currently closed.';
+        banner.querySelector('[data-closed-message]').innerText = (MENU.closed_message || 'Online ordering is currently closed.')
+          + (MENU.next_open ? ' You can add dishes to your cart now and finish placing your order ' + MENU.next_open.label + '.' : '');
       } else {
         banner.style.display = 'none';
       }
@@ -3544,7 +3546,6 @@
 
     function addModalToCart() {
       if (!modalDish) return;
-      if (!MENU.accepting_orders) { closeDishModal(); showBannerNudge(); return; }
       const m = $id('dishModal');
       const item = modalDish;
       const sizeLabel = item.sizes.length ? m.querySelector('input[name="m-size"]:checked')?.value : null;
@@ -3890,7 +3891,42 @@
       $id('taxVal').innerText = money(t.tax);
       $id('totalVal').innerText = money(t.total);
       $id('floatCartTotal').innerText = money(t.total);
+      renderCartClosedState();
     }
+
+    // While closed, the cart still fills (and is saved on this device for 24h) but
+    // checkout waits for the next opening time from /api/menu.
+    function renderCartClosedState() {
+      const notice = $id('cartClosedNotice');
+      const btn = $id('checkoutBtn');
+      if (!notice || !btn) return;
+      if (MENU.accepting_orders) {
+        notice.style.display = 'none';
+        btn.disabled = false; btn.style.opacity = ''; btn.innerText = '🔒 Proceed to Secure Checkout';
+        return;
+      }
+      const when = MENU.next_open ? MENU.next_open.label : null;
+      notice.innerText = when
+        ? '⏰ We\'re closed right now. Your cart is saved — you can finish placing your order ' + when + '.'
+        : '⏰ Online ordering is paused right now. Your cart is saved — you can finish placing your order once ordering resumes.';
+      notice.style.display = 'block';
+      btn.disabled = true; btn.style.opacity = '0.55';
+      btn.innerText = when ? '🔒 Checkout opens ' + when : '🔒 Checkout paused';
+    }
+
+    // Keep open/closed state fresh for a tab left open across opening time.
+    async function refreshStoreStatus() {
+      try {
+        const fresh = await fetch('/api/menu', { cache: 'no-store' }).then(r => r.json());
+        const changed = fresh.accepting_orders !== MENU.accepting_orders || (fresh.delivery?.paused) !== (MENU.delivery?.paused);
+        MENU.accepting_orders = fresh.accepting_orders; MENU.closed_message = fresh.closed_message;
+        MENU.next_open = fresh.next_open; MENU.delivery = fresh.delivery;
+        if (changed) { renderClosedState(); renderDeliveryAvailability(); }
+        renderCartClosedState();
+      } catch {}
+    }
+    setInterval(refreshStoreStatus, 60_000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && MENU) refreshStoreStatus(); });
 
     function changeQty(i, d) { cart[i].qty = Math.min(20, cart[i].qty + d); if (cart[i].qty <= 0) cart.splice(i, 1); renderCart(); }
     function deleteItem(i) { cart.splice(i, 1); renderCart(); }
@@ -3906,7 +3942,7 @@
     /* ==================== CHECKOUT DRAWER (two-phase: order -> pay) ==================== */
     function proceedToCheckout() {
       if (!cart.length) return;
-      if (!MENU.accepting_orders) { closeCart(); showBannerNudge(); return; }
+      if (!MENU.accepting_orders) { renderCartClosedState(); $id('cartClosedNotice').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
       closeCart();
       // copy cart summary + totals into the drawer
       $id('checkoutSummaryList').innerHTML = cart.map(l =>

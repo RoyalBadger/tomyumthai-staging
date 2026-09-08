@@ -215,6 +215,16 @@
   request), so all 45 dishes with ingredients now offer "Extra X (+$1.00)"; per-dish overrides
   in the editor. 7 new pricing tests. Old removals_* columns left unused.
 
+### September 7 — Build a cart while closed (owner request, deployed)
+- Customers can now add dishes to the cart any time; only checkout waits for opening. The cart
+  drawer shows "⏰ We're closed right now. Your cart is saved — you can finish placing your order
+  today at 5:00 PM" (or tomorrow / weekday), the checkout button is disabled and reads
+  "Checkout opens today at 5:00 PM", and the top banner says the same. Cart persists 24h.
+- /api/menu gains `next_open` from `nextOpening()` in lib/hours.js (skips holidays, searches 14
+  days; null while the manager pause is on → "once ordering resumes"). The page re-checks store
+  status every 60s and when the tab regains focus, so a tab left open flips to live checkout.
+- 7 new hours tests. Server-side /api/orders still refuses orders while closed (unchanged).
+
 ## 🔲 Remaining
 
 ### Owner
