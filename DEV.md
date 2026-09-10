@@ -33,6 +33,7 @@
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_VERIFY_SID` | 5 | phone OTP |
 | `GOOGLE_MONTHLY_CAP` | 4 | optional; max Google distance calls per calendar month (default 9000 — below the free allowance, so the Google bill is $0 by construction). |
 | `GOOGLE_DAILY_CAP` | 4 | optional; max Google distance calls per day across all visitors (default 500) — past it, labeled estimates serve instead. |
+| `PRINT_AGENT_TOKEN` | 7 | 32+ random chars. Shared secret for the restaurant-PC print agent (`print-agent/README.md`); sent as `X-Print-Token` to `/api/admin/orders`. Unset = auto-print off (portal falls back to browser printing). |
 | `GOOGLE_MAPS_API_KEY` | 4 | driving-distance zone checks (/api/distance). Without it, distances are straight-line × 1.3 labeled "est.". Setup: console.cloud.google.com → new project → enable **Routes API** → billing → Credentials → API key → restrict to Routes API. |
 | `CHANGE_REQUEST_WEBHOOK` | 6 | optional; URL that receives a JSON POST ({id, subject, details, by}) each time the family files a Change Request in the portal. Point it at a Power Automate / Zapier "HTTP request received" flow that emails the web admin. Unset = requests are only visible in the portal's Change Requests tab. |
 | `OTP_DAILY_CAP` | 5 | optional; max Twilio Verify OTP sends per day site-wide (default 150). Past it, sign-in says "try later"; guest checkout is unaffected. Caps worst-case SMS spend under distributed abuse. |

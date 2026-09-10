@@ -6,3 +6,8 @@ node_modules/
 
 .vercel
 .env*
+
+# print agent runtime files (restaurant PC only)
+print-agent/config.json
+print-agent/state.json
+print-agent/agent.log*

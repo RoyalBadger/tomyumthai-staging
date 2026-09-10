@@ -677,6 +677,19 @@
     .req-declined { background: rgba(148,163,184,0.15); color: #cbd5e1; border: 1px solid rgba(148,163,184,0.4); }
     @media (max-width: 640px) { .ed-grid { grid-template-columns: 1fr; } .ed-overlay { padding: 10px 6px; } }
 
+    .print-agent-pill {
+      align-self: center;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #eee;
+      color: #555;
+      white-space: nowrap;
+    }
+    .print-agent-pill.online { background: #dcf5e3; color: #176b34; }
+    .print-agent-pill.offline { background: #fde2e2; color: #9b1c1c; }
+
     /* ==================== 80MM THERMAL RECEIPT PRINT STYLES ==================== */
     @media print {
       body * {
@@ -689,11 +702,11 @@
         position: absolute;
         left: 0;
         top: 0;
-        width: 80mm;
+        width: 72mm; /* TSP143 printable width on 80mm paper */
       }
       .thermal-receipt {
-        width: 80mm;
-        max-width: 80mm;
+        width: 72mm;
+        max-width: 72mm;
         padding: 2mm;
         margin: 0;
         background: #fff !important;
@@ -845,6 +858,7 @@
           <div class="panel-title">🔔 Kitchen Live Orders Queue</div>
           <div class="panel-desc">Real-time tablet queue for kitchen woks. All orders shown are prepaid.</div>
         </div>
+        <span id="printAgentPill" class="print-agent-pill" title="The print agent on the restaurant PC prints every paid order automatically: receipt at the counter, kitchen tickets in the kitchen.">🖨️ Auto-print: checking…</span>
       </div>
 
       <!-- Live Order Cards Container -->
@@ -1884,7 +1898,29 @@
       const data = await api(url);
       if (lastQueuePoll && data.new_since > 0) chime();
       lastQueuePoll = data.now;
+      updatePrintAgentPill(data.print_agent_seen_at);
       renderQueue(data.orders);
+    }
+
+    // The print agent on the restaurant PC polls every ~4s; silence for 30s = offline.
+    let printAgentOnline = false;
+    function updatePrintAgentPill(seenAt) {
+      const ageMs = seenAt ? Date.now() - new Date(seenAt).getTime() : Infinity;
+      printAgentOnline = ageMs < 30000;
+      const pill = $('printAgentPill');
+      if (!pill) return;
+      pill.classList.toggle('online', printAgentOnline);
+      pill.classList.toggle('offline', !printAgentOnline);
+      pill.innerText = printAgentOnline
+        ? '🖨️ Auto-print online'
+        : (seenAt ? '🖨️ Auto-print OFFLINE (last seen ' + elapsedText(seenAt) + ')' : '🖨️ Auto-print not set up');
+    }
+
+    async function reprintOrder(o) {
+      try {
+        await api('/api/admin/orders', { method: 'PATCH', body: { id: o.id, reprint: true } });
+        toast('Tickets for ' + o.public_code + ' sent to the printers.');
+      } catch (ex) { toast('Error: ' + ex.message, true); }
     }
 
     function renderQueue(orders) {
@@ -1934,8 +1970,15 @@
         });
         const printBtn = document.createElement('button');
         printBtn.className = 'btn-queue btn-done';
-        printBtn.innerText = '🖨️ Print Tickets';
-        printBtn.onclick = () => printReceipt(o);
+        if (printAgentOnline && o.status !== 'completed') {
+          printBtn.innerText = '🖨️ Reprint Tickets';
+          printBtn.title = 'Prints the receipt at the counter and the kitchen tickets in the kitchen again.';
+          printBtn.onclick = () => reprintOrder(o);
+        } else {
+          printBtn.innerText = '🖨️ Print (browser)';
+          printBtn.title = 'Auto-print is offline: prints all tickets through this browser instead.';
+          printBtn.onclick = () => printReceipt(o);
+        }
         node.querySelector('.queue-action-btns').appendChild(printBtn);
         list.appendChild(node);
       }

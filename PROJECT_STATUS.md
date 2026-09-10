@@ -225,9 +225,33 @@
   status every 60s and when the tab regains focus, so a tab left open flips to live checkout.
 - 7 new hours tests. Server-side /api/orders still refuses orders while closed (unchanged).
 
+### September 9 — Automatic two-printer ticket printing (print agent)
+- **Why:** two Star TSP143IIIW printers at the restaurant (counter 192.168.1.251, kitchen
+  192.168.1.140). A browser can't route one job to two printers, so the family had to print
+  twice and pick a printer each time. Both printers were added to the restaurant PC via the
+  Star Printer Utility (Windows "add printer" search/IP wizard fails on this model — use the
+  utility's queue creation, Star Line Mode).
+- **Design:** `print-agent/agent.mjs` (Node, restaurant PC, scheduled task) polls
+  `/api/admin/orders?printer=1` every 4s with the `X-Print-Token` header
+  (`PRINT_AGENT_TOKEN` env), sends raw Star Line Mode bytes straight to each printer on
+  port 9100 (receipt → counter, CHEF 2 + MAIN KITCHEN → kitchen, partial cut each), then
+  PATCHes `{printed:true}`. Partial success is remembered in `state.json` so a printer
+  outage never double-prints. Endpoint lives inside `api/admin/orders.js` (12-function cap).
+- **Migration 023:** `orders.printed_at`, `orders.print_requested_at`,
+  `settings.print_agent_seen_at` (heartbeat); existing orders back-filled as printed.
+- **Portal:** Live Orders shows an Auto-print online/offline pill (30s heartbeat window).
+  The card button is "Reprint Tickets" (queues for the agent) while online and falls back
+  to "Print (browser)" when offline. Browser receipt CSS fixed 80mm → 72mm printable width.
+- `print-agent/README.md` = install/runbook for the restaurant PC. 27 new ticket-format
+  tests (`tests/print-tickets.test.mjs`). ESC/POS profile included in case the printers are
+  ever switched off Star Line Mode.
+
 ## 🔲 Remaining
 
 ### Owner
+- [ ] Install the print agent on the restaurant PC per `print-agent/README.md` (Node LTS,
+      config.json with `PRINT_AGENT_TOKEN`, `node agent.mjs test`, then the scheduled task);
+      give both printers DHCP reservations in UniFi
 - [ ] Twilio console (from the 2026-09-02 security review): confirm Verify **Fraud Guard** is
       enabled and set SMS **Geo Permissions** to US-only
 - [ ] Mobile walkthrough on a real phone (especially the new customization modal)
