@@ -1,5 +1,5 @@
 {
-  "server": "https://order.mytomyumthai.com",
+  "server": "https://tomyumthai-staging.vercel.app",
   "token": "PASTE_PRINT_AGENT_TOKEN_HERE",
   "printers": {
     "counter": "192.168.1.251",
