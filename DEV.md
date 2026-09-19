@@ -9,7 +9,7 @@
    Settings → Environment Variables → copy `DATABASE_URL`, then locally:
 
    ```powershell
-   cd C:\Users\strip\tomyumthai-staging
+   cd C:\Repo\tomyumthai-staging
    npm install
    $env:DATABASE_URL = "<paste connection string>"
    npm run migrate
@@ -61,9 +61,9 @@ Both runners pull `DATABASE_URL` from Vercel themselves (`npx vercel env pull`),
 job, and delete the pulled credentials file — no manual paste needed. Run from any cwd:
 
 ```powershell
-node C:\Users\strip\tomyumthai-staging\db\migrate-with-env.mjs      # apply pending migrations
-node C:\Users\strip\tomyumthai-staging\db\set-delivery-pause.mjs on  # pause direct delivery
-node C:\Users\strip\tomyumthai-staging\db\set-delivery-pause.mjs off # resume direct delivery
+node C:\Repo\tomyumthai-staging\db\migrate-with-env.mjs      # apply pending migrations
+node C:\Repo\tomyumthai-staging\db\set-delivery-pause.mjs on  # pause direct delivery
+node C:\Repo\tomyumthai-staging\db\set-delivery-pause.mjs off # resume direct delivery
 ```
 
 - **Migrations before deploys:** run `migrate-with-env.mjs` BEFORE `git push` when a change

@@ -1,7 +1,7 @@
 # Design Request: Tom Yum Thai — 4 UI shells (checkout, confirmation, menu cards, kitchen queue)
 
 You are doing the **visual design** for Tom Yum Thai's direct-ordering site in
-`C:\Users\strip\tomyumthai-staging`. The backend (database, auth, Stripe payments, kitchen
+`C:\Repo\tomyumthai-staging`. The backend (database, auth, Stripe payments, kitchen
 API) is built, deployed, and tested by Claude. Your job is markup + CSS + copy. Claude
 wires all behavior afterward.
 
@@ -74,6 +74,6 @@ kitchen tablet at arm's length — big type, high contrast:
 
 ## Delivery
 
-Edit the files in place in `C:\Users\strip\tomyumthai-staging` (they're under git — Claude
+Edit the files in place in `C:\Repo\tomyumthai-staging` (they're under git — Claude
 diffs everything), or return full file contents. When done, note anything you wanted to
 build but couldn't within these rules.
