@@ -22,6 +22,48 @@
 3. Verify: open `https://tomyumthai-staging.vercel.app/api/health` → should return
    `{"ok":true,"db":true,"menu_items":<count>}` and `/api/menu` → the full menu JSON.
 
+## Running the test suite against a Neon branch
+
+Use Node.js 20 or newer and npm, with this repository checked out locally and access
+to its development Neon project. From the repository root, run `npm ci` first.
+
+1. In the Neon Console, select the development project, open **Branches**, and
+   choose **New branch**. Name it `<temporary-test-branch>`, select the intended
+   development parent branch, and create it with a read-write compute. See
+   [Neon's branch management guide](https://neon.com/docs/manage/branches).
+2. Open **Connect**, select that new branch, database, and role, and copy its
+   PostgreSQL connection string. Verify the selected branch is the temporary one.
+   The placeholder is `<temporary-branch-connection-string>`; retain the SSL
+   options provided by Neon when pasting the actual value locally.
+3. In Bash, run the following from the repository root. Paste the connection
+   string at the hidden prompt. `DATABASE_URL` exists only in this subshell and
+   its child processes; the parent shell's environment is preserved when it exits.
+   The value is not saved in shell history, an `.env` file, or Vercel settings.
+
+   ```bash
+   (
+     read -r -s -p 'Temporary Neon branch connection string: ' DATABASE_URL
+     printf '\n'
+     export DATABASE_URL
+     npm test
+   )
+   ```
+
+   The current suite consists of local unit tests and fixture validation: it does
+   not query Postgres, apply migrations, or seed data. Setting `DATABASE_URL`
+   prepares this shell for database-aware tests, but a passing run does not verify
+   Neon connectivity or database behavior. No database credentials are needed to
+   run the current suite with plain `npm test`.
+4. After the run, even if tests fail, return to **Branches**, select only
+   `<temporary-test-branch>`, and use its **Delete** action. Confirm the temporary
+   branch name when prompted. Keep the parent branch.
+
+The delivery-zone fixture uses illustrative Garland-area addresses, not customer
+records. Its notes define hypothetical driving-distance cases against SPEC.md
+§3.5 and §5.3: a 5-mile radius with rejection only above 5.2 miles. These are not
+measured routes or straight-line distances; validate routing separately before
+using an address as a live distance assertion.
+
 ## Environment variables (Vercel project settings)
 
 | Var | Phase | Notes |

@@ -1,0 +1,20 @@
+[
+  {
+    "label": "just-inside-driving-radius",
+    "address": "1101 E Walnut St, Garland, TX 75040",
+    "expected": "inside",
+    "note": "Illustrative address, not a customer record or a measured route. Assume 4.9 driving miles from the restaurant at 3313 Belt Line Rd, Garland: just inside SPEC.md's default 5-mile radius. Use road travel distance, not straight-line distance."
+  },
+  {
+    "label": "at-driving-tolerance-boundary",
+    "address": "1501 E Walnut St, Garland, TX 75040",
+    "expected": "inside",
+    "note": "Illustrative address, not a customer record or a measured route. Assume exactly 5.2 driving miles from the restaurant at 3313 Belt Line Rd, Garland: SPEC.md section 5.3 rejects only miles > radius + 0.2, so this is inside the server gate for a 5-mile radius. Use road travel distance, not straight-line distance."
+  },
+  {
+    "label": "just-outside-driving-tolerance",
+    "address": "1801 E Walnut St, Garland, TX 75040",
+    "expected": "outside",
+    "note": "Illustrative address, not a customer record or a measured route. Assume 5.3 driving miles from the restaurant at 3313 Belt Line Rd, Garland: beyond SPEC.md's 5-mile radius plus 0.2-mile tolerance, even if the straight-line distance is under 5 miles. Validate an actual driving route before using this address in a live routing test."
+  }
+]
