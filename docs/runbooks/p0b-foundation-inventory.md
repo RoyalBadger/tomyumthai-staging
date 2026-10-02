@@ -1,6 +1,6 @@
 # P0B foundation inventory
 
-The existing suite is green on the recorded `main` commit under Node 20. **Capacity confirmed is not met:** Vercel and Neon account settings and deployed build evidence remain unavailable; Questions 1–8 below identify the human evidence needed. This is a repository inventory, not a deployment, live database inspection, or restore rehearsal.
+The existing suite is green on the recorded `main` commit under Node 20. **Capacity confirmed is not met:** Vercel and Neon account settings and deployed build-output/limit details remain unavailable; Questions 1–9 below identify the human evidence needed. This inventory uses repository and GitHub deployment evidence; no live database inspection or restore rehearsal was performed. Pushing its branch triggered the existing Vercel integration’s Preview deployment, as recorded below.
 
 ## Base
 
@@ -11,9 +11,9 @@ Inventoried on 2026-10-01 UTC in `/home/dev/worktrees/tyt-p0b`, branch `codex/p0
 1cd14a68cc2ad6d6c97b195d3795ec2a71d5552a
 ```
 
-Selected Node with `export PATH=/home/dev/.local/opt/node-v20.20.2-linux-x64/bin:$PATH`; `node --version` printed `v20.20.2`. `package.json:6–7` requires `>=20`. No evidence establishes which commit or Node version is currently deployed (Question 7).
+Selected Node with `export PATH=/home/dev/.local/opt/node-v20.20.2-linux-x64/bin:$PATH`; `node --version` printed `v20.20.2`. `package.json:6–7` requires `>=20`. The production commit and runtime remain unverified (Question 7); the Preview deployment of this PR’s initial head is recorded below.
 
-Assignment sources read, in order: `/home/dev/agent-teams/docs/team/roles/platform.md`, `/home/dev/agent-teams/docs/team/roles/platform-record.md` (no open lessons), `/home/dev/agent-teams/docs/team/charters/codex-pos-platform.md`, `/home/dev/.herdr-mail/p0b-brief.md`. Additional process sources: `/home/dev/HERDR-AGENTS.md`, `/home/dev/agent-teams/docs/pos-first-assignment.md`, `/home/dev/agent-teams/docs/runbooks/agent-identities.md`, `/home/dev/agent-teams/scripts/devvm-check.sh`. These are external devvm references, not files added to this repository. Repository sources are named in the relevant sections below; no Vercel or Neon credentials were accessed.
+Assignment sources read, in order: `/home/dev/agent-teams/docs/team/roles/platform.md`, `/home/dev/agent-teams/docs/team/roles/platform-record.md` (no open lessons), `/home/dev/agent-teams/docs/team/charters/codex-pos-platform.md`, `/home/dev/.herdr-mail/p0b-brief.md`. Additional process sources: `/home/dev/HERDR-AGENTS.md`, `/home/dev/agent-teams/docs/pos-first-assignment.md`, `/home/dev/agent-teams/docs/runbooks/agent-identities.md`, `/home/dev/agent-teams/scripts/devvm-check.sh`. These are external devvm references, not files added to this repository. Fix-cycle sources read on 2026-10-02: `/home/dev/.herdr-mail/p0b-fix-brief.md` and `/home/dev/.herdr-mail/p0b-review-1-claude-pos-reviewer.md`. Repository sources are named in the relevant sections below; no Vercel or Neon credentials were accessed.
 
 ## Test baseline
 
@@ -101,9 +101,22 @@ exit=0
 
 ## Deploy plan and capacity
 
-Sources: `vercel.json:1–5`, `.vercelignore:1`, `package.json`, the tracked tree, the default-handler declarations in every API file below, and `PROJECT_STATUS.md:3,77–80,194–196`.
+Sources: `vercel.json:1–5`, `.vercelignore:1`, `package.json`, the tracked tree, the default-handler declarations in every API file below, and `PROJECT_STATUS.md:3,77–80,194–196,239`, plus PR #5’s GitHub checks and deployments record.
 
 The tree supplies static files at the root (including `index.html`, `manager.html`, `insert.html`, `privacy.html`, and `sms-optin-proof.html`) and image assets. There is no package build script. `vercel.json` sets version 2, clean URLs, and no trailing slash; it supplies no build-command/output-directory, function size, duration, or region override. `.vercelignore` excludes `print-agent`, which is intended to run on the restaurant PC. These facts describe the expected static-plus-serverless layout; dashboard overrides and the actual deployed build output cannot be read here (Question 7).
+
+The repository's Vercel Git integration builds and deploys a **Preview of every pushed development/agent branch**, independently of this CI workflow and before any review. `vercel.json` contains no `git.deploymentEnabled` override. PR #5's initial push demonstrated that behavior: its [Vercel check](https://vercel.com/tytmktg/tomyumthai-staging/HyoXoursBgauSNQgHExVATdodmVU) reported `Deployment has completed`. GitHub's deployments record for that exact head confirms the creator, Preview environment and creation time (read on 2026-10-02):
+
+```text
+$ gh api 'repos/RoyalBadger/tomyumthai-staging/deployments?sha=58e0dbb95d1de53035bdba81855cfbc02b06ff37' --jq '.[] | {created_at, creator: .creator.login, environment}'
+{"created_at":"2026-10-02T03:07:21Z","creator":"vercel[bot]","environment":"Preview"}
+exit=0
+
+$ gh pr checks 5 --repo RoyalBadger/tomyumthai-staging (Vercel row)
+Vercel  pass  0  https://vercel.com/tytmktg/tomyumthai-staging/HyoXoursBgauSNQgHExVATdodmVU  Deployment has completed
+```
+
+Each Preview is a deployment and is subject to the per-deployment function cap; Preview deployment does not provide extra function slots. Code on an unreviewed agent branch runs under the Preview environment's variables. Whether those variables target production data or live services, whether Preview deployment protection is enabled, and whether agent branches should deploy before review are unverified account/policy facts (Question 9). No absence of secrets or deploy steps in CI establishes Preview isolation. The GitHub record proves this Preview occurred; dashboard branch exclusions and the effective deployment settings still need human confirmation.
 
 ```text
 $ find api -name '*.js' | wc -l
@@ -127,7 +140,7 @@ $ find api -name '*.js' | wc -l
 
 All 12 export a default request handler, including the two wrapped by `requireAdmin`; none is a helper-only file. Shared code lives in `lib/`, outside `api/`. The file count does not independently prove the deployed function count.
 
-The status document dated **2026-09-06** records a Hobby cap of **12 functions per deployment**, says “consolidated to 11” in its earlier September 1 entry, and pre-approves Pro if needed. Its later September 6 entry correctly says 12. Against that recorded cap, this checkout has **zero spare function slots: no new POS route fits on Hobby**. `/home/dev/agent-teams/docs/pos-first-assignment.md`, F7 and Step 0, require **Vercel Pro before any POS route**. Neither the historical status nor its pre-approval establishes today's account plan, current limits, or completion of the upgrade: see Questions 1 and 7. No current pricing or account capacity is inferred from that historical entry.
+The status document’s header is dated **2026-09-06**, with entries through September 9. `PROJECT_STATUS.md:77–80` records a Hobby cap of **12 functions per deployment**, says “consolidated to 11” under September 1, and pre-approves Pro if needed. The September 6 entry at `PROJECT_STATUS.md:196` correctly says 12 functions. The latest cap statement is `PROJECT_STATUS.md:239`, under September 9: the print endpoint lives inside `api/admin/orders.js` because of the 12-function cap. Against that recorded cap, this checkout has **zero spare function slots: no new POS route fits on Hobby**. `/home/dev/agent-teams/docs/pos-first-assignment.md`, F7 and Step 0, require **Vercel Pro before any POS route**. Neither the historical status nor its pre-approval establishes today's account plan, current limits, or completion of the upgrade: see Questions 1 and 7. No current pricing or account capacity is inferred from that historical entry.
 
 ## Database
 
@@ -201,9 +214,9 @@ The only documented branch practice is `DEV.md:25–59` (PR #4): create a tempor
 
 ## CI baseline
 
-`git ls-tree -r --name-only main .github docs` returned no paths: neither directory existed on this base. This commit adds `.github/workflows/ci.yml` as the CI baseline: push to `main` and `pull_request`, Ubuntu runner, independent Node 20/22 matrix jobs, npm cache, then `npm ci`, `npm run check`, and `npm test`. It declares only `actions/checkout@v4` and `actions/setup-node@v4`, sets `permissions: contents: read`, and disables checkout credential persistence. No secret, deployment, migration, or additional token is configured. Matrix major versions can resolve different patch versions from the local versions recorded here.
+`git ls-tree -r --name-only main .github docs` returned no paths: neither directory existed on this base. The initial P0B commit adds `.github/workflows/ci.yml` as the CI baseline: push to `main` and `pull_request`, Ubuntu runner, independent Node 20/22 matrix jobs, npm cache, then `npm ci`, `npm run check`, and `npm test`. It declares only `actions/checkout@v4` and `actions/setup-node@v4`, sets `permissions: contents: read`, and disables checkout credential persistence. The CI workflow configures no secrets, migrations, additional token, or deploy step. Independently, the existing Vercel integration deploys branch Previews, including this PR’s initial head; its Preview variables and protection remain unverified (Question 9). Matrix major versions can resolve different patch versions from the local versions recorded here.
 
-Action inputs were checked against the official [setup-node v4 README](https://github.com/actions/setup-node/blob/v4/README.md) and [checkout v4 README](https://github.com/actions/checkout/blob/v4/README.md). YAML parsing and contract checks are recorded in the PR handoff. GitHub's actual run is only available after pushing/opening the PR; its `gh pr checks` result or pending run URL belongs in the PR and final handoff so this report can remain part of one commit. Adding a workflow does not itself make it a required branch-protection check.
+Action inputs were checked against the official [setup-node v4 README](https://github.com/actions/setup-node/blob/v4/README.md) and [checkout v4 README](https://github.com/actions/checkout/blob/v4/README.md). YAML parsing and contract checks are recorded in the PR handoff. GitHub CI results and the tested head are recorded in the PR description and final handoff; the separate Vercel Preview deployment evidence is recorded in Deploy plan and capacity above. Adding a workflow does not itself make it a required branch-protection check.
 
 ## Access matrix
 
@@ -279,12 +292,13 @@ No tooling installation or version adjustment was needed. The gate's Herdr versi
 6. **Question 6 — Postgres version:** What Postgres major/minor version is the project running? Why: migrations, extensions and restore compatibility must use the actual engine version. Closes with dated console/version output supplied by the human, without credentials.
 7. **Question 7 — Deployed build and Vercel limits:** Are build/output settings and function size, duration and regions at defaults, or overridden? Which commit and runtime are deployed? Why: source layout alone does not prove the packaged function count or effective limits. Closes with a dated deployment URL/commit, build output/function manifest, runtime, effective size/duration/region limits, and project overrides or an explicit defaults confirmation tied to the current plan.
 8. **Question 8 — Access-model omissions:** Does the recorded access model omit any person, service, vendor grant, recovery custodian or environment? Why: safe preview/production separation and independent reviews need actual ownership and grants. Closes with a dated redacted access matrix for GitHub/branch protection, Vercel, Neon roles, Stripe test/live, Twilio, Google/webhooks, print-agent token custody and manager-portal roles; confirm environment isolation and whether the family still has portal-only access. Include approved exceptions or explicitly confirm there are none; never send secret values.
+9. **Question 9 — Preview environment and pre-review deployments:** Which variables are in Vercel Preview scope, including branch-specific overrides: does `DATABASE_URL` target the production Neon branch or a separate branch, are Stripe keys test or live, and which Twilio account/service is used? Is Vercel deployment protection enabled for Previews, and should agent branches deploy Previews at all before review? Why: each push deploys unreviewed code under those variables, potentially reaching production data or live services; deployment protection and a branch policy must be verified separately from CI. Closes with a dated redacted Preview variable-scope inventory (names, target environments and modes only; no values), identification of the Neon branch and isolation, Stripe/Twilio modes and targets, evidence of the Preview protection setting, and the human’s explicit decision on pre-review agent-branch deployment including any branch exclusions. Until supplied, Preview isolation and capacity confirmation remain unmet.
 
 ## Done-when
 
 | P0B condition | Result |
 | --- | --- |
 | Baseline tests green on main | **Met** at `1cd14a68cc2ad6d6c97b195d3795ec2a71d5552a`: Node 20.20.2, npm ci/test/check all exit 0, nine test files / 187 assertion/check invocations. Node 22 is a second passing data point. |
-| Capacity confirmed | **Not met.** Human evidence for Questions 1–8 remains outstanding; deployed build, Vercel plan/limits and Neon retention/branches/compute/version are unverified. |
+| Capacity confirmed | **Not met.** Human evidence for Questions 1–9 remains outstanding; deployed build limits, Vercel plan, Neon retention/branches/compute/version, and Preview environment isolation/protection and branch policy are unverified. |
 
-The report and CI baseline are ready for independent review. P0B overall remains open until the human evidence closes capacity; this change does not authorize deployment, POS routes, production restore, pilot, or charges.
+The report and CI baseline are ready for independent review. P0B overall remains open until the human evidence closes capacity, including Question 9. Pushing the branch causes the existing Vercel integration to deploy a Preview before review; the CI workflow itself has no deploy step. Production release, POS routes, production restore, pilot and charges remain separate human gates.
