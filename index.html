@@ -1123,6 +1123,77 @@
       color: var(--accent-orange);
     }
 
+    .footer-theme-selector {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 20px auto 14px;
+    }
+
+    .footer-theme-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--footer-dim);
+      font-weight: 700;
+    }
+
+    .theme-segmented-group {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.18);
+      padding: 4px;
+      border-radius: 24px;
+      gap: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    [data-theme="dark"] .theme-segmented-group {
+      background: rgba(0, 0, 0, 0.45);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-seg-btn {
+      background: transparent;
+      border: none;
+      color: var(--footer-dim);
+      padding: 6px 14px;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+
+    .theme-seg-btn:hover {
+      color: var(--footer-text);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .theme-seg-btn.active {
+      background: #ffffff;
+      color: var(--accent-orange);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .theme-seg-btn.active {
+      background: var(--bg-card);
+      color: #ff781f;
+      border: 1px solid rgba(255, 120, 31, 0.35);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .footer-copyright {
+      font-size: 11.5px;
+      margin-top: 14px;
+      color: var(--footer-dim);
+    }
+
     /* Custom Modal */
     .custom-modal-overlay {
       position: fixed;
@@ -1609,7 +1680,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(26, 29, 36, 0.98);
+      background: var(--header-bg);
       backdrop-filter: blur(10px);
       border-top: 1px solid var(--border-color);
       padding: 10px 16px;
@@ -1640,7 +1711,7 @@
       flex: 1;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      color: #ffffff;
+      color: var(--text-main);
       font-size: 13px;
       font-weight: 700;
       text-align: center;
@@ -1651,6 +1722,16 @@
     @media (max-width: 768px) {
       .nav-links, .nav-actions .btn-phone {
         display: none;
+      }
+      .theme-btn-text {
+        display: none;
+      }
+      .btn-theme-toggle {
+        padding: 7px 10px;
+        font-size: 14px;
+      }
+      .floating-theme-toggle {
+        display: none !important;
       }
       .mobile-bottom-bar {
         display: block;
@@ -2836,7 +2917,7 @@
       </ul>
 
       <div class="nav-actions">
-        <button id="themeToggleBtn" type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Switch Theme">☀️ Bright Theme</button>
+        <button id="themeToggleBtn" type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Switch Theme">☀️ <span class="theme-btn-text">Light Mode</span></button>
         <a href="tel:2147030391" class="btn-phone">📞 (214) 703-0391</a>
         <button class="btn-cart-nav" id="btnAccount" onclick="openAccount()">👤 Sign In</button>
         <button class="btn-cart-nav" onclick="openCart()">
@@ -3182,7 +3263,17 @@
         <li><a href="/privacy">Privacy &amp; SMS Policy</a></li>
       </ul>
 
-      <p style="font-size: 11px; margin-top: 12px; color: #64748b;">
+      <!-- Theme Setting Segmented Control -->
+      <div class="footer-theme-selector">
+        <span class="footer-theme-title">Theme</span>
+        <div class="theme-segmented-group" role="radiogroup" aria-label="Theme Selection">
+          <button type="button" class="theme-seg-btn" data-theme-btn="bright" onclick="setThemeMode('bright')">☀️ Light</button>
+          <button type="button" class="theme-seg-btn" data-theme-btn="dark" onclick="setThemeMode('dark')">🌙 Dark</button>
+          <button type="button" class="theme-seg-btn" data-theme-btn="auto" onclick="setThemeMode('auto')">⚙️ System</button>
+        </div>
+      </div>
+
+      <p class="footer-copyright">
         © 2026 Tom Yum Thai Restaurant. Garland's neighborhood Thai staple since 2005.
       </p>
     </div>
@@ -4514,26 +4605,93 @@
     });
   
     /* ==================== THEME CONTROLLER (BRIGHT LIVE-SITE VS DARK STAGING) ==================== */
-    function applyTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      try { localStorage.setItem('tyt_theme', theme); } catch {}
-      const btns = [document.getElementById('themeToggleBtn'), document.getElementById('floatingThemeToggleBtn')];
-      btns.forEach(btn => {
-        if (!btn) return;
-        if (theme === 'dark') {
-          btn.innerHTML = '🌙 Dark Mode';
-          btn.title = 'Switch to Bright Theme (Live Site Theme)';
+    let currentThemeMode = 'bright'; // 'bright' | 'dark' | 'auto'
+
+    function getSystemTheme() {
+      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'bright';
+    }
+
+    function applyTheme(mode, persist) {
+      if (persist === undefined) persist = true;
+      currentThemeMode = mode;
+      if (persist) {
+        try {
+          localStorage.setItem('tyt_theme_mode', mode);
+          localStorage.setItem('tyt_theme', mode);
+        } catch {}
+      }
+
+      const effective = (mode === 'auto') ? getSystemTheme() : mode;
+      document.documentElement.setAttribute('data-theme', effective);
+
+      // Update Header & Floating Toggle Buttons
+      const headerBtn = document.getElementById('themeToggleBtn');
+      const floatBtn = document.getElementById('floatingThemeToggleBtn');
+      const isDark = (effective === 'dark');
+
+      const nextThemeLabel = isDark ? 'Light Mode' : 'Dark Mode';
+      const currentIcon = isDark ? '🌙' : '☀️';
+      const currentText = isDark ? 'Dark Mode' : 'Light Mode';
+
+      if (headerBtn) {
+        headerBtn.innerHTML = `<span class="theme-icon">${currentIcon}</span> <span class="theme-btn-text">${currentText}</span>`;
+        headerBtn.title = `Switch to ${nextThemeLabel}`;
+        headerBtn.setAttribute('aria-label', `Theme toggle: currently ${currentText}, click to switch to ${nextThemeLabel}`);
+      }
+      if (floatBtn) {
+        floatBtn.innerHTML = `<span class="theme-icon">${currentIcon}</span> <span>${currentText}</span>`;
+        floatBtn.title = `Switch to ${nextThemeLabel}`;
+      }
+
+      // Update Footer Segmented Control Buttons
+      const segBtns = document.querySelectorAll('.theme-seg-btn');
+      segBtns.forEach(btn => {
+        const btnChoice = btn.getAttribute('data-theme-btn');
+        if (btnChoice === mode) {
+          btn.classList.add('active');
+          btn.setAttribute('aria-checked', 'true');
         } else {
-          btn.innerHTML = '☀️ Bright Mode';
-          btn.title = 'Switch to Dark Theme';
+          btn.classList.remove('active');
+          btn.setAttribute('aria-checked', 'false');
         }
       });
+
+      // Update Stripe Elements Theme dynamically if already initialized
+      try {
+        if (typeof stripeElements !== 'undefined' && stripeElements && typeof stripeElements.update === 'function') {
+          stripeElements.update({
+            appearance: {
+              theme: effective === 'dark' ? 'night' : 'stripe',
+              variables: {
+                colorPrimary: '#ec5a30',
+                colorBackground: effective === 'dark' ? '#222731' : '#ffffff',
+                colorText: effective === 'dark' ? '#ffffff' : '#111827',
+              }
+            }
+          });
+        }
+      } catch (err) {
+        // Stripe Elements not initialized yet or not active
+      }
+    }
+
+    function setThemeMode(mode) {
+      applyTheme(mode, true);
     }
 
     function toggleTheme() {
       const cur = document.documentElement.getAttribute('data-theme') || 'bright';
-      const next = cur === 'bright' ? 'dark' : 'bright';
-      applyTheme(next);
+      const next = (cur === 'bright') ? 'dark' : 'bright';
+      applyTheme(next, true);
+    }
+
+    // Listen to OS system theme changes when in 'auto' mode
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (currentThemeMode === 'auto') {
+          applyTheme('auto', false);
+        }
+      });
     }
 
     // Auto-initialize theme on load (URL param ?theme=... overrides, then localStorage, defaults to bright)
@@ -4541,15 +4699,17 @@
       const params = new URLSearchParams(window.location.search);
       const urlTheme = params.get('theme');
       let chosen = 'bright';
-      if (urlTheme === 'dark' || urlTheme === 'bright') {
+      if (urlTheme === 'dark' || urlTheme === 'bright' || urlTheme === 'auto') {
         chosen = urlTheme;
       } else {
         try {
-          const saved = localStorage.getItem('tyt_theme');
-          if (saved === 'dark' || saved === 'bright') chosen = saved;
+          const saved = localStorage.getItem('tyt_theme_mode') || localStorage.getItem('tyt_theme');
+          if (saved === 'dark' || saved === 'bright' || saved === 'auto') {
+            chosen = saved;
+          }
         } catch {}
       }
-      applyTheme(chosen);
+      applyTheme(chosen, false);
     })();
 
 </script>
