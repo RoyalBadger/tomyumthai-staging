@@ -20,6 +20,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Figtree:ital,wght@0,300..900;1,300..900&family=Cinzel:wght@700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <script>
+    // Apply the saved theme before first paint. ?theme=light|bright|dark|auto overrides; default follows the device.
+    (function () {
+      var mode = "auto";
+      try {
+        var q = new URLSearchParams(location.search).get("theme");
+        var saved = localStorage.getItem("tyt_theme_mode");
+        if (q === "light") q = "bright";
+        if (q === "bright" || q === "dark" || q === "auto") mode = q;
+        else if (saved === "bright" || saved === "dark" || saved === "auto") mode = saved;
+      } catch (e) {}
+      var dark = mode === "dark" || (mode === "auto" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "bright");
+      window.TYT_THEME_MODE = mode;
+    })();
+  </script>
+
   <style>
     :root {
       /* Bright Theme by Default (matches live site mytomyumthai.com) */
@@ -31,12 +48,16 @@
       --hero-bg: radial-gradient(circle at 50% 10%, #fff7ed 0%, #f2f7f8 65%, #f8fafc 100%);
       --promo-bg: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
       --cta-bar-bg: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-      --footer-bg: #ec5a30;
+      --footer-bg: #c2410c;
       --footer-text: #ffffff;
-      --footer-dim: rgba(255, 255, 255, 0.85);
+      --footer-dim: rgba(255, 255, 255, 0.92);
       --accent-orange: #ec5a30;
       --accent-orange-hover: #d44319;
       --accent-orange-light: #fef2ee;
+      --accent-text: #c2410c;     /* brand orange darkened to 5.2:1 on white for small text */
+      --ok-text: #15803d;
+      --err-text: #b91c1c;
+      --info-text: #1d4ed8;
       --accent-green: #16a34a;
       --accent-gold: #d97706;
       --accent-red: #dc2626;
@@ -69,7 +90,11 @@
       --footer-dim: #94a3b8;
       --accent-orange: #ff781f;
       --accent-orange-hover: #e65c00;
-      --accent-orange-light: #ffebd9;
+      --accent-orange-light: rgba(255, 120, 31, 0.15);
+      --accent-text: #ff781f;
+      --ok-text: #86efac;
+      --err-text: #fca5a5;
+      --info-text: #93c5fd;
       --accent-green: #22c55e;
       --accent-gold: #f5b041;
       --accent-red: #ef4444;
@@ -137,34 +162,10 @@
     }
     .btn-theme-toggle:hover {
       border-color: var(--accent-orange);
-      color: var(--accent-orange);
+      color: var(--accent-text);
       background: var(--accent-orange-light);
     }
 
-    .floating-theme-toggle {
-      position: fixed;
-      bottom: 24px;
-      left: 20px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 9px 16px;
-      border-radius: 30px;
-      font-size: 13px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: var(--shadow-lg);
-      cursor: pointer;
-      z-index: 9990;
-      transition: all 0.2s;
-    }
-    .floating-theme-toggle:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent-orange);
-      color: var(--accent-orange);
-    }
 
     .nav-wrapper {
       display: flex;
@@ -189,7 +190,7 @@
     .brand-subtitle {
       font-size: 11px;
       font-weight: 700;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       letter-spacing: 0.5px;
       align-self: center;
     }
@@ -209,7 +210,7 @@
     }
 
     .nav-links a:hover {
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .nav-actions {
@@ -235,7 +236,7 @@
     .btn-phone:hover {
       background: var(--accent-orange-light);
       border-color: var(--accent-orange);
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .btn-cart-nav {
@@ -261,7 +262,7 @@
 
     .cart-count-badge {
       background: #ffffff;
-      color: var(--accent-orange);
+      color: #c2410c;
       font-size: 11px;
       font-weight: 800;
       padding: 2px 7px;
@@ -282,7 +283,7 @@
       gap: 8px;
       background: var(--accent-orange-light);
       border: 1px solid var(--border-color);
-      color: var(--accent-orange);
+      color: var(--accent-text);
       padding: 6px 16px;
       border-radius: 30px;
       font-size: 12px;
@@ -304,7 +305,7 @@
     }
 
     .hero-title span {
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .hero-desc {
@@ -434,7 +435,7 @@
     .delivery-paused-banner {
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.5);
-      color: #fca5a5;
+      color: var(--err-text);
       padding: 12px;
       border-radius: var(--radius-sm);
       font-size: 12.5px;
@@ -533,11 +534,11 @@
 
     .autocomplete-item:active, .autocomplete-item:hover {
       background: var(--accent-orange-light) !important;
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .autocomplete-item strong {
-      color: #ff9d5c;
+      color: var(--accent-text);
     }
 
     .autocomplete-item .dist-tag {
@@ -596,13 +597,13 @@
     .zone-success {
       background: rgba(34, 197, 94, 0.18);
       border: 1px solid rgba(34, 197, 94, 0.45);
-      color: #86efac;
+      color: var(--ok-text);
     }
 
     .zone-warning {
       background: rgba(239, 68, 68, 0.18);
       border: 1px solid rgba(239, 68, 68, 0.45);
-      color: #fca5a5;
+      color: var(--err-text);
     }
 
     .dispatch-perks-row {
@@ -626,7 +627,7 @@
 
     a.trust-item { text-decoration: none; color: inherit; transition: transform 0.15s; }
     a.trust-item:hover { transform: translateY(-2px); }
-    a.trust-item:hover .trust-label { color: #ff9d5c; }
+    a.trust-item:hover .trust-label { color: var(--accent-text); }
     .trust-item {
       display: flex;
       flex-direction: column;
@@ -637,7 +638,7 @@
     .trust-score {
       font-size: 16px;
       font-weight: 800;
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .trust-label {
@@ -662,7 +663,7 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 2px;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       margin-bottom: 4px;
       display: block;
     }
@@ -813,14 +814,14 @@
       font-family: var(--font-serif);
       font-size: 12px;
       font-style: italic;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       margin-top: 2px;
     }
 
     .dish-price {
       font-size: 16.5px;
       font-weight: 800;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       white-space: nowrap;
     }
 
@@ -841,7 +842,7 @@
 
     .badge-signature {
       background: rgba(255, 120, 31, 0.15);
-      color: var(--accent-orange);
+      color: var(--accent-text);
       border: 1px solid var(--accent-orange);
     }
 
@@ -945,7 +946,7 @@
       border-radius: 8px;
       font-size: 15px;
       font-weight: 700;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       margin-bottom: 24px;
     }
 
@@ -1019,7 +1020,7 @@
       font-family: var(--font-serif);
       font-style: italic;
       font-size: 18px;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       line-height: 1.5;
       margin-bottom: 18px;
     }
@@ -1027,7 +1028,7 @@
     .story-card-visual .author {
       font-size: 13px;
       font-weight: 700;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -1120,7 +1121,7 @@
     }
 
     .footer-links a:hover {
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .footer-theme-selector {
@@ -1176,7 +1177,7 @@
 
     .theme-seg-btn.active {
       background: #ffffff;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
       font-weight: 700;
     }
@@ -1241,7 +1242,7 @@
     .modal-dish-title {
       font-size: 18px;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--text-main);
       line-height: 1.2;
     }
 
@@ -1249,7 +1250,7 @@
       font-family: var(--font-serif);
       font-size: 12px;
       font-style: italic;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       margin-top: 2px;
     }
 
@@ -1335,7 +1336,7 @@
       width: 100%;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      color: #ffffff;
+      color: var(--text-main);
       padding: 10px;
       border-radius: var(--radius-sm);
       font-size: 12.5px;
@@ -1425,7 +1426,7 @@
       font-family: var(--font-title);
       font-size: 17px;
       font-weight: 800;
-      color: #fff;
+      color: var(--text-main);
     }
 
     .btn-close-cart {
@@ -1438,7 +1439,7 @@
     }
 
     .free-delivery-bar-box {
-      background: #191d25;
+      background: var(--bg-base);
       padding: 10px 20px;
       border-bottom: 1px solid var(--border-subtle);
     }
@@ -1501,13 +1502,13 @@
     .cart-item-title {
       font-size: 14px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-main);
     }
 
     .cart-item-price {
       font-size: 14px;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--text-main);
       text-align: right;
       white-space: nowrap;
     }
@@ -1516,7 +1517,7 @@
       font-size: 11.5px;
       color: var(--text-muted);
       line-height: 1.4;
-      background: rgba(0,0,0,0.2);
+      background: var(--bg-base);
       padding: 6px 8px;
       border-radius: 4px;
       border-left: 2px solid var(--accent-orange);
@@ -1532,7 +1533,7 @@
     .qty-btn {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       width: 24px;
       height: 24px;
       border-radius: 4px;
@@ -1568,7 +1569,7 @@
       flex: 1;
       background: var(--bg-surface);
       border: 1px dashed var(--accent-orange);
-      color: #ff9d5c;
+      color: var(--accent-text);
       padding: 8px 12px;
       border-radius: 4px;
       font-size: 13px;
@@ -1580,7 +1581,7 @@
     .btn-apply-promo {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       font-size: 12px;
       font-weight: 700;
       padding: 0 12px;
@@ -1612,7 +1613,7 @@
       font-weight: 800;
       border-top: 1px solid var(--border-subtle);
       padding-top: 8px;
-      color: #ffffff;
+      color: var(--text-main);
     }
 
     .btn-checkout {
@@ -1671,7 +1672,7 @@
     }
     .back-to-cats-btn:hover {
       border-color: var(--accent-orange);
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .mobile-bottom-bar {
@@ -1730,9 +1731,6 @@
         padding: 7px 10px;
         font-size: 14px;
       }
-      .floating-theme-toggle {
-        display: none !important;
-      }
       .mobile-bottom-bar {
         display: block;
       }
@@ -1787,7 +1785,7 @@
       line-height: 1;
       padding: 4px;
     }
-    .drawer-close:hover { color: #fff; }
+    .drawer-close:hover { color: var(--text-main); }
 
     .drawer-body {
       padding: 20px;
@@ -1846,7 +1844,7 @@
     #promo-apply {
       background: var(--bg-card);
       border: 1px solid var(--accent-orange);
-      color: var(--accent-orange);
+      color: var(--accent-text);
       padding: 10px 16px;
       border-radius: var(--radius-sm);
       font-size: 13px;
@@ -1971,7 +1969,7 @@
 
     /* Error Message */
     #checkout-errors {
-      color: #fca5a5;
+      color: var(--err-text);
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.4);
       padding: 10px 14px;
@@ -2048,7 +2046,7 @@
       display: inline-block;
       background: var(--accent-orange-light);
       border: 1px solid var(--accent-orange);
-      color: var(--accent-orange);
+      color: var(--accent-text);
       font-size: 13.5px;
       font-weight: 800;
       padding: 4px 14px;
@@ -2131,7 +2129,7 @@
       gap: 8px;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       padding: 12px 20px;
       border-radius: var(--radius-sm);
       font-size: 14px;
@@ -2183,7 +2181,7 @@
     .badge-sold-out {
       background: rgba(239, 68, 68, 0.2) !important;
       border: 1px solid #ef4444 !important;
-      color: #fca5a5 !important;
+      color: var(--err-text) !important;
     }
 
     .dish-card.is-sold-out {
@@ -2248,7 +2246,7 @@
       font-family: var(--font-serif);
       font-size: 13px;
       font-style: italic;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       margin-top: 2px;
     }
 
@@ -2261,7 +2259,7 @@
       line-height: 1;
       padding: 2px;
     }
-    .modal-close-btn:hover { color: #fff; }
+    .modal-close-btn:hover { color: var(--text-main); }
 
     .custom-modal-body {
       padding: 20px 22px;
@@ -2337,7 +2335,7 @@
 
     .category-toggle-icon {
       font-size: 14px;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       transition: transform 0.2s;
     }
 
@@ -2526,7 +2524,7 @@
       font-family: var(--font-serif);
       font-size: 12.5px;
       font-style: italic;
-      color: var(--accent-orange);
+      color: var(--accent-text);
       margin-top: 2px;
     }
 
@@ -2538,7 +2536,7 @@
     .dish-price {
       font-size: 17px;
       font-weight: 800;
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     .dish-price-note {
@@ -2558,7 +2556,7 @@
       width: 100%;
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      color: var(--accent-orange);
+      color: var(--accent-text);
       padding: 10px 14px;
       border-radius: var(--radius-sm);
       font-size: 13px;
@@ -2574,7 +2572,7 @@
     .btn-toggle-customizer:hover {
       background: var(--accent-orange-light);
       border-color: var(--accent-orange);
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
     /* COLLAPSIBLE ACCORDION CONTAINER */
@@ -2727,7 +2725,7 @@
     .delivery-paused-banner {
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.5);
-      color: #fca5a5;
+      color: var(--err-text);
       padding: 12px 16px;
       border-radius: var(--radius-sm);
       font-size: 13px;
@@ -2801,7 +2799,7 @@
     .autocomplete-item {
       padding: 10px 14px;
       border-bottom: 1px solid var(--border-subtle);
-      color: #e2e8f0;
+      color: var(--text-main);
       font-size: 13px;
       cursor: pointer;
       display: flex;
@@ -2812,10 +2810,10 @@
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover {
       background: var(--accent-orange-light);
-      color: var(--accent-orange);
+      color: var(--accent-text);
     }
 
-    .dist-tag.dist-out { color: #f87171 !important; }
+    .dist-tag.dist-out { color: var(--err-text) !important; }
     .dist-tag {
       font-size: 11px;
       color: var(--accent-gold);
@@ -2825,7 +2823,7 @@
     .btn-check-address {
       background: var(--bg-card);
       border: 1px solid var(--accent-orange);
-      color: #ff9d5c;
+      color: var(--accent-text);
       padding: 0 20px;
       border-radius: var(--radius-sm);
       font-size: 13.5px;
@@ -2873,7 +2871,7 @@
     .zone-success {
       background: rgba(34, 197, 94, 0.15);
       border: 1px solid rgba(34, 197, 94, 0.4);
-      color: #86efac;
+      color: var(--ok-text);
     }
 
     .zone-warning {
@@ -3267,9 +3265,9 @@
       <div class="footer-theme-selector">
         <span class="footer-theme-title">Theme</span>
         <div class="theme-segmented-group" role="radiogroup" aria-label="Theme Selection">
-          <button type="button" class="theme-seg-btn" data-theme-btn="bright" onclick="setThemeMode('bright')">☀️ Light</button>
-          <button type="button" class="theme-seg-btn" data-theme-btn="dark" onclick="setThemeMode('dark')">🌙 Dark</button>
-          <button type="button" class="theme-seg-btn" data-theme-btn="auto" onclick="setThemeMode('auto')">⚙️ System</button>
+          <button type="button" role="radio" class="theme-seg-btn" data-theme-btn="bright" onclick="setThemeMode('bright')">☀️ Light</button>
+          <button type="button" role="radio" class="theme-seg-btn" data-theme-btn="dark" onclick="setThemeMode('dark')">🌙 Dark</button>
+          <button type="button" role="radio" class="theme-seg-btn" data-theme-btn="auto" onclick="setThemeMode('auto')">⚙️ System</button>
         </div>
       </div>
 
@@ -3337,7 +3335,7 @@
           </tr>
           <tr class="total-row">
             <td>Estimated Total:</td>
-            <td id="totalVal" style="color:var(--accent-orange);">$0.00</td>
+            <td id="totalVal" style="color:var(--accent-text);">$0.00</td>
           </tr>
         </table>
 
@@ -3890,7 +3888,7 @@
     function renderCodeStep(phone) {
       aTitle().innerText = 'Enter Your Code';
       aBody().innerHTML = `
-        <p style="color:var(--text-muted);font-size:13.5px;">We texted a 6-digit code to <strong style="color:#fff;">${esc(phone)}</strong>.</p>
+        <p style="color:var(--text-muted);font-size:13.5px;">We texted a 6-digit code to <strong style="color:var(--text-main);">${esc(phone)}</strong>.</p>
         <input type="text" data-a-code class="form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" style="width:100%;margin:10px 0;letter-spacing:4px;font-size:18px;text-align:center;">
         <div data-a-err style="display:none;color:#f87171;font-weight:700;font-size:13px;margin-bottom:8px;"></div>
         <button type="button" class="btn-modal-add" data-a-verify style="width:100%;">Verify &amp; Sign In</button>
@@ -3913,7 +3911,7 @@
     function renderAccountView() {
       aTitle().innerText = CUST.name ? ('Hi, ' + CUST.name.split(' ')[0] + '!') : 'My Account';
       aBody().innerHTML = `
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Signed in as <strong style="color:#fff;">${esc(CUST.phone)}</strong></div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Signed in as <strong style="color:var(--text-main);">${esc(CUST.phone)}</strong></div>
         <div class="customizer-group">
           <label class="custom-label">Saved Info (prefilled at checkout):</label>
           <input type="text" data-a-name class="form-input" placeholder="Name" value="${esc(CUST.name || '')}" style="width:100%;margin:6px 0;">
@@ -3955,12 +3953,12 @@
         if (!r.orders.length) { box.innerText = 'No orders yet — your history will appear here.'; return; }
         box.innerHTML = r.orders.map((o, i) => `
           <div style="border:1px solid var(--border-subtle,#374151);border-radius:10px;padding:10px;margin-bottom:8px;">
-            <div style="display:flex;justify-content:space-between;gap:8px;color:#e2e8f0;">
+            <div style="display:flex;justify-content:space-between;gap:8px;color:var(--text-main);">
               <strong>${esc(o.code)}</strong>
               <span>${money(o.total_cents)}</span>
             </div>
             <div style="font-size:11.5px;margin:2px 0 6px;">${new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • ${esc(o.type)} • ${esc(o.status)}</div>
-            <div style="font-size:12px;color:#cbd5e1;">${o.items.map(it => it.qty + '× ' + esc(it.name)).join(', ')}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${o.items.map(it => it.qty + '× ' + esc(it.name)).join(', ')}</div>
             <button type="button" class="btn-modal-add" data-a-reorder="${i}" style="width:100%;margin-top:8px;padding:8px;font-size:12.5px;">🔄 Reorder — current prices</button>
           </div>`).join('');
         box.querySelectorAll('[data-a-reorder]').forEach(b => b.onclick = () => {
@@ -4066,10 +4064,10 @@
           <div class="cart-item-controls">
             <div style="display:flex;align-items:center;gap:6px;">
               <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
-              <span style="font-size:13px;font-weight:bold;color:#fff;min-width:18px;text-align:center;">${l.qty}</span>
+              <span style="font-size:13px;font-weight:bold;color:var(--text-main);min-width:18px;text-align:center;">${l.qty}</span>
               <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
             </div>
-            <button class="btn-item-delete" style="color:#93c5fd;border-color:#1e40af;" onclick="editItem(${idx})">✏️ Edit</button>
+            <button class="btn-item-delete" style="color:var(--info-text);" onclick="editItem(${idx})">✏️ Edit</button>
             <button class="btn-item-delete" onclick="deleteItem(${idx})">🗑️ Remove</button>
           </div>
         </div>`;
@@ -4140,7 +4138,7 @@
       closeCart();
       // copy cart summary + totals into the drawer
       $id('checkoutSummaryList').innerHTML = cart.map(l =>
-        `<li style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;">
+        `<li style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-main);">
            <span>${l.qty}× ${esc(l.name)}${l.size_label ? ' (' + esc(l.size_label) + ')' : ''}${l.variant ? ' — ' + esc(l.variant) : ''}</span>
            <span>${money(l.unit_cents * l.qty)}</span></li>`).join('');
       $id('promo-code').value = promoCode || '';
@@ -4236,14 +4234,7 @@
           stripeInstance = Stripe(data.publishable_key);
           stripeElements = stripeInstance.elements({
             clientSecret: data.client_secret,
-            appearance: {
-            theme: (document.documentElement.getAttribute('data-theme') === 'dark' ? 'night' : 'stripe'),
-            variables: {
-              colorPrimary: '#ec5a30',
-              colorBackground: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#222731' : '#ffffff'),
-              colorText: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111827'),
-            }
-          },
+            appearance: stripeAppearance(document.documentElement.getAttribute('data-theme')),
           });
           $id('payment-element').innerHTML = '';
           stripeElements.create('payment', {
@@ -4289,7 +4280,7 @@
       overlay.querySelector('[data-order-code]').innerText = code;
       overlay.querySelector('[data-eta]').innerText = (eta || '15-20') + ' min';
       overlay.querySelector('[data-receipt]').innerHTML = cart.map(l => `
-        <li style="font-size:13px;color:#e2e8f0;">
+        <li style="font-size:13px;color:var(--text-main);">
           <div style="display:flex;justify-content:space-between;">
             <strong>${l.qty}× ${esc(l.name)}${l.size_label ? ' (' + esc(l.size_label) + ')' : ''}</strong>
             <span>${money(l.unit_cents * l.qty)}</span>
@@ -4604,75 +4595,51 @@
       }
     });
   
-    /* ==================== THEME CONTROLLER (BRIGHT LIVE-SITE VS DARK STAGING) ==================== */
-    let currentThemeMode = 'bright'; // 'bright' | 'dark' | 'auto'
+    /* ==================== THEME CONTROLLER (Light / Dark / System) ==================== */
+    // The initial data-theme is set by the inline script in <head> (no flash of the wrong
+    // theme); this controller keeps the toggles, Stripe and OS changes in sync with it.
+    let currentThemeMode = window.TYT_THEME_MODE || 'auto'; // 'bright' | 'dark' | 'auto'
 
     function getSystemTheme() {
       return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'bright';
     }
 
+    function stripeAppearance(effective) {
+      const dark = effective === 'dark';
+      return {
+        theme: dark ? 'night' : 'stripe',
+        variables: { colorPrimary: '#ec5a30', colorBackground: dark ? '#222731' : '#ffffff', colorText: dark ? '#ffffff' : '#111827' },
+      };
+    }
+
     function applyTheme(mode, persist) {
-      if (persist === undefined) persist = true;
       currentThemeMode = mode;
-      if (persist) {
-        try {
-          localStorage.setItem('tyt_theme_mode', mode);
-          localStorage.setItem('tyt_theme', mode);
-        } catch {}
-      }
+      if (persist) { try { localStorage.setItem('tyt_theme_mode', mode); } catch {} }
 
       const effective = (mode === 'auto') ? getSystemTheme() : mode;
       document.documentElement.setAttribute('data-theme', effective);
 
-      // Update Header & Floating Toggle Buttons
-      const headerBtn = document.getElementById('themeToggleBtn');
-      const floatBtn = document.getElementById('floatingThemeToggleBtn');
-      const isDark = (effective === 'dark');
-
-      const nextThemeLabel = isDark ? 'Light Mode' : 'Dark Mode';
-      const currentIcon = isDark ? '🌙' : '☀️';
+      const isDark = effective === 'dark';
       const currentText = isDark ? 'Dark Mode' : 'Light Mode';
-
+      const nextText = isDark ? 'Light Mode' : 'Dark Mode';
+      const headerBtn = document.getElementById('themeToggleBtn');
       if (headerBtn) {
-        headerBtn.innerHTML = `<span class="theme-icon">${currentIcon}</span> <span class="theme-btn-text">${currentText}</span>`;
-        headerBtn.title = `Switch to ${nextThemeLabel}`;
-        headerBtn.setAttribute('aria-label', `Theme toggle: currently ${currentText}, click to switch to ${nextThemeLabel}`);
-      }
-      if (floatBtn) {
-        floatBtn.innerHTML = `<span class="theme-icon">${currentIcon}</span> <span>${currentText}</span>`;
-        floatBtn.title = `Switch to ${nextThemeLabel}`;
+        headerBtn.innerHTML = `<span class="theme-icon">${isDark ? '🌙' : '☀️'}</span> <span class="theme-btn-text">${currentText}</span>`;
+        headerBtn.title = `Switch to ${nextText}`;
+        headerBtn.setAttribute('aria-label', `Theme: ${currentText}. Switch to ${nextText}`);
       }
 
-      // Update Footer Segmented Control Buttons
-      const segBtns = document.querySelectorAll('.theme-seg-btn');
-      segBtns.forEach(btn => {
-        const btnChoice = btn.getAttribute('data-theme-btn');
-        if (btnChoice === mode) {
-          btn.classList.add('active');
-          btn.setAttribute('aria-checked', 'true');
-        } else {
-          btn.classList.remove('active');
-          btn.setAttribute('aria-checked', 'false');
-        }
+      document.querySelectorAll('.theme-seg-btn').forEach(btn => {
+        const on = btn.getAttribute('data-theme-btn') === mode;
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-checked', on ? 'true' : 'false');
       });
 
-      // Update Stripe Elements Theme dynamically if already initialized
       try {
         if (typeof stripeElements !== 'undefined' && stripeElements && typeof stripeElements.update === 'function') {
-          stripeElements.update({
-            appearance: {
-              theme: effective === 'dark' ? 'night' : 'stripe',
-              variables: {
-                colorPrimary: '#ec5a30',
-                colorBackground: effective === 'dark' ? '#222731' : '#ffffff',
-                colorText: effective === 'dark' ? '#ffffff' : '#111827',
-              }
-            }
-          });
+          stripeElements.update({ appearance: stripeAppearance(effective) });
         }
-      } catch (err) {
-        // Stripe Elements not initialized yet or not active
-      }
+      } catch {}
     }
 
     function setThemeMode(mode) {
@@ -4681,36 +4648,16 @@
 
     function toggleTheme() {
       const cur = document.documentElement.getAttribute('data-theme') || 'bright';
-      const next = (cur === 'bright') ? 'dark' : 'bright';
-      applyTheme(next, true);
+      applyTheme(cur === 'dark' ? 'bright' : 'dark', true);
     }
 
-    // Listen to OS system theme changes when in 'auto' mode
     if (window.matchMedia) {
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (currentThemeMode === 'auto') {
-          applyTheme('auto', false);
-        }
+        if (currentThemeMode === 'auto') applyTheme('auto', false);
       });
     }
 
-    // Auto-initialize theme on load (URL param ?theme=... overrides, then localStorage, defaults to bright)
-    (function initTheme() {
-      const params = new URLSearchParams(window.location.search);
-      const urlTheme = params.get('theme');
-      let chosen = 'bright';
-      if (urlTheme === 'dark' || urlTheme === 'bright' || urlTheme === 'auto') {
-        chosen = urlTheme;
-      } else {
-        try {
-          const saved = localStorage.getItem('tyt_theme_mode') || localStorage.getItem('tyt_theme');
-          if (saved === 'dark' || saved === 'bright' || saved === 'auto') {
-            chosen = saved;
-          }
-        } catch {}
-      }
-      applyTheme(chosen, false);
-    })();
+    applyTheme(currentThemeMode, false);
 
 </script>
 
@@ -4763,7 +4710,7 @@
         <input type="email" id="checkout-email" class="form-input" placeholder="Email (optional — for your receipt)">
         <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text-muted);cursor:pointer;line-height:1.45;">
           <input type="checkbox" id="checkout-sms-optin" style="margin-top:2px;">
-          <span>Text me updates about this order (confirmation &amp; ready alert). Msg &amp; data rates may apply. Reply STOP to opt out. <a href="/privacy" target="_blank" rel="noopener" style="color:#ff9d5c;">SMS &amp; Privacy Policy</a></span>
+          <span>Text me updates about this order (confirmation &amp; ready alert). Msg &amp; data rates may apply. Reply STOP to opt out. <a href="/privacy" target="_blank" rel="noopener" style="color:var(--accent-text);">SMS &amp; Privacy Policy</a></span>
         </label>
       </div>
 
@@ -4854,8 +4801,6 @@
   </div>
 
 
-  <!-- Floating Quick Theme Switcher (for testing side-by-side) -->
-  <button id="floatingThemeToggleBtn" type="button" class="floating-theme-toggle" onclick="toggleTheme()" title="Switch Theme">☀️ Bright Theme</button>
 
 </body>
 </html>
