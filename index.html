@@ -18,14 +18,55 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Figtree:ital,wght@0,300..900;1,300..900&family=Cinzel:wght@700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
+      /* Bright Theme by Default (matches live site mytomyumthai.com) */
+      --bg-base: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --header-bg: rgba(255, 255, 255, 0.96);
+      --hero-bg: radial-gradient(circle at 50% 10%, #fff7ed 0%, #f2f7f8 65%, #f8fafc 100%);
+      --promo-bg: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      --cta-bar-bg: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      --footer-bg: #ec5a30;
+      --footer-text: #ffffff;
+      --footer-dim: rgba(255, 255, 255, 0.85);
+      --accent-orange: #ec5a30;
+      --accent-orange-hover: #d44319;
+      --accent-orange-light: #fef2ee;
+      --accent-green: #16a34a;
+      --accent-gold: #d97706;
+      --accent-red: #dc2626;
+      --text-main: #111827;
+      --text-muted: #575757;
+      --text-dim: #64748b;
+      --border-color: rgba(236, 90, 48, 0.35);
+      --border-subtle: #e2e8f0;
+      --font-title: 'EB Garamond', Georgia, serif;
+      --font-serif: 'EB Garamond', Georgia, serif;
+      --font-sans: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    [data-theme="dark"] {
       --bg-base: #1a1d24;
       --bg-surface: #222731;
       --bg-card: #2a313e;
       --bg-card-hover: #323b4b;
+      --header-bg: rgba(26, 29, 36, 0.96);
+      --hero-bg: radial-gradient(circle at 50% 10%, #362a20 0%, #222731 60%, var(--bg-base) 100%);
+      --promo-bg: linear-gradient(135deg, #2b323f 0%, #36281e 100%);
+      --cta-bar-bg: linear-gradient(135deg, #242a36 0%, #1a1e27 100%);
+      --footer-bg: #14171f;
+      --footer-text: #cbd5e1;
+      --footer-dim: #94a3b8;
       --accent-orange: #ff781f;
       --accent-orange-hover: #e65c00;
       --accent-orange-light: #ffebd9;
@@ -42,9 +83,6 @@
       --font-sans: 'Plus Jakarta Sans', sans-serif;
       --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
       --shadow-lg: 0 14px 35px rgba(0, 0, 0, 0.45);
-      --radius-sm: 6px;
-      --radius-md: 12px;
-      --radius-lg: 18px;
     }
 
     * {
@@ -75,12 +113,57 @@
     }
 
     header {
-      background: rgba(26, 29, 36, 0.96);
+      background: var(--header-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
       position: sticky;
       top: 0;
       z-index: 1000;
+    }
+
+    .btn-theme-toggle {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 7px 13px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-theme-toggle:hover {
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+      background: var(--accent-orange-light);
+    }
+
+    .floating-theme-toggle {
+      position: fixed;
+      bottom: 24px;
+      left: 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 9px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      z-index: 9990;
+      transition: all 0.2s;
+    }
+    .floating-theme-toggle:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
     }
 
     .nav-wrapper {
@@ -138,7 +221,7 @@
     .btn-phone {
       font-size: 13px;
       font-weight: 700;
-      color: #ffffff;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -146,17 +229,18 @@
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       transition: all 0.2s;
+      background: var(--bg-surface);
     }
 
     .btn-phone:hover {
-      background: rgba(255, 120, 31, 0.15);
+      background: var(--accent-orange-light);
       border-color: var(--accent-orange);
       color: var(--accent-orange);
     }
 
     .btn-cart-nav {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
+      background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-hover) 100%);
+      border: none;
       color: #fff;
       padding: 8px 16px;
       border-radius: var(--radius-sm);
@@ -167,15 +251,17 @@
       gap: 8px;
       cursor: pointer;
       transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(236, 90, 48, 0.35);
     }
 
     .btn-cart-nav:hover {
-      background: rgba(255, 120, 31, 0.2);
+      box-shadow: 0 4px 14px rgba(236, 90, 48, 0.5);
+      transform: translateY(-1px);
     }
 
     .cart-count-badge {
-      background: var(--accent-orange);
-      color: #fff;
+      background: #ffffff;
+      color: var(--accent-orange);
       font-size: 11px;
       font-weight: 800;
       padding: 2px 7px;
@@ -185,7 +271,7 @@
     .hero-section {
       position: relative;
       padding: 50px 0 35px;
-      background: radial-gradient(circle at 50% 10%, #362a20 0%, #222731 60%, var(--bg-base) 100%);
+      background: var(--hero-bg);
       border-bottom: 1px solid var(--border-subtle);
       text-align: center;
     }
@@ -194,7 +280,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 120, 31, 0.15);
+      background: var(--accent-orange-light);
       border: 1px solid var(--border-color);
       color: var(--accent-orange);
       padding: 6px 16px;
@@ -209,12 +295,12 @@
     .hero-title {
       font-family: var(--font-title);
       font-size: clamp(28px, 4.5vw, 48px);
-      font-weight: 800;
-      color: #ffffff;
+      font-weight: 700;
+      color: var(--text-main);
       line-height: 1.15;
       max-width: 860px;
       margin: 0 auto 12px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
     }
 
     .hero-title span {
@@ -223,7 +309,7 @@
 
     .hero-desc {
       font-size: clamp(14.5px, 1.8vw, 17px);
-      color: #e2e8f0;
+      color: var(--text-muted);
       max-width: 700px;
       margin: 0 auto 20px;
       line-height: 1.6;
@@ -306,12 +392,12 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: #fff;
+      color: var(--text-main);
     }
 
     .dispatch-tabs {
       display: flex;
-      background: var(--bg-card);
+      background: var(--bg-base);
       padding: 4px;
       border-radius: 30px;
       border: 1px solid var(--border-subtle);
@@ -370,9 +456,9 @@
 
     .delivery-input {
       width: 100%;
-      background: var(--bg-card);
-      border: 2px solid var(--border-subtle);
-      color: #ffffff;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      color: var(--text-main);
       padding: 12px 14px;
       border-radius: var(--radius-sm);
       font-size: 14px;
@@ -383,7 +469,8 @@
 
     .delivery-input:focus {
       border-color: var(--accent-orange);
-      background: #1c212a;
+      background: var(--bg-surface);
+      box-shadow: 0 0 0 3px rgba(236, 90, 48, 0.15);
     }
 
     /* 1-Tap Quick Suggestion Chips */
@@ -396,9 +483,9 @@
     }
 
     .quick-chip {
-      background: #181d26;
-      border: 1px solid rgba(255, 120, 31, 0.4);
-      color: #fbd38d;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
       font-size: 11px;
       font-weight: 700;
       padding: 4px 9px;
@@ -409,6 +496,7 @@
 
     .quick-chip:hover, .quick-chip:active {
       background: var(--accent-orange);
+      border-color: var(--accent-orange);
       color: #ffffff;
       transform: translateY(-1px);
     }
@@ -419,10 +507,10 @@
       top: 100%;
       left: 0;
       right: 0;
-      background: #151821;
+      background: var(--bg-surface);
       border: 2px solid var(--accent-orange);
       border-radius: 6px;
-      box-shadow: 0 14px 35px rgba(0,0,0,0.85);
+      box-shadow: var(--shadow-lg);
       z-index: 99999;
       max-height: 250px;
       overflow-y: auto;
@@ -433,19 +521,19 @@
     .autocomplete-item {
       padding: 12px 14px;
       font-size: 13px;
-      color: #e2e8f0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-subtle);
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #151821;
+      background: var(--bg-surface);
       transition: background 0.15s;
     }
 
     .autocomplete-item:active, .autocomplete-item:hover {
-      background: rgba(255, 120, 31, 0.25) !important;
-      color: #ffffff;
+      background: var(--accent-orange-light) !important;
+      color: var(--accent-orange);
     }
 
     .autocomplete-item strong {
@@ -582,8 +670,8 @@
     .section-title {
       font-family: var(--font-title);
       font-size: clamp(24px, 3.5vw, 34px);
-      font-weight: 800;
-      color: #ffffff;
+      font-weight: 700;
+      color: var(--text-main);
       line-height: 1.2;
       margin-bottom: 6px;
     }
@@ -604,14 +692,18 @@
 
     .search-input {
       width: 100%;
-      background: var(--bg-card);
+      background: var(--bg-base);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       padding: 10px 16px 10px 38px;
       border-radius: var(--radius-sm);
       font-size: 13.5px;
       font-family: inherit;
       outline: none;
+    }
+    .search-input:focus {
+      background: var(--bg-surface);
+      border-color: var(--accent-orange);
     }
 
     .search-icon {
@@ -632,7 +724,7 @@
     }
 
     .cat-btn {
-      background: var(--bg-card);
+      background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
       padding: 7px 14px;
@@ -645,9 +737,10 @@
     }
 
     .cat-btn:hover, .cat-btn.active {
-      background: var(--accent-orange);
+      background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-hover) 100%);
       color: #ffffff;
       border-color: var(--accent-orange);
+      box-shadow: 0 2px 8px rgba(236, 90, 48, 0.3);
     }
 
     .dietary-chips {
@@ -712,7 +805,7 @@
     .dish-name {
       font-size: 16.5px;
       font-weight: 700;
-      color: #ffffff;
+      color: var(--text-main);
       line-height: 1.25;
     }
 
@@ -727,7 +820,7 @@
     .dish-price {
       font-size: 16.5px;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--accent-orange);
       white-space: nowrap;
     }
 
@@ -805,7 +898,7 @@
 
     /* Promo Banner */
     .promo-banner {
-      background: linear-gradient(135deg, #2b323f 0%, #36281e 100%);
+      background: var(--promo-bg);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       padding: 40px 30px;
@@ -830,13 +923,13 @@
     .promo-title {
       font-family: var(--font-title);
       font-size: clamp(24px, 3.5vw, 34px);
-      font-weight: 800;
-      color: #ffffff;
+      font-weight: 700;
+      color: var(--text-main);
       margin-bottom: 10px;
     }
 
     .promo-desc {
-      color: #e2e8f0;
+      color: var(--text-muted);
       font-size: 15px;
       max-width: 680px;
       margin: 0 auto 20px;
@@ -874,8 +967,8 @@
     .story-content h2 {
       font-family: var(--font-title);
       font-size: clamp(26px, 3.5vw, 36px);
-      font-weight: 800;
-      color: #fff;
+      font-weight: 700;
+      color: var(--text-main);
       line-height: 1.2;
       margin-bottom: 16px;
     }
@@ -903,7 +996,7 @@
 
     .story-feat-item strong {
       display: block;
-      color: #ffffff;
+      color: var(--text-main);
       font-size: 14px;
       margin-bottom: 2px;
     }
@@ -926,7 +1019,7 @@
       font-family: var(--font-serif);
       font-style: italic;
       font-size: 18px;
-      color: var(--accent-orange-light);
+      color: var(--accent-orange);
       line-height: 1.5;
       margin-bottom: 18px;
     }
@@ -961,7 +1054,7 @@
     .location-card h3 {
       font-family: var(--font-title);
       font-size: 20px;
-      color: #fff;
+      color: var(--text-main);
       margin-bottom: 16px;
       border-bottom: 1px solid var(--border-subtle);
       padding-bottom: 10px;
@@ -979,7 +1072,7 @@
 
     .hours-table td:last-child {
       text-align: right;
-      color: #ffffff;
+      color: var(--text-main);
       font-weight: 700;
     }
 
@@ -991,24 +1084,30 @@
     }
 
     .address-box strong {
-      color: #fff;
+      color: var(--text-main);
       font-size: 15px;
     }
 
     footer {
-      background: #14171f;
+      background: var(--footer-bg);
       border-top: 1px solid var(--border-subtle);
       padding: 40px 0 30px;
-      color: var(--text-dim);
+      color: var(--footer-text);
       font-size: 13px;
       text-align: center;
     }
 
+    footer a {
+      color: var(--footer-text);
+      text-decoration: underline;
+    }
+
     .footer-brand {
       font-family: var(--font-title);
-      font-size: 18px;
-      color: var(--accent-orange);
-      letter-spacing: 1.5px;
+      font-size: 20px;
+      color: var(--footer-text);
+      letter-spacing: 2px;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
@@ -1590,11 +1689,12 @@
 
     .drawer-title {
       font-size: 18px;
-      font-weight: 800;
-      color: #fff;
+      font-weight: 700;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 8px;
+      font-family: var(--font-title);
     }
 
     .drawer-close {
@@ -1650,9 +1750,9 @@
 
     #promo-code {
       flex: 1;
-      background: var(--bg-card);
+      background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       padding: 10px 12px;
       border-radius: var(--radius-sm);
       font-size: 13px;
@@ -1733,9 +1833,9 @@
 
     .form-input {
       width: 100%;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      color: #fff;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      color: var(--text-main);
       padding: 11px 14px;
       border-radius: var(--radius-sm);
       font-size: 13.5px;
@@ -1771,7 +1871,7 @@
       border-top: 1px solid var(--border-subtle);
       padding-top: 8px;
       margin-top: 4px;
-      color: #ffffff;
+      color: var(--text-main);
       font-size: 17px;
       font-weight: 800;
     }
@@ -1857,7 +1957,7 @@
     .order-code-display {
       font-size: 24px;
       font-weight: 900;
-      color: #fff;
+      color: var(--text-main);
       font-family: monospace;
       letter-spacing: 1px;
       margin: 4px 0;
@@ -1865,9 +1965,9 @@
 
     .eta-badge {
       display: inline-block;
-      background: rgba(255, 120, 31, 0.15);
+      background: var(--accent-orange-light);
       border: 1px solid var(--accent-orange);
-      color: #ff9d5c;
+      color: var(--accent-orange);
       font-size: 13.5px;
       font-weight: 800;
       padding: 4px 14px;
@@ -1903,7 +2003,8 @@
 
     #order-status li.active {
       opacity: 1;
-      color: #fff;
+      color: var(--text-main);
+      font-weight: 800;
     }
 
     #order-status li .step-icon {
@@ -2056,9 +2157,10 @@
 
     .modal-dish-title {
       font-size: 20px;
-      font-weight: 800;
-      color: #fff;
+      font-weight: 700;
+      color: var(--text-main);
       margin: 0;
+      font-family: var(--font-title);
     }
 
     .modal-dish-thai {
@@ -2243,9 +2345,9 @@
 
     .custom-notes-input {
       width: 100%;
-      background: var(--bg-card);
+      background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       padding: 8px 12px;
       border-radius: var(--radius-sm);
       font-size: 12px;
@@ -2277,7 +2379,7 @@
     .btn-qty-minus, .btn-qty-plus {
       background: transparent;
       border: none;
-      color: #fff;
+      color: var(--text-main);
       font-weight: 800;
       font-size: 16px;
       cursor: pointer;
@@ -2334,7 +2436,7 @@
     .dish-name {
       font-size: 17px;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--text-main);
       line-height: 1.25;
       margin: 0;
     }
@@ -2355,7 +2457,7 @@
     .dish-price {
       font-size: 17px;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--accent-orange);
     }
 
     .dish-price-note {
@@ -2374,8 +2476,8 @@
     .btn-toggle-customizer {
       width: 100%;
       background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      color: #ff9d5c;
+      border: 1px solid var(--border-subtle);
+      color: var(--accent-orange);
       padding: 10px 14px;
       border-radius: var(--radius-sm);
       font-size: 13px;
@@ -2389,9 +2491,9 @@
       transition: all 0.2s ease;
     }
     .btn-toggle-customizer:hover {
-      background: rgba(236, 90, 48, 0.15);
+      background: var(--accent-orange-light);
       border-color: var(--accent-orange);
-      color: #fff;
+      color: var(--accent-orange);
     }
 
     /* COLLAPSIBLE ACCORDION CONTAINER */
@@ -2418,7 +2520,7 @@
 
     /* "OUR MENU" BIG CTA BANNER TRIGGER */
     .our-menu-cta-bar {
-      background: linear-gradient(135deg, #242a36 0%, #1a1e27 100%);
+      background: var(--cta-bar-bg);
       border: 2px solid var(--accent-orange);
       border-radius: var(--radius-lg);
       padding: 24px 28px;
@@ -2428,20 +2530,20 @@
       flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      box-shadow: var(--shadow-lg);
       cursor: pointer;
       transition: all 0.2s;
     }
     .our-menu-cta-bar:hover {
       box-shadow: 0 12px 35px rgba(236, 90, 48, 0.25);
-      border-color: #ff9d5c;
+      border-color: var(--accent-orange);
     }
 
     .our-menu-title {
       font-family: var(--font-title);
       font-size: 24px;
-      font-weight: 800;
-      color: #ffffff;
+      font-weight: 700;
+      color: var(--text-main);
       margin: 0;
       letter-spacing: 0.5px;
     }
@@ -2504,7 +2606,7 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: #ffffff;
+      color: var(--text-main);
     }
 
     .dispatch-tabs {
@@ -2532,7 +2634,7 @@
     }
 
     .dispatch-tab:hover {
-      color: #ffffff;
+      color: var(--text-main);
     }
 
     .dispatch-tab.active {
@@ -2567,9 +2669,9 @@
     }
 
     .time-dropdown {
-      background: var(--bg-card);
+      background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       padding: 6px 12px;
       border-radius: 4px;
       font-size: 13px;
@@ -2590,9 +2692,9 @@
 
     .delivery-input {
       width: 100%;
-      background: var(--bg-base);
+      background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      color: #fff;
+      color: var(--text-main);
       padding: 12px 16px;
       border-radius: var(--radius-sm);
       font-size: 14px;
@@ -2628,8 +2730,8 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover {
-      background: rgba(236, 90, 48, 0.15);
-      color: #fff;
+      background: var(--accent-orange-light);
+      color: var(--accent-orange);
     }
 
     .dist-tag.dist-out { color: #f87171 !important; }
@@ -2711,7 +2813,7 @@
     }
 
     .dispatch-perk strong {
-      color: #ffffff;
+      color: var(--text-main);
     }
 
   </style>
@@ -2734,6 +2836,7 @@
       </ul>
 
       <div class="nav-actions">
+        <button id="themeToggleBtn" type="button" class="btn-theme-toggle" onclick="toggleTheme()" title="Switch Theme">☀️ Bright Theme</button>
         <a href="tel:2147030391" class="btn-phone">📞 (214) 703-0391</a>
         <button class="btn-cart-nav" id="btnAccount" onclick="openAccount()">👤 Sign In</button>
         <button class="btn-cart-nav" onclick="openCart()">
@@ -4042,7 +4145,14 @@
           stripeInstance = Stripe(data.publishable_key);
           stripeElements = stripeInstance.elements({
             clientSecret: data.client_secret,
-            appearance: { theme: 'night', variables: { colorPrimary: '#ec5a30' } },
+            appearance: {
+            theme: (document.documentElement.getAttribute('data-theme') === 'dark' ? 'night' : 'stripe'),
+            variables: {
+              colorPrimary: '#ec5a30',
+              colorBackground: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#222731' : '#ffffff'),
+              colorText: (document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111827'),
+            }
+          },
           });
           $id('payment-element').innerHTML = '';
           stripeElements.create('payment', {
@@ -4402,7 +4512,47 @@
         oldCheckout.onclick = proceedToCheckout;
       }
     });
-  </script>
+  
+    /* ==================== THEME CONTROLLER (BRIGHT LIVE-SITE VS DARK STAGING) ==================== */
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem('tyt_theme', theme); } catch {}
+      const btns = [document.getElementById('themeToggleBtn'), document.getElementById('floatingThemeToggleBtn')];
+      btns.forEach(btn => {
+        if (!btn) return;
+        if (theme === 'dark') {
+          btn.innerHTML = '🌙 Dark Mode';
+          btn.title = 'Switch to Bright Theme (Live Site Theme)';
+        } else {
+          btn.innerHTML = '☀️ Bright Mode';
+          btn.title = 'Switch to Dark Theme';
+        }
+      });
+    }
+
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'bright';
+      const next = cur === 'bright' ? 'dark' : 'bright';
+      applyTheme(next);
+    }
+
+    // Auto-initialize theme on load (URL param ?theme=... overrides, then localStorage, defaults to bright)
+    (function initTheme() {
+      const params = new URLSearchParams(window.location.search);
+      const urlTheme = params.get('theme');
+      let chosen = 'bright';
+      if (urlTheme === 'dark' || urlTheme === 'bright') {
+        chosen = urlTheme;
+      } else {
+        try {
+          const saved = localStorage.getItem('tyt_theme');
+          if (saved === 'dark' || saved === 'bright') chosen = saved;
+        } catch {}
+      }
+      applyTheme(chosen);
+    })();
+
+</script>
 
   <!-- ==================== TASK 1: CHECKOUT DRAWER SHELL ==================== -->
   <div id="checkoutDrawer" class="checkout-drawer">
@@ -4504,7 +4654,7 @@
   <div id="orderConfirmationOverlay" class="confirmation-overlay">
     <div class="confirmation-card">
       <span class="confirm-icon-badge">🎉</span>
-      <h2 style="color:#fff;font-size:22px;margin:0 0 6px;">Order Confirmed!</h2>
+      <h2 style="color:var(--text-main);font-size:22px;margin:0 0 6px;">Order Confirmed!</h2>
       <p style="color:var(--text-muted);font-size:13px;margin:0;">Thank you for ordering direct from Tom Yum Thai.</p>
 
       <div class="order-code-display">Order #<span data-order-code>TYT-2026-0042</span></div>
@@ -4543,6 +4693,9 @@
     </div>
   </div>
 
+
+  <!-- Floating Quick Theme Switcher (for testing side-by-side) -->
+  <button id="floatingThemeToggleBtn" type="button" class="floating-theme-toggle" onclick="toggleTheme()" title="Switch Theme">☀️ Bright Theme</button>
 
 </body>
 </html>
