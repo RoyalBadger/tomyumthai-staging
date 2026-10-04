@@ -316,7 +316,7 @@ No tooling installation or version adjustment was needed. The gate's Herdr versi
 
    **Evidence — `p0b-neon-read-codex-p0b-neon.md`, 2026-10-04 01:21:08; 01:21:25; 01:21:57; 01:22:13; 01:24:26 UTC:** Computes Edit/Connect, Postgres settings and endpoints/limits APIs show one read/write endpoint `ep-round-rice-axy3k1uk` on main, fixed **0.25–0.25 CU** (no effective autoscaling range), scale-to-zero after **5 minutes**, **105 direct / 10,000 pooled connections**. Free allows 2 CU, but this endpoint is not configured to scale there. Connect has pooling checked; endpoint API separately returns `pooler_enabled=false`, `pooler_mode=transaction`. Preserve both observations; connectivity was not tested. Raw `suspend_timeout_seconds=0` is not interpreted as disabled because the UI shows the effective five-minute default.
 
-   **Evidence — `p0b-vercel-read-codex-p0b-vercel.md`, 2026-10-04 01:08:47; 01:09:20 UTC:** Environment Variables confirms DATABASE_URL uses the pooled endpoint label. Actual equality of the unpooled counterparts' stored endpoints remains unverified; their names alone are not proof. Q5 settings closed.
+   **Evidence — `p0b-vercel-read-codex-p0b-vercel.md`, 2026-10-04 01:08:47; 01:09:20 UTC:** Environment Variables confirms DATABASE_URL uses the pooled endpoint label. Actual equality of the unpooled counterparts' stored endpoints remains unverified; their names alone are not proof (source: `p0b-neon-read-codex-p0b-neon.md`, 2026-10-04 01:21:57 UTC, unpooled-counterpart row). Q5 settings closed.
 
 6. **Question 6 — Postgres version:** What Postgres major/minor version is the project running? Why: migrations, extensions and restore compatibility must use the actual engine version. Closes with dated console/version output supplied by the human, without credentials.
 
@@ -371,11 +371,13 @@ The dated answers and dashboard appendix are ready for independent review. P0B o
 
 ## Dashboard evidence, 2026-10-04
 
-The following tables reproduce the three source reports verbatim, with their original redaction. Reports live outside this repository; the tables and source-page descriptions below are self-contained. Times are UTC on 2026-10-04. Earlier “not found” rows are historical observations: the close read later establishes the PostgreSQL minor version and Vercel connection settings; the Q1–Q9 synthesis above records which gaps remain. No environment values, full connection hosts/strings, keys, tokens, cookies or screenshots are included.
+The following tables reproduce the three source reports’ finding tables, environment inventory and function output verbatim, with their original redaction. Reports live outside this repository; the tables and source-page descriptions below are self-contained. Times are UTC on 2026-10-04. Earlier “not found” rows are historical observations: the close read later establishes the PostgreSQL minor version and Vercel connection settings; the Q1–Q9 synthesis above records which gaps remain. No environment values, full connection hosts/strings, keys, tokens, cookies or screenshots are included.
 
 ### Vercel
 
 Source report: `p0b-vercel-read-codex-p0b-vercel.md`.
+
+Collected by codex-p0b-vercel through Playwright Core attached to the human’s laptop Chrome, read-only, approximately 01:05–01:10 UTC. No account settings changed, deployments triggered or tokens created by the inspection.
 
 Times below are UTC on 2026-10-04. Page abbreviations are linked below. Dashboard API reads were executed inside the authenticated browser; only selected metadata and allowed secret classifications left browser memory. No secret values, cookies, tokens, screenshots, or raw API response files were recorded.
 
@@ -467,6 +469,8 @@ Source: Resources, 2026-10-04 01:09:36 UTC. Every row: Node.js 24.x, IAD1, ≤30
 
 Source report: `p0b-neon-read-codex-p0b-neon.md`.
 
+Collected by codex-p0b-neon through the human’s laptop Chrome, read-only, 01:20–01:24 UTC (the final pooling observation is timestamped 01:24:26). No settings, branches, endpoints or data were changed; no SQL or restore was run.
+
 Times below are UTC on 2026-10-04. Source-page abbreviations link to the pages below. API evidence is limited to browser-authenticated console metadata; no credentials or full connection hosts/strings are included.
 
 | Item | Status | Read time UTC | Redacted finding | Source page |
@@ -506,6 +510,8 @@ Times below are UTC on 2026-10-04. Source-page abbreviations link to the pages b
 ### Close read: Vercel, Neon, Stripe and Twilio
 
 Source report: `p0b-close-read-codex-p0b-close.md`.
+
+Collected by codex-p0b-close through the human’s laptop Chrome, completed evidence reads 03:10:55–03:21:37 UTC. No settings were changed; the only SQL statements were the authorized read-only SELECT version() and SHOW server_version. Stripe test/live pages were reached by explicit routes; the final mode-selector interaction timed out. Mode-specific labels supplied the mode evidence; documentation quickstart pages were not endpoint evidence.
 
 One row per requested item. All times are UTC on 2026-10-04. Source-page labels are expanded below.
 
